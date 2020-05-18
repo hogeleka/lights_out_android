@@ -32,6 +32,19 @@ public class Bulb extends AppCompatButton{
         this.isOn = !this.isOn;
     }
 
+    public boolean isOn() {
+        return this.isOn;
+    }
+
+    public void setOn(boolean isOn) {
+        this.isOn = isOn;
+        if (isOn) {
+            this.setBackgroundColor(getResources().getColor((ON_COLOR)));
+        } else {
+            this.setBackgroundColor(getResources().getColor(OFF_COLOR));
+        }
+    }
+
     @Override
     public String toString() {
         return "Bulb{" +

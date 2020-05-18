@@ -15,6 +15,8 @@ import android.widget.Button;
  * status bar and navigation/system bar) with user interaction.
  */
 public class FullscreenActivity extends AppCompatActivity {
+
+    private boolean[] currentGameState;
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -31,7 +33,7 @@ public class FullscreenActivity extends AppCompatActivity {
      * Some older devices needs a small delay between UI widget updates
      * and a change of the status and navigation bar.
      */
-    private static final int UI_ANIMATION_DELAY = 300;
+    private static final int UI_ANIMATION_DELAY = 0;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -108,7 +110,11 @@ public class FullscreenActivity extends AppCompatActivity {
             }
         });
 
-
+        if (getIntent().getExtras() == null) {
+            currentGameState = null;
+        } else {
+            currentGameState = getIntent().getExtras().getBooleanArray(getString(R.string.gameBoardState));
+        }
     }
 
     @Override
@@ -118,7 +124,15 @@ public class FullscreenActivity extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100);
+        delayedHide(0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(FullscreenActivity.this, GameGridActivity.class);
+        intent.putExtra(getString(R.string.gameBoardState), currentGameState);
+        intent.putExtra(getString(R.string.dimension), (int) Math.sqrt(currentGameState.length));
+        startActivity(intent);
     }
 
     private void toggle() {
@@ -161,7 +175,8 @@ public class FullscreenActivity extends AppCompatActivity {
     public void goToGridAtivity() {
         Intent intent = new Intent(FullscreenActivity.this, GameGridActivity.class);
         Bundle b = new Bundle();
-        b.putInt("dimension", 3); //Your
+        b.putInt(getString(R.string.dimension), 10); //Your
+        b.putBooleanArray(getString(R.string.gameBoardState), null);
         intent.putExtras(b); //Put your id to your next Intent
         startActivity(intent);
         finish();

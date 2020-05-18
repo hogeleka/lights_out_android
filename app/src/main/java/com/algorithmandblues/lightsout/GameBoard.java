@@ -1,37 +1,43 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridLayout;
+import android.widget.RelativeLayout;
 
-class GameBoard {
+class GameBoard  {
 
-//    private Bulb selectedBulb;
-
+    private boolean[] gameBoardState;
     private GridLayout grid;
     private int dimension;
     private static final int BULB_GAP = 20;
     private static final int BOARD_PADDING = 20;
 
-    public GameBoard(Context context, final int dimension){
+    public GameBoard(Context context, final int dimension, @Nullable boolean[] gameBoardState){
         this.dimension = dimension;
-
         grid = new GridLayout(context);
         grid.removeAllViews();
         grid.setRowCount(this.dimension);
         grid.setColumnCount(this.dimension);
-        this.drawBoard(context);
+        this.gameBoardState = gameBoardState;
+        this.drawBoard(context, this.gameBoardState);
     }
 
     public GridLayout getGrid() {
         return this.grid;
     }
 
-    public void drawBoard(Context context) {
+    public void drawBoard(Context context, @Nullable boolean[] currState) {
+        if (currState == null) {
+            this.gameBoardState = new boolean[this.dimension * this.dimension];
+        }
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
@@ -54,6 +60,11 @@ class GameBoard {
                     }
                 });
                 grid.addView(bulb);
+                if (currState != null) {
+                    bulb.setOn(currState[id]);
+                } else {
+                    this.gameBoardState[id] = bulb.isOn();
+                }
                 id++;
             }
         }
@@ -95,6 +106,7 @@ class GameBoard {
         Log.d("Bulb: ", b.toString());
 
         int bulbIndex = b.getBulbId();
+        this.gameBoardState[bulbIndex] = b.isOn();
 
         int row = bulbIndex / dimension;
         int col = bulbIndex % dimension;
@@ -104,24 +116,39 @@ class GameBoard {
         if (col != 0) {
             int left = (row * dimension) + (col - 1);
             ((Bulb) grid.getChildAt(left)).toggle();
+            this.gameBoardState[left] = ((Bulb) grid.getChildAt(left)).isOn();
         }
 
         //toggle right neighbour
         if (col != dimension-1) {
             int right = (row * dimension) + (col + 1);
             ((Bulb) grid.getChildAt(right)).toggle();
+            this.gameBoardState[right] = ((Bulb) grid.getChildAt(right)).isOn();
         }
 
         //toggle top neighbour
         if (row != 0) {
             int top = (row - 1) * dimension + col;
             ((Bulb) grid.getChildAt(top)).toggle();
+            this.gameBoardState[top] = ((Bulb) grid.getChildAt(top)).isOn();
         }
 
         //toggle bottom neighbour
         if (row != dimension - 1) {
             int bottom = (row + 1) * dimension + col;
             ((Bulb) grid.getChildAt(bottom)).toggle();
+            this.gameBoardState[bottom] = ((Bulb) grid.getChildAt(bottom)).isOn();
+        }
+    }
+
+    public boolean[] getGameBoardState() {
+        return gameBoardState;
+    }
+
+    public void setGameBoardState(boolean[] gameBoardState) {
+        this.gameBoardState = gameBoardState;
+        for (int i = 0; i < gameBoardState.length; i++) {
+            ((Bulb)this.getGrid().getChildAt(i)).setOn(this.gameBoardState[i]);
         }
     }
 }

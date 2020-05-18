@@ -37,7 +37,7 @@ public class GameGridActivity extends AppCompatActivity {
      * Some older devices needs a small delay between UI widget updates
      * and a change of the status and navigation bar.
      */
-    private static final int UI_ANIMATION_DELAY = 300;
+    private static final int UI_ANIMATION_DELAY = 0;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -107,8 +107,9 @@ public class GameGridActivity extends AppCompatActivity {
             }
         });
 
+        boolean[] alreadyExistingState = getIntent().getBooleanArrayExtra(getString(R.string.gameBoardState));
         dimension = getDimension();
-        gameBoard = new GameBoard(this, dimension);
+        gameBoard = new GameBoard(this, dimension, alreadyExistingState);
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameBoard.getGrid());
     }
@@ -121,8 +122,41 @@ public class GameGridActivity extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100);
+        delayedHide(0);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        savedInstanceState.putBooleanArray(getString(R.string.gameBoardState), gameBoard.getGameBoardState());
+        // etc.
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        boolean[] gameState = savedInstanceState.getBooleanArray(getString(R.string.gameBoardState));
+        for (int i = 0; i < gameState.length; i++) {
+            ((Bulb) gameBoard.getGrid().getChildAt(i)).setOn(gameState[i]);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+//        Bundle bundle = new Bundle();
+//        bundle.putBooleanArray(getString(R.string.gameBoardState), gameBoard.getGameBoardState());
+//        onSaveInstanceState(bundle);
+        Intent intent = new Intent(GameGridActivity.this, FullscreenActivity.class);
+        intent.putExtra(getString(R.string.gameBoardState), gameBoard.getGameBoardState());
+        startActivity(intent);
+    }
+
 
     private void toggle() {
 
@@ -152,7 +186,7 @@ public class GameGridActivity extends AppCompatActivity {
 
     public int getDimension() {
         Bundle b = getIntent().getExtras();
-        int value = b.getInt("dimension", 3);
+        int value = b.getInt(getString(R.string.dimension), 3);
         return value;
     }
 
