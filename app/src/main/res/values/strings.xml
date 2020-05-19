@@ -5,4 +5,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="title_activity_game_grid">GameGridActivity</string>
+    <string name="gameBoardState">gameBoardState</string>
+    <string name="dimension">dimension</string>
+    <string name="startState">startState</string>
 </resources>

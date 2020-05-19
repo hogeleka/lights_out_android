@@ -10,7 +10,7 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,10 +22,14 @@
             android:id="@+id/goToGrid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Button"
-            tools:layout_editor_absoluteX="161dp"
-            tools:layout_editor_absoluteY="341dp" />
-    </RelativeLayout>
+            android:text="Play Game" />
+
+        <Button
+            android:id="@+id/playRandom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Random" />
+    </LinearLayout>
 
 
 </FrameLayout>

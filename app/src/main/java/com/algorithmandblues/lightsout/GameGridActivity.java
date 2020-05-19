@@ -6,9 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 
 /**
@@ -18,7 +16,7 @@ import android.widget.RelativeLayout;
 public class GameGridActivity extends AppCompatActivity {
 
     private int dimension;
-    private GameBoard gameBoard;
+    private GameInstance gameInstance;
     private RelativeLayout gridLayoutHolder;
 
     /**
@@ -37,7 +35,7 @@ public class GameGridActivity extends AppCompatActivity {
      * Some older devices needs a small delay between UI widget updates
      * and a change of the status and navigation bar.
      */
-    private static final int UI_ANIMATION_DELAY = 300;
+    private static final int UI_ANIMATION_DELAY = 0;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -57,36 +55,27 @@ public class GameGridActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private final Runnable mShowPart2Runnable = new Runnable() {
-        @Override
-        public void run() {
-            // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
+
+    private final Runnable mShowPart2Runnable = () -> {
+        // Delayed display of UI elements
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.show();
         }
     };
-    private boolean mVisible;
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
+
+    private final Runnable mHideRunnable = this::hide;
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
+    @SuppressLint("ClickableViewAccessibility")
+    private final View.OnTouchListener mDelayHideTouchListener = (view, motionEvent) -> {
+        if (AUTO_HIDE) {
+            delayedHide(AUTO_HIDE_DELAY_MILLIS);
         }
+        return false;
     };
 
     @Override
@@ -94,23 +83,17 @@ public class GameGridActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_game_grid);
-
-        mVisible = true;
         mContentView = findViewById(R.id.fullscreen_content);
 
-
         // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+        mContentView.setOnClickListener(view -> toggle());
 
-        dimension = getDimension();
-        gameBoard = new GameBoard(this, dimension);
+        byte[] startState = getStartState();
+        dimension = (int) Math.sqrt(startState.length);
+
+        gameInstance = new GameInstance(this, dimension, startState);
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
-        gridLayoutHolder.addView(gameBoard.getGrid());
+        gridLayoutHolder.addView(gameInstance.getGrid());
     }
 
 
@@ -121,7 +104,25 @@ public class GameGridActivity extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100);
+        delayedHide(0);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(GameGridActivity.this, FullscreenActivity.class);
+        startActivity(i);
+        finish();
     }
 
     private void toggle() {
@@ -150,10 +151,9 @@ public class GameGridActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    public int getDimension() {
+    public byte[] getStartState() {
         Bundle b = getIntent().getExtras();
-        int value = b.getInt("dimension", 3);
-        return value;
+        return b.getByteArray(getString(R.string.startState));
     }
 
 }

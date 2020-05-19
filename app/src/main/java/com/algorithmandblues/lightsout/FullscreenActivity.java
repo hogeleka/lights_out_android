@@ -6,15 +6,18 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class FullscreenActivity extends AppCompatActivity {
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -31,9 +34,9 @@ public class FullscreenActivity extends AppCompatActivity {
      * Some older devices needs a small delay between UI widget updates
      * and a change of the status and navigation bar.
      */
-    private static final int UI_ANIMATION_DELAY = 300;
+    private static final int UI_ANIMATION_DELAY = 0;
     private final Handler mHideHandler = new Handler();
-    private View mContentView;
+    private LinearLayout mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -51,22 +54,15 @@ public class FullscreenActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private final Runnable mShowPart2Runnable = new Runnable() {
-        @Override
-        public void run() {
-            // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
+    private final Runnable mShowPart2Runnable = () -> {
+        // Delayed display of UI elements
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.show();
         }
     };
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
+    private final Runnable mHideRunnable = this::hide;
+
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
@@ -87,28 +83,16 @@ public class FullscreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fullscreen);
-
         mContentView = findViewById(R.id.fullscreen_content);
 
-
         // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
-
+        mContentView.setOnClickListener(view -> toggle());
 
         Button button = (Button) findViewById(R.id.goToGrid);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToGridAtivity();
-            }
-        });
+        button.setOnClickListener(v -> goToFixedDefaultState());
 
-
+        Button randomStateButton = (Button) findViewById(R.id.playRandom);
+        randomStateButton.setOnClickListener(v -> goToRandomState());
     }
 
     @Override
@@ -118,11 +102,15 @@ public class FullscreenActivity extends AppCompatActivity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100);
+        delayedHide(0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void toggle() {
-
         hide();
     }
 
@@ -138,17 +126,6 @@ public class FullscreenActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
     }
 
-    @SuppressLint("InlinedApi")
-    private void show() {
-        // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-
-        // Schedule a runnable to display UI elements after a delay
-        mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }
-
     /**
      * Schedules a call to hide() in delay milliseconds, canceling any
      * previously scheduled calls.
@@ -158,11 +135,43 @@ public class FullscreenActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    public void goToGridAtivity() {
+    public void goToRandomState() {
         Intent intent = new Intent(FullscreenActivity.this, GameGridActivity.class);
         Bundle b = new Bundle();
-        b.putInt("dimension", 3); //Your
-        intent.putExtras(b); //Put your id to your next Intent
+        byte[] state = new byte[9];
+        for (int i = 0; i < state.length; i++) {
+            if (Math.random() < 0.5) {
+                state[i] = 0;
+            } else {
+                state[i] = 1;
+            }
+        }
+        b.putByteArray(getString(R.string.startState), state);
+        intent.putExtras(b);
+        String currentSate = "";
+        for (int i = 0; i < state.length; i++) {
+            currentSate += (state[i] + ",");
+        }
+        Log.d("StartState: ", currentSate);
+        startActivity(intent);
+        finish();
+    }
+
+    public void goToFixedDefaultState() {
+        Intent intent = new Intent(FullscreenActivity.this, GameGridActivity.class);
+        Bundle b = new Bundle();
+        byte[] state = new byte[9];
+        for (int i = 0; i < state.length; i++) {
+            state[i] = 1;
+        }
+
+        b.putByteArray(getString(R.string.startState), state);
+        intent.putExtras(b);
+        String currentSate = "";
+        for (int i = 0; i < state.length; i++) {
+            currentSate += (state[i] + ",");
+        }
+        Log.d("StartState: ", currentSate);
         startActivity(intent);
         finish();
     }
