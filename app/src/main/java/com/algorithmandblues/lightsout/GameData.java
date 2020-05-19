@@ -9,6 +9,9 @@ public class GameData {
     private String redoStackString;
 
 
+    public GameData() {
+    }
+
     public GameData(int dimension, String startState, String toggledBulbsState, String undoStackString, String redoStackString) {
         this.dimension = dimension;
         this.startState = startState;

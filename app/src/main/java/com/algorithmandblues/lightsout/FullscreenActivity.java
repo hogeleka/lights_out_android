@@ -2,6 +2,8 @@ package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,11 +14,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import java.util.List;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class FullscreenActivity extends AppCompatActivity {
+
+    SQLiteDatabaseHandler dbHandler;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -78,6 +84,7 @@ public class FullscreenActivity extends AppCompatActivity {
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +100,8 @@ public class FullscreenActivity extends AppCompatActivity {
 
         Button randomStateButton = (Button) findViewById(R.id.playRandom);
         randomStateButton.setOnClickListener(v -> goToRandomState());
+
+        dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
     }
 
     @Override
