@@ -3,7 +3,7 @@ package com.algorithmandblues.lightsout;
 public class GameData {
 
     private int dimension;
-    private String startState;
+    private String originalStartState;
     private String toggledBulbsState;
     private String undoStackString;
     private String redoStackString;
@@ -12,9 +12,9 @@ public class GameData {
     public GameData() {
     }
 
-    public GameData(int dimension, String startState, String toggledBulbsState, String undoStackString, String redoStackString) {
+    public GameData(int dimension, String originalStartState, String toggledBulbsState, String undoStackString, String redoStackString) {
         this.dimension = dimension;
-        this.startState = startState;
+        this.originalStartState = originalStartState;
         this.toggledBulbsState = toggledBulbsState;
         this.undoStackString = undoStackString;
         this.redoStackString = redoStackString;
@@ -29,12 +29,12 @@ public class GameData {
         this.dimension = dimension;
     }
 
-    public String getStartState() {
-        return startState;
+    public String getOriginalStartState() {
+        return originalStartState;
     }
 
-    public void setStartState(String startState) {
-        this.startState = startState;
+    public void setOriginalStartState(String originalStartState) {
+        this.originalStartState = originalStartState;
     }
 
     public String getToggledBulbsState() {
@@ -65,7 +65,7 @@ public class GameData {
     public String toString() {
         return "GameData{" +
                 "dimension=" + dimension +
-                ", startState='" + startState + '\'' +
+                ", originalStartState='" + originalStartState + '\'' +
                 ", toggledBulbsState='" + toggledBulbsState + '\'' +
                 ", undoStackString='" + undoStackString + '\'' +
                 ", redoStackString='" + redoStackString + '\'' +

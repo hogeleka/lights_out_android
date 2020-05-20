@@ -281,5 +281,3 @@ public class GameInstance extends BaseObservable {
         this.dimension = dimension;
     }
 }
-
-

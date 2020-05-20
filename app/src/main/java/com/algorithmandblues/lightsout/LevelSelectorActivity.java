@@ -1,6 +1,8 @@
 package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -12,17 +14,19 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-
-import java.util.List;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity {
-
+public class LevelSelectorActivity extends AppCompatActivity {
     SQLiteDatabaseHandler dbHandler;
+
+    private CheckBox mCheckBox;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -89,17 +93,29 @@ public class FullscreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_fullscreen);
+        setContentView(R.layout.activity_level_selector);
         mContentView = findViewById(R.id.fullscreen_content);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(view -> toggle());
 
-        //set onclick listener for "play button")
-        Button button = (Button) findViewById(R.id.goToLevelSelector);
-        button.setOnClickListener(v -> goToLevelSelector());
+//        Button button = (Button) findViewById(R.id.goToGrid);
+//        button.setOnClickListener(v -> goToFixedDefaultState());
+//
+//        Button randomStateButton = (Button) findViewById(R.id.playRandom);
+//        randomStateButton.setOnClickListener(v -> goToRandomState());
 
         dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
+        mCheckBox = (CheckBox) findViewById(R.id.should_randomize_checkbox);
+        mCheckBox.setChecked(dbHandler.checkPreferenceForRandomState());
+        mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                dbHandler.updateSetRandomStatePreference(isChecked);
+            }
+        });
+
+        prepareLevelSelectors();
     }
 
     @Override
@@ -114,7 +130,10 @@ public class FullscreenActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent intent = new Intent(LevelSelectorActivity.this, FullscreenActivity.class);
+        startActivity(intent);
+        finish();
+//        super.onBackPressed();
     }
 
     private void toggle() {
@@ -143,9 +162,69 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
 
-    public void goToLevelSelector() {
-        Intent intent = new Intent(FullscreenActivity.this, LevelSelectorActivity.class);
+    public void prepareLevelSelectors() {
+        int dim = 2;
+        int numRows = mContentView.getChildCount() - 1; //last row of linear layout contains the checkbox for randomizing start state or not
+        int numCols = ((LinearLayout) mContentView.getChildAt(0)).getChildCount();
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                int dimension = dim;
+                String label = String.format(getString(R.string.level_chooser_button_label), dimension, dimension);
+                ( (Button) ( (LinearLayout) mContentView.getChildAt(row) ).getChildAt(col) ).setText(label);
+                ( (Button) ( (LinearLayout) mContentView.getChildAt(row) ).getChildAt(col) ).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        selectLevelLabel(dimension);
+                    }
+                });
+                dim++;
+            }
+        }
+    }
+
+    public void selectLevelLabel(int dimension) {
+        Log.d("Selected Level: ", Integer.toString(dimension));
+        boolean setRandomStateFlag = ((CheckBox) findViewById(R.id.should_randomize_checkbox)).isChecked();
+        if (!checkForExistingGame(dimension)) {
+            Log.d("Already Existing Game", "No existing game in DB");
+            goToNewGameActivity(dimension, false, setRandomStateFlag);
+        } else {
+            buildDialogToRequestUserResponse(dimension, setRandomStateFlag);
+        }
+    }
+
+    public void buildDialogToRequestUserResponse(int dimension, boolean setRandomStateFlag) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LevelSelectorActivity.this);
+        builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
+                .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), dimension, dimension))
+                .setCancelable(true)
+                .setPositiveButton(getString(R.string.resume_from_db_yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToNewGameActivity(dimension, true, setRandomStateFlag);
+                    }
+                })
+                .setNegativeButton(getString(R.string.restart_new_game), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToNewGameActivity(dimension, false, setRandomStateFlag);
+                    }
+                });
+        //Creating dialog box
+        AlertDialog dialog  = builder.create();
+        dialog.show();
+    }
+
+    public void goToNewGameActivity(int dimension, boolean resumeGameFromDBFlag, boolean setRandomStateFlag) {
+        Intent intent = new Intent(LevelSelectorActivity.this, GameGridActivity.class);
+        intent.putExtra(getString(R.string.dimension), dimension);
+        intent.putExtra(getString(R.string.resume_from_db_flag), resumeGameFromDBFlag);
+        intent.putExtra(getString(R.string.set_random_state_flag), setRandomStateFlag);
         startActivity(intent);
         finish();
+    }
+
+    public boolean checkForExistingGame(int dimension) {
+        return dimension <= 5;
     }
 }
