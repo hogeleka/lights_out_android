@@ -134,9 +134,9 @@ class GameInstance implements Parcelable{
                 bulb.setOnClickListener(v -> {
                     byte newVal = (byte) (1 - toggledBulbs[bulb.getBulbId()]);
                     toggledBulbs[bulb.getBulbId()] = newVal;
-                    if (undoStack.size() == UNDO_REDO_STACK_SIZE) {
-                        undoStack.remove(0);
-                    }
+//                    if (undoStack.size() == UNDO_REDO_STACK_SIZE) {
+//                        undoStack.remove(0);
+//                    }
                     undoStack.push(bulb.getBulbId());
                     clickBulb(bulb);
                 });

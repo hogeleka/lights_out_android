@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0099cc"
+    tools:context=".LevelSelectorActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <LinearLayout
+        android:id="@+id/fullscreen_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:background="#33b5e5"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <Button
+                android:id="@+id/button_2_by_2"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+            <Button
+                android:id="@+id/button_3_by_3"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+            <Button
+                android:id="@+id/button_4_by_4"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <Button
+                android:id="@+id/button_5_by_5"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+            <Button
+                android:id="@+id/button_6_by_6"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+            <Button
+                android:id="@+id/button_7_by_7"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <Button
+                android:id="@+id/button_8_by_8"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+            <Button
+                android:id="@+id/button_9_by_9"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+            <Button
+                android:id="@+id/button_10_by_10"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="0.3"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <CheckBox
+                android:id="@+id/should_randomize_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/should_randomize"
+                android:checked="true"/>
+
+        </LinearLayout>
+
+
+
+        <!--<Button-->
+            <!--android:id="@+id/goToGrid"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Play Game" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/playRandom"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Random" />-->
+    </LinearLayout>
+
+</FrameLayout>

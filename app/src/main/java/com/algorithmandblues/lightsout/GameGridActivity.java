@@ -6,8 +6,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+
+import java.util.Arrays;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -88,12 +91,14 @@ public class GameGridActivity extends AppCompatActivity {
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(view -> toggle());
 
-        byte[] startState = getStartState();
-        dimension = (int) Math.sqrt(startState.length);
+//        byte[] startState = getOriginalStartState();
+//        dimension = (int) Math.sqrt(startState.length);
+//
+//        gameInstance = new GameInstance(this, dimension, startState);
+//        gridLayoutHolder = findViewById(R.id.game_grid_holder);
+//        gridLayoutHolder.addView(gameInstance.getGrid());
 
-        gameInstance = new GameInstance(this, dimension, startState);
-        gridLayoutHolder = findViewById(R.id.game_grid_holder);
-        gridLayoutHolder.addView(gameInstance.getGrid());
+        createGameBoard();
     }
 
 
@@ -151,9 +156,24 @@ public class GameGridActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    public byte[] getStartState() {
-        Bundle b = getIntent().getExtras();
-        return b.getByteArray(getString(R.string.startState));
+    public void createGameBoard() {
+        dimension = getIntent().getIntExtra(getString(R.string.dimension), 5);
+        boolean resumeFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
+        boolean startFromRandomState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
+
+        byte[] startState = new byte[dimension * dimension];
+        Arrays.fill(startState, (byte) 1);
+        Log.d("START_RANDOM_STATE", Boolean.toString(startFromRandomState));
+        if (startFromRandomState) {
+            for (int i = 0; i < startState.length; i++) {
+                if (Math.random() <= 0.5) {
+                    startState[i] = 0;
+                }
+            }
+        }
+        gameInstance = new GameInstance(this, dimension, startState);
+        gridLayoutHolder = findViewById(R.id.game_grid_holder);
+        gridLayoutHolder.addView(gameInstance.getGrid());
     }
 
 }

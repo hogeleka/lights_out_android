@@ -7,5 +7,22 @@
     <string name="title_activity_game_grid">GameGridActivity</string>
     <string name="gameBoardState">gameBoardState</string>
     <string name="dimension">dimension</string>
-    <string name="startState">startState</string>
+    <string name="originalStartState">originalStartState</string>
+    <string name="resume_from_db_flag">resumeGameFromDB</string>
+    <string name="set_random_state_flag">setRandomStateFlag</string>
+    <string name="title_activity_level_selector">LevelSelectorActivity</string>
+
+
+    <string name="level_chooser_button_label">%1$d x %2$d</string>
+    <string name="should_randomize">Randomize initial start state</string>
+    <string name="level_picker_resume_or_restart_title">Resume Game</string>
+    <string name="level_picker_resume_or_restart_message_prompt"> Would you like to resume your already existing %1$d x %2$d game?</string>
+    <string name="resume_from_db_yes">Yes</string>
+    <string name="restart_new_game">No (Restart New Game)</string>
+
+
+    <string name="undo">undo</string>
+    <string name="reset">reset</string>
+    <string name="redo">redo</string>
+
 </resources>

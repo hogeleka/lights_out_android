@@ -19,12 +19,12 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "LightsOutDB";
     private static final String TABLE_NAME = "Board";
     private static final String KEY_ID_DIMENSION = "idDimension";
-    private static final String KEY_START_STATE = "startState";
+    private static final String ORIGINAL_START_STATE = "originalStartState";
     private static final String KEY_TOGGLED_BULBS = "toggledBulbs";
     private static final String KEY_UNDO_STACK_STRING = "undoStackString";
     private static final String KEY_REDO_STACK_STRING = "redoStackString";
     private static final String[] COLUMNS = {
-            KEY_ID_DIMENSION, KEY_START_STATE, KEY_TOGGLED_BULBS, KEY_UNDO_STACK_STRING, KEY_REDO_STACK_STRING
+            KEY_ID_DIMENSION, ORIGINAL_START_STATE, KEY_TOGGLED_BULBS, KEY_UNDO_STACK_STRING, KEY_REDO_STACK_STRING
     };
 
     public static synchronized SQLiteDatabaseHandler getInstance(Context context) {
@@ -40,7 +40,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_LIGHTSOUT_TABLE = "CREATE TABLE " + TABLE_NAME + " ( " + KEY_ID_DIMENSION + " INTEGER PRIMARY KEY, " + KEY_START_STATE + " TEXT, " + KEY_TOGGLED_BULBS + " TEXT, " + KEY_UNDO_STACK_STRING + " TEXT, " + KEY_REDO_STACK_STRING + " TEXT )";
+        String CREATE_LIGHTSOUT_TABLE = "CREATE TABLE " + TABLE_NAME + " ( " + KEY_ID_DIMENSION + " INTEGER PRIMARY KEY, " + ORIGINAL_START_STATE + " TEXT, " + KEY_TOGGLED_BULBS + " TEXT, " + KEY_UNDO_STACK_STRING + " TEXT, " + KEY_REDO_STACK_STRING + " TEXT )";
         db.execSQL(CREATE_LIGHTSOUT_TABLE);
     }
 
@@ -63,7 +63,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
             GameData gameData = new GameData();
             gameData.setDimension(Integer.parseInt(cursor.getString(0)));
-            gameData.setStartState(cursor.getString(1));
+            gameData.setOriginalStartState(cursor.getString(1));
             gameData.setToggledBulbsState(cursor.getString(2));
             gameData.setUndoStackString(cursor.getString(3));
             gameData.setRedoStackString(cursor.getString(4));
@@ -78,7 +78,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(KEY_ID_DIMENSION, gameData.getDimension());
-            values.put(KEY_START_STATE, gameData.getStartState());
+            values.put(ORIGINAL_START_STATE, gameData.getOriginalStartState());
             values.put(KEY_TOGGLED_BULBS, gameData.getToggledBulbsState());
             values.put(KEY_UNDO_STACK_STRING, gameData.getUndoStackString());
             values.put(KEY_REDO_STACK_STRING, gameData.getRedoStackString());
@@ -93,7 +93,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     private int updateGameData(GameData gameData) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_START_STATE, gameData.getStartState());
+        values.put(ORIGINAL_START_STATE, gameData.getOriginalStartState());
         values.put(KEY_TOGGLED_BULBS, gameData.getToggledBulbsState());
         values.put(KEY_UNDO_STACK_STRING, gameData.getUndoStackString());
         values.put(KEY_REDO_STACK_STRING, gameData.getRedoStackString());
@@ -115,7 +115,7 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
             do {
                 gameData = new GameData();
                 gameData.setDimension(Integer.parseInt(cursor.getString(0)));
-                gameData.setStartState(cursor.getString(1));
+                gameData.setOriginalStartState(cursor.getString(1));
                 gameData.setToggledBulbsState(cursor.getString(2));
                 gameData.setUndoStackString(cursor.getString(3));
                 gameData.setRedoStackString(cursor.getString(4));
@@ -127,5 +127,9 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         return gameDataList;
     }
 
-
+    public void clearDataBase() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.close();
+    }
 }
