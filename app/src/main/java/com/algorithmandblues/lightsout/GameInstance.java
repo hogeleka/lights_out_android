@@ -1,8 +1,9 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
+import android.databinding.PropertyChangeRegistry;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -12,46 +13,42 @@ import android.widget.GridLayout;
 import java.util.Arrays;
 import java.util.Stack;
 
-class GameInstance implements Parcelable{
+public class GameInstance extends BaseObservable {
 
-    private static final int UNDO_REDO_STACK_SIZE = 40;
+    private int dimension;
     private byte[] toggledBulbs;
-    private byte[] startState;
+    private byte[] originalStartState;
     private Stack<Integer> undoStack;
     private Stack<Integer> redoStack;
-
     private GridLayout grid;
-    private int dimension;
+
+
+    private boolean isUndoStackEmpty;
+    private boolean isRedoStackEmpty;
+
     private static final int BULB_GAP = 20;
     private static final int BOARD_PADDING = 20;
 
-    public GameInstance(Context context, final int dimension, final byte[] startState) {
+    private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
+
+    public GameInstance(Context context, final int dimension, final byte[] originalStartState, final byte[]
+            toggledBulbs, final Stack<Integer> undoStack, final Stack<Integer> redoStack) {
         this.dimension = dimension;
-        this.startState = startState;
-        this.undoStack = new Stack<>();
-
-        for (int i = 0; i < UNDO_REDO_STACK_SIZE; i++) {
-            this.undoStack.push(-1);
-        }
-
-        this.redoStack = new Stack<>();
-
-        for (int i = 0; i < UNDO_REDO_STACK_SIZE; i++) {
-            this.redoStack.push(-1);
-        }
+        this.originalStartState = originalStartState;
+        this.toggledBulbs = toggledBulbs;
+        this.undoStack = undoStack;
+        this.redoStack = redoStack;
+        this.isUndoStackEmpty = undoStack.isEmpty();
+        this.isRedoStackEmpty = redoStack.isEmpty();
 
         grid = new GridLayout(context);
-        grid.removeAllViews();
         grid.setRowCount(this.dimension);
         grid.setColumnCount(this.dimension);
-        this.toggledBulbs = startState;
+
         this.drawGameBoard(context);
         this.setStartState();
     }
 
-    public GridLayout getGrid() {
-        return this.grid;
-    }
 
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
@@ -120,9 +117,10 @@ class GameInstance implements Parcelable{
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
 
+        grid.removeAllViews();
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
-        int size = width <= height ? width : height;
+        int size = Math.min(width, height);
         int marginCumulativeWidth = (dimension + 1) * BULB_GAP;
         int bulbWidth = (size - marginCumulativeWidth) / dimension;
 
@@ -132,12 +130,8 @@ class GameInstance implements Parcelable{
                 final Bulb bulb = new Bulb(context, id);
                 bulb.setLayoutParams(this.createBulbParameters(row, col, bulbWidth));
                 bulb.setOnClickListener(v -> {
-                    byte newVal = (byte) (1 - toggledBulbs[bulb.getBulbId()]);
-                    toggledBulbs[bulb.getBulbId()] = newVal;
-//                    if (undoStack.size() == UNDO_REDO_STACK_SIZE) {
-//                        undoStack.remove(0);
-//                    }
-                    undoStack.push(bulb.getBulbId());
+                    recordBulbClick(bulb.getBulbId());
+                    handleStackOnBulbClick(bulb.getBulbId());
                     clickBulb(bulb);
                 });
                 grid.addView(bulb);
@@ -147,77 +141,143 @@ class GameInstance implements Parcelable{
         Log.i("GRID num buttons:", Integer.toString(grid.getChildCount()));
     }
 
+    public void recordBulbClick(int id) {
+        byte newVal = (byte) (1 - this.toggledBulbs[id]);
+        this.toggledBulbs[id] = newVal;
+    }
+
+    public void handleStackOnBulbClick(int id) {
+        this.addToUndoStack(id);
+        this.clearRedoStack();
+    }
+
+    public void resetBoardToOriginalStartState() {
+        this.toggledBulbs = Arrays.copyOf(this.originalStartState, this.dimension * this.dimension);
+        this.clearUndoStack();
+        this.clearRedoStack();
+        this.setStartState();
+    }
+
     public void setStartState() {
-        for (int i = 0; i < this.startState.length; i++) {
-            if (this.startState[i] == 0) {
+        for (int i = 0; i < this.dimension*this.dimension; i++) {
+            ((Bulb) grid.getChildAt(i)).setOn(true);
+        }
+
+
+        for (int i = 0; i < this.toggledBulbs.length; i++) {
+            if (this.toggledBulbs[i] == 0) {
                 clickBulb((Bulb)(grid.getChildAt(i)));
             }
         }
+        int x = 4;
     }
 
-    public GameInstance(Parcel in) {
-        int dim = in.readInt();
-        byte[] toggled = new byte[dim * dim];
-        int[] undo = new int[UNDO_REDO_STACK_SIZE];
-        int[] redo = new int[UNDO_REDO_STACK_SIZE];
-        in.readByteArray(toggled);
-        in.readIntArray(undo);
-        in.readIntArray(redo);
-        dimension = dim;
-        toggledBulbs = toggled;
-        undoStack = new Stack<>();
-        for (int i = 0; i < undo.length; i++) {
-            undoStack.push(undo[i]);
-        }
-        for (int i = 0; i < redo.length; i++) {
-            redoStack.push(redo[i]);
+    public void addToUndoStack(int id) {
+        this.undoStack.push(id);
+        this.setIsUndoStackEmpty(false);
+        Log.d(this.getClass().getSimpleName(), "Adding " + id + "to current undo stack: " + this.undoStack.toString());
+    }
+
+    public void addToRedoStack(int id) {
+        this.redoStack.push(id);
+        this.setIsRedoStackEmpty(false);
+    }
+
+    public void removeFromUndoStack() {
+        int elementPopped = this.undoStack.pop();
+        int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
+        this.recordBulbClick(id);
+        this.addToRedoStack(elementPopped);
+        this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
+
+        if (this.undoStack.isEmpty()) {
+            this.setIsUndoStackEmpty(true);
         }
     }
 
-    public static final Creator<GameInstance> CREATOR = new Creator<GameInstance>() {
-        @Override
-        public GameInstance createFromParcel(Parcel in) {
-            return new GameInstance(in);
-        }
+    public void removeFromRedoStack() {
+        int elementPopped = this.redoStack.pop();
+        int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
+        this.recordBulbClick(id);
+        this.addToUndoStack(id);
+        this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
 
-        @Override
-        public GameInstance[] newArray(int size) {
-            return new GameInstance[size];
+        if (this.redoStack.isEmpty()) {
+            this.setIsRedoStackEmpty(true);
         }
-    };
-
-    public static Creator<GameInstance> getCREATOR() {
-        return CREATOR;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public void clearUndoStack() {
+        this.undoStack.clear();
+        this.setIsUndoStackEmpty(true);
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(dimension);
-        parcel.writeByteArray(toggledBulbs);
-        int[] undoArray = new int[UNDO_REDO_STACK_SIZE];
-        Arrays.fill(undoArray, -1);
-        int[] redoArray = new int[UNDO_REDO_STACK_SIZE];
-        Arrays.fill(redoArray, -1);
+    public void clearRedoStack() {
+        this.redoStack.clear();
+        this.setIsRedoStackEmpty(true);
+    }
 
-        int undoLen = undoStack.size();
-        for (int j = 0; j < undoLen; j++) {
-            int element = undoStack.get(j);
-            undoArray[UNDO_REDO_STACK_SIZE - undoLen + j] = element;
-        }
+    public GridLayout getGrid() {
+        return this.grid;
+    }
 
-        int redoLen = redoStack.size();
-        for (int j = 0; j < redoLen; j++) {
-            int element = redoStack.get(j);
-            redoArray[UNDO_REDO_STACK_SIZE - redoLen + j] = element;
-        }
-        parcel.writeIntArray(undoArray);
-        parcel.writeIntArray(redoArray);
+    public void setIsUndoStackEmpty(boolean undoStackEmpty) {
+        this.isUndoStackEmpty = undoStackEmpty;
+        notifyPropertyChanged(BR.isUndoStackEmpty);
+    }
+
+    public void setIsRedoStackEmpty(boolean redoStackEmpty) {
+        this.isRedoStackEmpty = redoStackEmpty;
+        notifyPropertyChanged(BR.isRedoStackEmpty);
+    }
+
+    @Bindable
+    public boolean getIsUndoStackEmpty() {
+        return this.isUndoStackEmpty;
+    }
+
+    @Bindable
+    public boolean getIsRedoStackEmpty() {
+        return this.isRedoStackEmpty;
+    }
+
+    public byte[] getToggledBulbs() {
+        return this.toggledBulbs;
+    }
+
+    public void setToggledBulbs(byte[] toggledBulbs) {
+        this.toggledBulbs = toggledBulbs;
+    }
+
+    public byte[] getOriginalStartState() {
+        return this.originalStartState;
+    }
+
+    public void setOriginalStartState(byte[] originalStartState) {
+        this.originalStartState = originalStartState;
+    }
+
+    public Stack<Integer> getUndoStack() {
+        return this.undoStack;
+    }
+
+    public void setUndoStack(Stack<Integer> undoStack) {
+        this.undoStack = undoStack;
+    }
+
+    public Stack<Integer> getRedoStack() {
+        return this.redoStack;
+    }
+
+    public void setRedoStack(Stack<Integer> redoStack) {
+        this.redoStack = redoStack;
+    }
+
+    public int getDimension() {
+        return this.dimension;
+    }
+
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
     }
 }
-
-
