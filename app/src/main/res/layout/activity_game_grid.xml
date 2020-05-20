@@ -1,34 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#0099cc"
-    tools:context=".GameGridActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <RelativeLayout
-        android:id="@+id/fullscreen_content"
+    <data>
+        <import type="com.algorithmandblues.lightsout.GameInstance"/>
+        <variable name="gameinstance" type="GameInstance" />
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:keepScreenOn="true"
-        android:background="#33b5e5"
-        android:gravity="center">
+        android:background="#0099cc"
+        tools:context=".GameGridActivity">
 
         <RelativeLayout
-            android:id="@+id/game_grid_holder"
+            android:id="@+id/fullscreen_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:layout_marginTop="200px">
+            android:keepScreenOn="true"
+            android:background="#33b5e5"
+            android:gravity="center">
 
+            <RelativeLayout
+                android:id="@+id/game_grid_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:layout_marginTop="180dp">
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="bottom"
+                android:layout_marginTop="550dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+                <Button
+                    android:id="@+id/undo_button"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="0.3"
+                    android:text="@string/undo"
+                    android:enabled="@{!gameinstance.isUndoStackEmpty}"/>
+
+                <Button
+                    android:id="@+id/reset_to_original_start_state"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="0.3"
+                    android:text="@string/reset"/>
+                <Button
+                    android:id="@+id/redo_button"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="0.3"
+                    android:text="@string/redo"
+                    android:enabled="@{!gameinstance.isRedoStackEmpty}"/>
+            </LinearLayout>
         </RelativeLayout>
-
-
-    </RelativeLayout>
-
-
-</FrameLayout>
+    </FrameLayout>
+</layout>
