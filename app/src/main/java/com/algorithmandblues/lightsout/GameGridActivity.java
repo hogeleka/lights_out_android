@@ -2,12 +2,19 @@ package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+
+import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
+
+import java.util.Arrays;
+import java.util.Stack;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -16,8 +23,11 @@ import android.widget.RelativeLayout;
 public class GameGridActivity extends AppCompatActivity {
 
     private int dimension;
-    private GameInstance gameInstance;
+    public GameInstance gameInstance;
     private RelativeLayout gridLayoutHolder;
+    private Button undo;
+    private Button redo;
+    private Button reset;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -51,8 +61,7 @@ public class GameGridActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
     };
 
@@ -82,7 +91,7 @@ public class GameGridActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_game_grid);
+        ActivityGameGridBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_game_grid);
         mContentView = findViewById(R.id.fullscreen_content);
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -90,11 +99,50 @@ public class GameGridActivity extends AppCompatActivity {
 
         byte[] startState = getStartState();
         dimension = (int) Math.sqrt(startState.length);
+        byte[] toggledBulbs = Arrays.copyOf(startState, startState.length);
+        Stack<Integer> undoStack = new Stack<>();
+        Stack<Integer> redoStack = new Stack<>();
 
-        gameInstance = new GameInstance(this, dimension, startState);
+        gameInstance = new GameInstance(this, dimension, startState, toggledBulbs, undoStack, redoStack);
+        binding.setGameinstance(gameInstance);
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());
+
+
+        createUndoButton();
+        createRedoButton();
+        createResetButton();
     }
+
+    private void createUndoButton() {
+        undo = (Button) findViewById(R.id.undo_button);
+        undo.setOnClickListener(v -> handleUndoClick());
+    }
+
+    private void handleUndoClick() {
+        gameInstance.removeFromUndoStack();
+    }
+
+    private void createRedoButton() {
+        redo = (Button) findViewById(R.id.redo_button);
+        redo.setOnClickListener(v -> handleRedoClick());
+    }
+
+    private void handleRedoClick() {
+        gameInstance.removeFromRedoStack();
+        redo.setEnabled(!gameInstance.getRedoStack().empty());
+    }
+
+    private void createResetButton() {
+        reset = (Button) findViewById(R.id.reset_to_original_start_state);
+        reset.setOnClickListener(v -> handleResetClick());
+    }
+
+    private void handleResetClick() {
+        gameInstance.resetBoardToOriginalStartState();
+    }
+
+
 
 
     @Override
@@ -155,5 +203,4 @@ public class GameGridActivity extends AppCompatActivity {
         Bundle b = getIntent().getExtras();
         return b.getByteArray(getString(R.string.startState));
     }
-
 }
