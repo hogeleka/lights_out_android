@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -24,6 +25,8 @@ import android.widget.Toast;
  */
 public class LevelSelectorActivity extends AppCompatActivity {
     SQLiteDatabaseHandler dbHandler;
+
+    private CheckBox mCheckBox;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -103,6 +106,14 @@ public class LevelSelectorActivity extends AppCompatActivity {
 //        randomStateButton.setOnClickListener(v -> goToRandomState());
 
         dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
+        mCheckBox = (CheckBox) findViewById(R.id.should_randomize_checkbox);
+        mCheckBox.setChecked(dbHandler.checkPreferenceForRandomState());
+        mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                dbHandler.updateSetRandomStatePreference(isChecked);
+            }
+        });
 
         prepareLevelSelectors();
     }
@@ -173,12 +184,10 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
     public void selectLevelLabel(int dimension) {
         Log.d("Selected Level: ", Integer.toString(dimension));
-        boolean resumeGameFromDBFlag;
         boolean setRandomStateFlag = ((CheckBox) findViewById(R.id.should_randomize_checkbox)).isChecked();
         if (!checkForExistingGame(dimension)) {
-            resumeGameFromDBFlag = false;
             Log.d("Already Existing Game", "No existing game in DB");
-            goToNewGameActivity(dimension, resumeGameFromDBFlag, setRandomStateFlag);
+            goToNewGameActivity(dimension, false, setRandomStateFlag);
         } else {
             buildDialogToRequestUserResponse(dimension, setRandomStateFlag);
         }

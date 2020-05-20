@@ -22,7 +22,11 @@ import java.util.Stack;
  */
 public class GameGridActivity extends AppCompatActivity {
 
+    SQLiteDatabaseHandler dbHandler;
+
     private int dimension;
+    private boolean shouldResumeGameFromDB;
+    private boolean shouldSetRandomOriginalStartState;
     public GameInstance gameInstance;
     private RelativeLayout gridLayoutHolder;
     private Button undo;
@@ -91,19 +95,24 @@ public class GameGridActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
+
         ActivityGameGridBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_game_grid);
         mContentView = findViewById(R.id.fullscreen_content);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(view -> toggle());
 
-        byte[] startState = getStartState();
-        dimension = (int) Math.sqrt(startState.length);
-        byte[] toggledBulbs = Arrays.copyOf(startState, startState.length);
+//        byte[] startState = getStartState();
+        dimension = getIntent().getIntExtra(getString(R.string.dimension), 2);
+        shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
+        shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
+
+        byte[] originalStartState = getOriginalStartState();
         Stack<Integer> undoStack = new Stack<>();
         Stack<Integer> redoStack = new Stack<>();
-
-        gameInstance = new GameInstance(this, dimension, startState, toggledBulbs, undoStack, redoStack);
+        byte[] toggledBulbs = Arrays.copyOf(originalStartState, originalStartState.length);
+        gameInstance = new GameInstance(this, dimension, originalStartState, toggledBulbs, undoStack, redoStack);
         binding.setGameinstance(gameInstance);
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());
@@ -112,6 +121,38 @@ public class GameGridActivity extends AppCompatActivity {
         createUndoButton();
         createRedoButton();
         createResetButton();
+    }
+
+    private byte[] getOriginalStartState() {
+        byte[] originalStartState = new byte[dimension * dimension];
+        if (shouldResumeGameFromDB) {
+            Arrays.fill(originalStartState, (byte) 1);
+//            originalStartState = getStartStateFromDB();
+        } else {
+            if (shouldSetRandomOriginalStartState) {
+                originalStartState = getRandomOriginalStartState(dimension);
+            } else {
+                Arrays.fill(originalStartState, (byte)1);
+            }
+        }
+        return originalStartState;
+    }
+
+    private byte[] getRandomOriginalStartState(int dimension) {
+        byte[] originalStartState = new byte[dimension * dimension];
+        for (int i = 0; i < originalStartState.length; i++) {
+            if (Math.random() <= 0.5) {
+                originalStartState[i] = 0;
+            } else {
+                originalStartState[i] = 1;
+            }
+        }
+        return originalStartState;
+    }
+
+    private byte[] getStartStateFromDB() {
+        byte[] originalStartState = new byte[dimension * dimension];
+        return originalStartState;
     }
 
     private void createUndoButton() {
@@ -168,13 +209,12 @@ public class GameGridActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(GameGridActivity.this, FullscreenActivity.class);
+        Intent i = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
         startActivity(i);
         finish();
     }
 
     private void toggle() {
-
         hide();
     }
 
@@ -199,8 +239,4 @@ public class GameGridActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    public byte[] getStartState() {
-        Bundle b = getIntent().getExtras();
-        return b.getByteArray(getString(R.string.originalStartState));
-    }
 }
