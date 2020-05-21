@@ -2,12 +2,7 @@ package com.algorithmandblues.lightsout;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.widget.AppCompatButton;
 
 public class Bulb extends AppCompatButton{
@@ -26,8 +21,6 @@ public class Bulb extends AppCompatButton{
         this.isBorderHighlighted = false;
         this.createBulbBackground();
         this.setBackground(background);
-//        this.setBackgroundColor(getResources().getColor(ON_COLOR));
-
     }
 
     private void createBulbBackground() {

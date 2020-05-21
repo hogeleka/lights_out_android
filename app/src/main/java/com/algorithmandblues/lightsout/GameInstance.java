@@ -3,6 +3,7 @@ package com.algorithmandblues.lightsout;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.media.MediaPlayer;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +25,8 @@ public class GameInstance extends BaseObservable {
     private boolean isShowingSolution;
     private boolean isUndoStackEmpty;
     private boolean isRedoStackEmpty;
+    private MediaPlayer onSound;
+    private MediaPlayer offSound;
 
     private static final int BULB_GAP = 16;
 
@@ -37,6 +40,9 @@ public class GameInstance extends BaseObservable {
         this.isUndoStackEmpty = undoStack.isEmpty();
         this.isRedoStackEmpty = redoStack.isEmpty();
         this.isShowingSolution = false;
+
+        this.onSound = MediaPlayer.create(context, R.raw.switchon);
+        this.offSound = MediaPlayer.create(context, R.raw.switchoff);
 
         grid = new GridLayout(context);
         grid.setRowCount(this.dimension);
@@ -84,6 +90,7 @@ public class GameInstance extends BaseObservable {
                 b.highlightBorder();
             }
         }
+
         b.toggle();
 
         Log.d(TAG, "Bulb: " +b.toString());
@@ -135,7 +142,8 @@ public class GameInstance extends BaseObservable {
                 bulb.setLayoutParams(this.createBulbParameters(row, col, bulbWidth));
                 bulb.setOnClickListener(v -> {
                     recordBulbClick(bulb.getBulbId());
-                    handleStackOnBulbClick(bulb.getBulbId());
+                    handleStackOnBulbClick(bulb);
+                    playLightSwitchSound(bulb);
                     clickBulb(bulb);
                 });
                 grid.addView(bulb);
@@ -150,8 +158,25 @@ public class GameInstance extends BaseObservable {
         this.toggledBulbs[id] = newVal;
     }
 
-    public void handleStackOnBulbClick(int id) {
-        this.addToUndoStack(id);
+    public void playLightSwitchSound(Bulb bulb) {
+        if (bulb.isOn()) {
+            this.playLightOffSound();
+        } else {
+            this.playLightOnSound();
+        }
+    }
+
+
+    public void playLightOnSound() {
+        this.onSound.start();
+    }
+
+    public void playLightOffSound() {
+        this.offSound.start();
+    }
+
+    public void handleStackOnBulbClick(Bulb bulb) {
+        this.addToUndoStack(bulb.getBulbId());
         this.clearRedoStack();
     }
 
@@ -218,6 +243,7 @@ public class GameInstance extends BaseObservable {
         int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
         this.recordBulbClick(id);
         this.addToRedoStack(elementPopped);
+        this.playLightSwitchSound(((Bulb) grid.getChildAt(elementPopped)));
         this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current undo stack: " + this.undoStack.toString());
@@ -232,6 +258,7 @@ public class GameInstance extends BaseObservable {
         int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
         this.recordBulbClick(id);
         this.addToUndoStack(id);
+        this.playLightSwitchSound(((Bulb) grid.getChildAt(elementPopped)));
         this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current redo stack: " + this.redoStack.toString());

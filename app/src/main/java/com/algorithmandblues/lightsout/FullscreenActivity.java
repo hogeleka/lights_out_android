@@ -1,20 +1,16 @@
 package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-
-import java.util.List;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -34,7 +30,7 @@ public class FullscreenActivity extends AppCompatActivity {
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
      */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+    private static final int AUTO_HIDE_DELAY_MILLIS = 0;
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -86,7 +82,7 @@ public class FullscreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        overridePendingTransition(0, 0);
         setContentView(R.layout.activity_fullscreen);
         mContentView = findViewById(R.id.fullscreen_content);
 
@@ -112,7 +108,15 @@ public class FullscreenActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        AlertDialog.Builder ab = new AlertDialog.Builder(FullscreenActivity.this);
+        ab.setTitle(getResources().getString(R.string.exit_game_title));
+        ab.setMessage(getResources().getString(R.string.exit_game_question));
+        ab.setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {
+            //if you want to finish just current activity
+            FullscreenActivity.this.finish();
+        });
+        ab.setNegativeButton(getResources().getString(R.string.no), (dialog, which) -> dialog.dismiss());
+        ab.show();
     }
 
     private void toggle() {

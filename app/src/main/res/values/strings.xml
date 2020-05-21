@@ -17,12 +17,16 @@
     <string name="should_randomize">Randomize initial start state</string>
     <string name="level_picker_resume_or_restart_title">Resume Game</string>
     <string name="level_picker_resume_or_restart_message_prompt"> Would you like to resume your already existing %1$d x %2$d game?</string>
-    <string name="resume_from_db_yes">Yes</string>
     <string name="restart_new_game">No (Restart New Game)</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 
     <string name="undo">undo</string>
     <string name="reset">reset</string>
     <string name="redo">redo</string>
     <string name="solution">solution</string>
+
+    <string name="exit_game_title">Exit Lights Out</string>
+    <string name="exit_game_question">Are you sure to exit?</string>
 </resources>

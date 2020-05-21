@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -188,7 +186,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
         builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
                 .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), dimension, dimension))
                 .setCancelable(true)
-                .setPositiveButton(getString(R.string.resume_from_db_yes), new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         goToNewGameActivity(dimension, true, setRandomStateFlag);
