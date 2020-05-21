@@ -87,7 +87,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        overridePendingTransition(0, 0);
         setContentView(R.layout.activity_level_selector);
         mContentView = findViewById(R.id.fullscreen_content);
 
@@ -213,6 +213,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
     }
 
     public boolean checkForExistingGame(int dimension) {
-        return dimension <= 5;
+        return dbHandler.getGameData(dimension) != null;
     }
 }
