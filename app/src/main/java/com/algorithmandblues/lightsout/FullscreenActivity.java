@@ -1,6 +1,7 @@
 package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +30,7 @@ public class FullscreenActivity extends AppCompatActivity {
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
      */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+    private static final int AUTO_HIDE_DELAY_MILLIS = 0;
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -107,7 +108,15 @@ public class FullscreenActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        AlertDialog.Builder ab = new AlertDialog.Builder(FullscreenActivity.this);
+        ab.setTitle(getResources().getString(R.string.exit_game_title));
+        ab.setMessage(getResources().getString(R.string.exit_game_question));
+        ab.setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {
+            //if you want to finish just current activity
+            FullscreenActivity.this.finish();
+        });
+        ab.setNegativeButton(getResources().getString(R.string.no), (dialog, which) -> dialog.dismiss());
+        ab.show();
     }
 
     private void toggle() {
