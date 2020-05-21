@@ -13,7 +13,7 @@
             android:name=".LevelSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_level_selector"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme"/>
         <activity
             android:name=".GameGridActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -60,8 +59,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
     };
     private final Runnable mShowPart2Runnable = () -> {
@@ -88,7 +86,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
         }
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,13 +95,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(view -> toggle());
-
-//        Button button = (Button) findViewById(R.id.goToGrid);
-//        button.setOnClickListener(v -> goToFixedDefaultState());
-//
-//        Button randomStateButton = (Button) findViewById(R.id.playRandom);
-//        randomStateButton.setOnClickListener(v -> goToRandomState());
-
         dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
         mCheckBox = (CheckBox) findViewById(R.id.should_randomize_checkbox);
         mCheckBox.setChecked(dbHandler.checkPreferenceForRandomState());
@@ -133,7 +123,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
         Intent intent = new Intent(LevelSelectorActivity.this, FullscreenActivity.class);
         startActivity(intent);
         finish();
-//        super.onBackPressed();
+        super.onBackPressed();
     }
 
     private void toggle() {

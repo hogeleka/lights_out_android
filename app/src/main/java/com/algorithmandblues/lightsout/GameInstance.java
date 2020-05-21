@@ -3,7 +3,6 @@ package com.algorithmandblues.lightsout;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.databinding.PropertyChangeRegistry;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -15,21 +14,18 @@ import java.util.Stack;
 
 public class GameInstance extends BaseObservable {
 
+    private static final String TAG = GameInstance.class.getSimpleName();
     private int dimension;
     private byte[] toggledBulbs;
     private byte[] originalStartState;
     private Stack<Integer> undoStack;
     private Stack<Integer> redoStack;
     private GridLayout grid;
-
-
+    private boolean isShowingSolution;
     private boolean isUndoStackEmpty;
     private boolean isRedoStackEmpty;
 
-    private static final int BULB_GAP = 20;
-    private static final int BOARD_PADDING = 20;
-
-    private PropertyChangeRegistry callbacks = new PropertyChangeRegistry();
+    private static final int BULB_GAP = 16;
 
     public GameInstance(Context context, final int dimension, final byte[] originalStartState, final byte[]
             toggledBulbs, final Stack<Integer> undoStack, final Stack<Integer> redoStack) {
@@ -40,6 +36,7 @@ public class GameInstance extends BaseObservable {
         this.redoStack = redoStack;
         this.isUndoStackEmpty = undoStack.isEmpty();
         this.isRedoStackEmpty = redoStack.isEmpty();
+        this.isShowingSolution = false;
 
         grid = new GridLayout(context);
         grid.setRowCount(this.dimension);
@@ -53,19 +50,19 @@ public class GameInstance extends BaseObservable {
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         if (c != this.dimension-1) {
-            params.rightMargin = BOARD_PADDING;
+            params.rightMargin = BULB_GAP;
         } else {
             params.rightMargin = 0;
         }
 
         if (c == 0) {
-            params.leftMargin = BOARD_PADDING;
+            params.leftMargin = BULB_GAP;
         } else {
             params.leftMargin = 0;
         }
 
         if (r == dimension - 1) {
-            params.bottomMargin = BOARD_PADDING;
+            params.bottomMargin = BULB_GAP;
         }
 
         params.height = length;
@@ -80,9 +77,16 @@ public class GameInstance extends BaseObservable {
     }
 
     private void clickBulb(Bulb b) {
+        if(this.isShowingSolution) {
+            if (b.isBorderHighlighted()) {
+                b.unHighlightBorder();
+            } else {
+                b.highlightBorder();
+            }
+        }
         b.toggle();
 
-        Log.d("Bulb: ", b.toString());
+        Log.d(TAG, "Bulb: " +b.toString());
         int bulbIndex = b.getBulbId();
         int row = bulbIndex / dimension;
         int col = bulbIndex % dimension;
@@ -138,7 +142,7 @@ public class GameInstance extends BaseObservable {
                 id++;
             }
         }
-        Log.i("GRID num buttons:", Integer.toString(grid.getChildCount()));
+        Log.i(TAG, "GRID num buttons:" + Integer.toString(grid.getChildCount()));
     }
 
     public void recordBulbClick(int id) {
@@ -156,6 +160,31 @@ public class GameInstance extends BaseObservable {
         this.clearUndoStack();
         this.clearRedoStack();
         this.setStartState();
+
+        Log.d(TAG, "Board Reset complete");
+    }
+
+    public void highlightSolution(byte[] solution) {
+        for(int i = 0; i < solution.length; i++) {
+            if (solution[i] == 1) {
+                ((Bulb) grid.getChildAt(i)).highlightBorder();
+            }
+        }
+
+        this.isShowingSolution = true;
+        Log.d(TAG, "Highlighting Solution:" + Arrays.toString(solution));
+
+    }
+
+    public void unHighlightSolution(byte[] solution) {
+        for(int i = 0; i < solution.length; i++) {
+            if (solution[i] == 1) {
+                ((Bulb) grid.getChildAt(i)).unHighlightBorder();
+            }
+        }
+
+        this.isShowingSolution = false;
+        Log.d(TAG, "Highlighting Solution:" + Arrays.toString(solution));
     }
 
     public void setStartState() {
@@ -163,24 +192,25 @@ public class GameInstance extends BaseObservable {
             ((Bulb) grid.getChildAt(i)).setOn(true);
         }
 
-
         for (int i = 0; i < this.toggledBulbs.length; i++) {
             if (this.toggledBulbs[i] == 0) {
                 clickBulb((Bulb)(grid.getChildAt(i)));
             }
         }
-        int x = 4;
+
+        Log.d(TAG, "Setting Start State:" + Arrays.toString(toggledBulbs));
     }
 
     public void addToUndoStack(int id) {
         this.undoStack.push(id);
         this.setIsUndoStackEmpty(false);
-        Log.d(this.getClass().getSimpleName(), "Adding " + id + "to current undo stack: " + this.undoStack.toString());
+        Log.d(TAG, "Added " + id + " to current undo stack: " + this.undoStack.toString());
     }
 
     public void addToRedoStack(int id) {
         this.redoStack.push(id);
         this.setIsRedoStackEmpty(false);
+        Log.d(TAG, "Added " + id + " to current redo stack: " + this.redoStack.toString());
     }
 
     public void removeFromUndoStack() {
@@ -189,6 +219,8 @@ public class GameInstance extends BaseObservable {
         this.recordBulbClick(id);
         this.addToRedoStack(elementPopped);
         this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
+
+        Log.d(TAG, "Removed " + id + " from current undo stack: " + this.undoStack.toString());
 
         if (this.undoStack.isEmpty()) {
             this.setIsUndoStackEmpty(true);
@@ -201,6 +233,9 @@ public class GameInstance extends BaseObservable {
         this.recordBulbClick(id);
         this.addToUndoStack(id);
         this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
+
+        Log.d(TAG, "Removed " + id + " from current redo stack: " + this.redoStack.toString());
+
 
         if (this.redoStack.isEmpty()) {
             this.setIsRedoStackEmpty(true);
@@ -279,5 +314,13 @@ public class GameInstance extends BaseObservable {
 
     public void setDimension(int dimension) {
         this.dimension = dimension;
+    }
+
+    public boolean isShowingSolution() {
+        return this.isShowingSolution;
+    }
+
+    public void setShowingSolution(boolean showingSolution) {
+        this.isShowingSolution = showingSolution;
     }
 }
