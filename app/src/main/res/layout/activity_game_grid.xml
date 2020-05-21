@@ -41,27 +41,27 @@
                 <Button
                     android:id="@+id/undo_button"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:text="@string/undo"
                     android:enabled="@{!gameinstance.isUndoStackEmpty}"/>
                 <Button
                     android:id="@+id/redo_button"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:text="@string/redo"
                     android:enabled="@{!gameinstance.isRedoStackEmpty}"/>
                 <Button
                     android:id="@+id/solution"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:text="@string/solution"/>
                 <Button
                     android:id="@+id/reset_to_original_start_state"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:text="@string/reset"/>
             </LinearLayout>
