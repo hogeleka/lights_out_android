@@ -3,12 +3,16 @@ package com.algorithmandblues.lightsout;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
@@ -32,6 +36,8 @@ public class GameGridActivity extends AppCompatActivity {
     private Button undo;
     private Button redo;
     private Button reset;
+    private Button showSolution;
+    private LinearLayout gameButtonsHolder;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -103,7 +109,6 @@ public class GameGridActivity extends AppCompatActivity {
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(view -> toggle());
 
-//        byte[] startState = getStartState();
         dimension = getIntent().getIntExtra(getString(R.string.dimension), 2);
         shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
@@ -116,11 +121,14 @@ public class GameGridActivity extends AppCompatActivity {
         binding.setGameinstance(gameInstance);
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());
+        gameButtonsHolder = findViewById(R.id.gameButtonsHolder);
+        gameButtonsHolder.setVisibility(View.VISIBLE);
 
 
         createUndoButton();
         createRedoButton();
         createResetButton();
+        createShowSolutionButton();
     }
 
     private byte[] getOriginalStartState() {
@@ -174,12 +182,36 @@ public class GameGridActivity extends AppCompatActivity {
         redo.setEnabled(!gameInstance.getRedoStack().empty());
     }
 
+    private void createShowSolutionButton() {
+        showSolution = (Button) findViewById(R.id.solution);
+        showSolution.setOnClickListener(v -> handleShowSolution());
+    }
+
+    private void handleShowSolution() {
+        try {
+//            byte[] solution =
+//            Log.d("SolutionFound", "Solution:" + Arrays.toString(solution));
+            if (this.gameInstance.isShowingSolution()) {
+                this.gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+            } else {
+                this.gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+            }
+
+        } catch (UnknownSolutionException e) {
+            Log.d("UnknownSolutionFound", e.getMessage());
+        }
+
+    }
+
     private void createResetButton() {
         reset = (Button) findViewById(R.id.reset_to_original_start_state);
         reset.setOnClickListener(v -> handleResetClick());
     }
 
     private void handleResetClick() {
+        if(gameInstance.isShowingSolution()) {
+            showSolution.callOnClick();
+        }
         gameInstance.resetBoardToOriginalStartState();
     }
 
@@ -208,10 +240,10 @@ public class GameGridActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent i = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
         startActivity(i);
         finish();
+        super.onBackPressed();
     }
 
     private void toggle() {

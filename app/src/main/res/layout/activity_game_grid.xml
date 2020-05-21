@@ -1,68 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-
     <data>
         <import type="com.algorithmandblues.lightsout.GameInstance"/>
         <variable name="gameinstance" type="GameInstance" />
     </data>
-
-    <FrameLayout
+    <RelativeLayout
+        android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#0099cc"
-        tools:context=".GameGridActivity">
-
+        android:keepScreenOn="true"
+        android:background="#33b5e5"
+        android:gravity="bottom">
         <RelativeLayout
-            android:id="@+id/fullscreen_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:keepScreenOn="true"
-            android:background="#33b5e5"
-            android:gravity="center">
-
+            android:layout_height="wrap_content"
+            android:paddingBottom="80dp">
             <RelativeLayout
                 android:id="@+id/game_grid_holder"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:layout_marginTop="180dp">
+                android:orientation="vertical"
+                android:paddingBottom="60dp"
+                android:layout_alignParentBottom="true">
+                <!--android:layout_marginTop="180dp">-->
             </RelativeLayout>
-
             <LinearLayout
+                android:id="@+id/gameButtonsHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="bottom"
-                android:layout_marginTop="550dp"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:paddingRight="10dp"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true">
                 <Button
                     android:id="@+id/undo_button"
                     android:layout_width="0dp"
                     android:layout_height="80dp"
-                    android:layout_weight="0.3"
+                    android:layout_weight="0.25"
                     android:text="@string/undo"
                     android:enabled="@{!gameinstance.isUndoStackEmpty}"/>
-
-                <Button
-                    android:id="@+id/reset_to_original_start_state"
-                    android:layout_width="0dp"
-                    android:layout_height="80dp"
-                    android:layout_weight="0.3"
-                    android:text="@string/reset"/>
                 <Button
                     android:id="@+id/redo_button"
                     android:layout_width="0dp"
                     android:layout_height="80dp"
-                    android:layout_weight="0.3"
+                    android:layout_weight="0.25"
                     android:text="@string/redo"
                     android:enabled="@{!gameinstance.isRedoStackEmpty}"/>
+                <Button
+                    android:id="@+id/solution"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="0.25"
+                    android:text="@string/solution"/>
+                <Button
+                    android:id="@+id/reset_to_original_start_state"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="0.25"
+                    android:text="@string/reset"/>
             </LinearLayout>
         </RelativeLayout>
-    </FrameLayout>
+    </RelativeLayout>
 </layout>
