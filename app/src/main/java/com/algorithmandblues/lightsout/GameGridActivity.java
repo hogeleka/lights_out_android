@@ -1,6 +1,8 @@
 package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
@@ -19,6 +21,7 @@ import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 
 import java.util.Arrays;
 import java.util.Stack;
+import java.util.logging.Level;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -32,6 +35,7 @@ public class GameGridActivity extends AppCompatActivity {
     private boolean shouldResumeGameFromDB;
     private boolean shouldSetRandomOriginalStartState;
     public GameInstance gameInstance;
+    GameData gameData;
     private RelativeLayout gridLayoutHolder;
     private Button undo;
     private Button redo;
@@ -113,17 +117,21 @@ public class GameGridActivity extends AppCompatActivity {
         shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
 
-        byte[] originalStartState = getOriginalStartState();
-        Stack<Integer> undoStack = new Stack<>();
-        Stack<Integer> redoStack = new Stack<>();
-        byte[] toggledBulbs = Arrays.copyOf(originalStartState, originalStartState.length);
+        gameData = shouldResumeGameFromDB ? dbHandler.getGameData(dimension) : null;
+        byte[] originalStartState = getOriginalStartState(dimension, shouldResumeGameFromDB, shouldSetRandomOriginalStartState);
+        byte[] toggledBulbs = shouldResumeGameFromDB ? getToggledBulbStates() : Arrays.copyOf(originalStartState, dimension*dimension);
+
+        Stack<Integer> undoStack = shouldResumeGameFromDB ? getUndoStackFromDBValue(gameData) : new Stack<>();
+        Stack<Integer> redoStack = shouldResumeGameFromDB ? getRedoStackFromDBValue(gameData) : new Stack<>();
+
         gameInstance = new GameInstance(this, dimension, originalStartState, toggledBulbs, undoStack, redoStack);
+
         binding.setGameinstance(gameInstance);
+
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());
         gameButtonsHolder = findViewById(R.id.gameButtonsHolder);
         gameButtonsHolder.setVisibility(View.VISIBLE);
-
 
         createUndoButton();
         createRedoButton();
@@ -131,11 +139,52 @@ public class GameGridActivity extends AppCompatActivity {
         createShowSolutionButton();
     }
 
-    private byte[] getOriginalStartState() {
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Trigger the initial hide() shortly after the activity has been
+        // created, to briefly hint to the user that UI controls
+        // are available.
+        delayedHide(0);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        showDialogBoxAskingToSaveGame(gameInstance);
+    }
+
+    @Override
+    public void onDestroy() {
+        saveCurrentGameInstance(gameInstance);
+        super.onDestroy();
+    }
+
+    private Stack<Integer> getRedoStackFromDBValue(GameData gameData) {
+        return GameDataUtil.StringToIntegerStack(gameData.getRedoStackString());
+    }
+
+    private Stack<Integer> getUndoStackFromDBValue(GameData gameData) {
+        return GameDataUtil.StringToIntegerStack(gameData.getUndoStackString());
+    }
+
+    private byte[] getToggledBulbStates() {
+        return GameDataUtil.stringToByteArray(gameData.getToggledBulbsState());
+    }
+
+    private byte[] getOriginalStartState(int dimension, boolean shouldResumeGameFromDB, boolean shouldSetRandomOriginalStartState) {
         byte[] originalStartState = new byte[dimension * dimension];
         if (shouldResumeGameFromDB) {
-            Arrays.fill(originalStartState, (byte) 1);
-//            originalStartState = getStartStateFromDB();
+            originalStartState = getOriginalStartStateFromGameData(gameData);
         } else {
             if (shouldSetRandomOriginalStartState) {
                 originalStartState = getRandomOriginalStartState(dimension);
@@ -144,6 +193,10 @@ public class GameGridActivity extends AppCompatActivity {
             }
         }
         return originalStartState;
+    }
+
+    private byte[] getOriginalStartStateFromGameData(GameData gameData) {
+        return GameDataUtil.stringToByteArray(gameData.getOriginalStartState());
     }
 
     private byte[] getRandomOriginalStartState(int dimension) {
@@ -158,10 +211,6 @@ public class GameGridActivity extends AppCompatActivity {
         return originalStartState;
     }
 
-    private byte[] getStartStateFromDB() {
-        byte[] originalStartState = new byte[dimension * dimension];
-        return originalStartState;
-    }
 
     private void createUndoButton() {
         undo = (Button) findViewById(R.id.undo_button);
@@ -189,8 +238,6 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void handleShowSolution() {
         try {
-//            byte[] solution =
-//            Log.d("SolutionFound", "Solution:" + Arrays.toString(solution));
             if (this.gameInstance.isShowingSolution()) {
                 this.gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
             } else {
@@ -215,36 +262,53 @@ public class GameGridActivity extends AppCompatActivity {
         gameInstance.resetBoardToOriginalStartState();
     }
 
-
-
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        delayedHide(0);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onBackPressed() {
+    private void returnToLevelSelector() {
         Intent i = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
         startActivity(i);
-        finish();
-        super.onBackPressed();
     }
+
+    private void removeDataForCurrentDimensionFromDB(GameInstance gameInstance) {
+        dbHandler.deleteRowForSpecificDimension(gameInstance.getDimension());
+    }
+
+    private void saveCurrentGameInstance(GameInstance gameInstance) {
+        GameData gameData = getGameDataFromCurrentGameInstance(gameInstance);
+        dbHandler.addGameData(gameData);
+    }
+
+    private GameData getGameDataFromCurrentGameInstance(GameInstance gameInstance) {
+        int dimension = gameInstance.getDimension();
+        String originalStartStateString = GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState());
+        String toggledBulbsStateString = GameDataUtil.byteArrayToString(gameInstance.getToggledBulbs());
+        String undoStackString = GameDataUtil.IntegerStackToString(gameInstance.getUndoStack());
+        String redoStackString = GameDataUtil.IntegerStackToString(gameInstance.getRedoStack());
+        return new GameData(dimension, originalStartStateString, toggledBulbsStateString, undoStackString, redoStackString);
+    }
+
+    private void showDialogBoxAskingToSaveGame(GameInstance instance) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameGridActivity.this);
+        builder.setTitle(getString(R.string.request_to_save_game_title))
+                .setMessage(String.format(getString(R.string.request_to_save_game_message), gameInstance.getDimension(), gameInstance.getDimension()))
+                .setCancelable(true)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveCurrentGameInstance(instance);
+                        returnToLevelSelector();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no_do_not_save_current_game), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        removeDataForCurrentDimensionFromDB(instance);
+                        returnToLevelSelector();
+                    }
+                });
+        //Creating dialog box
+        AlertDialog dialog  = builder.create();
+        dialog.show();
+    }
+
 
     private void toggle() {
         hide();

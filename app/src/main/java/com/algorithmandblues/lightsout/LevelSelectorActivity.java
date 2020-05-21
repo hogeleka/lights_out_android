@@ -89,7 +89,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        overridePendingTransition(0, 0);
         setContentView(R.layout.activity_level_selector);
         mContentView = findViewById(R.id.fullscreen_content);
 
@@ -188,7 +188,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
         builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
                 .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), dimension, dimension))
                 .setCancelable(true)
-                .setPositiveButton(getString(R.string.resume_from_db_yes), new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         goToNewGameActivity(dimension, true, setRandomStateFlag);
@@ -215,6 +215,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
     }
 
     public boolean checkForExistingGame(int dimension) {
-        return dimension <= 5;
+        return dbHandler.getGameData(dimension) != null;
     }
 }

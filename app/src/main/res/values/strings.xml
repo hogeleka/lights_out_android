@@ -17,8 +17,12 @@
     <string name="should_randomize">Randomize initial start state</string>
     <string name="level_picker_resume_or_restart_title">Resume Game</string>
     <string name="level_picker_resume_or_restart_message_prompt"> Would you like to resume your already existing %1$d x %2$d game?</string>
-    <string name="resume_from_db_yes">Yes</string>
+    <string name="yes">Yes</string>
     <string name="restart_new_game">No (Restart New Game)</string>
+
+    <string name="request_to_save_game_title">Save Current Game</string>
+    <string name="request_to_save_game_message">Would you like to Save your current %1$d x %2$d game?</string>
+    <string name="no_do_not_save_current_game">No, do not save</string>
 
 
     <string name="undo">undo</string>
