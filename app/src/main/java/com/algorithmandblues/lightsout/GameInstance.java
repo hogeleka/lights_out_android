@@ -33,6 +33,10 @@ public class GameInstance extends BaseObservable {
     private static int BULB_GAP;
     private static final double SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP = 1.5;
 
+    private String gameOverText;
+    private static String GAME_IS_OVER;
+    private static String GAME_IS_NOT_OVER;
+
     public GameInstance(Context context, final int dimension, final byte[] originalStartState, final byte[]
             toggledBulbs, final Stack<Integer> undoStack, final Stack<Integer> redoStack) {
         this.dimension = dimension;
@@ -55,6 +59,10 @@ public class GameInstance extends BaseObservable {
         this.drawGameBoard(context);
         this.setStartState();
         this.updateIndividualBulbStatus();
+
+        GAME_IS_OVER = context.getString(R.string.all_lights_off);
+        GAME_IS_NOT_OVER = context.getString(R.string.turn_off_all_the_lights);
+        this.gameOverText = GAME_IS_NOT_OVER;
     }
 
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
@@ -134,7 +142,19 @@ public class GameInstance extends BaseObservable {
         }
 
         this.updateIndividualBulbStatus();
-        this.isGameOver = this.checkIfAllLightsAreOff();
+        this.setIsGameOver(this.checkIfAllLightsAreOff());
+//        this.isGameOver = this.checkIfAllLightsAreOff();
+//        String gameOverText = this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER;
+        this.setGameOverText(this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER);
+        if (this.getIsShowingSolution() && this.getIsGameOver()) {
+            this.unHighlightAllBulbs();
+        }
+    }
+
+    private void unHighlightAllBulbs() {
+        for (int i = 0; i < this.dimension * this.dimension; i++) {
+            ((Bulb) grid.getChildAt(i)).unHighlightBorder();
+        }
     }
 
     private void updateIndividualBulbStatus() {
@@ -218,6 +238,9 @@ public class GameInstance extends BaseObservable {
         this.clearUndoStack();
         this.clearRedoStack();
         this.setStartState();
+        this.setGameOverText(GAME_IS_NOT_OVER);
+        this.setIsGameOver(false);
+        this.unHighlightAllBulbs();
 
         Log.d(TAG, "Board Reset complete");
     }
@@ -229,7 +252,7 @@ public class GameInstance extends BaseObservable {
             }
         }
 
-        this.isShowingSolution = true;
+        this.setIsShowingSolution(true);
         Log.d(TAG, "Highlighting Solution:" + Arrays.toString(solution));
 
     }
@@ -241,7 +264,7 @@ public class GameInstance extends BaseObservable {
             }
         }
 
-        this.isShowingSolution = false;
+        this.setIsShowingSolution(false);
         Log.d(TAG, "Highlighting Solution:" + Arrays.toString(solution));
     }
 
@@ -274,6 +297,9 @@ public class GameInstance extends BaseObservable {
     public void removeFromUndoStack() {
         int elementPopped = this.undoStack.pop();
         int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
+        if(this.getIsGameOver()) {
+            this.setIsShowingSolution(false);
+        }
         this.recordBulbClick(id);
         this.addToRedoStack(elementPopped);
         this.playLightSwitchSound(((Bulb) grid.getChildAt(elementPopped)));
@@ -376,11 +402,34 @@ public class GameInstance extends BaseObservable {
         this.dimension = dimension;
     }
 
-    public boolean isShowingSolution() {
+    @Bindable
+    public boolean getIsShowingSolution() {
         return this.isShowingSolution;
     }
 
-    public void setShowingSolution(boolean showingSolution) {
+    public void setIsShowingSolution(boolean showingSolution) {
         this.isShowingSolution = showingSolution;
+        notifyPropertyChanged(BR.isShowingSolution);
+    }
+
+    @Bindable
+    public boolean getIsGameOver() {
+        return this.isGameOver;
+    }
+
+    public void setIsGameOver(boolean isGameOver) {
+        this.isGameOver = isGameOver;
+        notifyPropertyChanged(BR.isGameOver);
+    }
+
+    @Bindable
+    public String getGameOverText() {
+        return this.gameOverText;
+//        return this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER;
+    }
+
+    public void setGameOverText(String gameOverText) {
+        this.gameOverText = gameOverText;
+        notifyPropertyChanged(BR.gameOverText);
     }
 }

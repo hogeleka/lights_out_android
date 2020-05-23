@@ -35,4 +35,5 @@
     <string name="exit_game_question">Are you sure to exit?</string>
     <string name="turn_off_all_the_lights">Turn off all the Lights!!</string>
     <string name="play">Play</string>
+    <string name="all_lights_off">All lights are off!</string>
 </resources>

@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,13 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 
 import java.util.Arrays;
 import java.util.Stack;
-import java.util.logging.Level;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -245,12 +241,12 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void handleShowSolution() {
         try {
-            if (gameInstance.isShowingSolution()) {
+            if (gameInstance.getIsShowingSolution()) {
                 gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
-                showSolution.setBackgroundColor(getResources().getColor(R.color.Transparent));
+//                showSolution.setBackgroundColor(getResources().getColor(R.color.Transparent));
             } else {
                 gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
-                showSolution.setBackgroundColor(getResources().getColor(R.color.BULB_ON_COLOR));
+//                showSolution.setBackgroundColor(getResources().getColor(R.color.BULB_ON_COLOR));
             }
 
         } catch (UnknownSolutionException e) {
@@ -266,7 +262,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void handleResetClick() {
-        if(gameInstance.isShowingSolution()) {
+        if(gameInstance.getIsShowingSolution()) {
             showSolution.callOnClick();
         }
         gameInstance.resetBoardToOriginalStartState();
