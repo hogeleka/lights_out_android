@@ -73,6 +73,10 @@ public class Bulb extends AppCompatButton{
         return this.isOn;
     }
 
+    public byte isOnOrOff() {
+        return this.isOn() ? (byte) 1 : (byte) 0;
+    }
+
     public boolean isBorderHighlighted() {
         return isBorderHighlighted;
     }
