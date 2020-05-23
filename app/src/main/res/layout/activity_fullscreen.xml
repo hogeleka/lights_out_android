@@ -15,14 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:keepScreenOn="true"
-        android:background="#33b5e5"
+        android:background="@color/background_color"
         android:gravity="center">
 
         <Button
             android:id="@+id/goToLevelSelector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Play Game" />
+            android:text="@string/play" />
     </LinearLayout>
 
 

@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,7 +19,6 @@ import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 
 import java.util.Arrays;
 import java.util.Stack;
-import java.util.logging.Level;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -30,6 +27,8 @@ import java.util.logging.Level;
 public class GameGridActivity extends AppCompatActivity {
 
     SQLiteDatabaseHandler dbHandler;
+
+    private static final String TAG = GameGridActivity.class.getSimpleName();
 
     private int dimension;
     private boolean shouldResumeGameFromDB;
@@ -42,6 +41,7 @@ public class GameGridActivity extends AppCompatActivity {
     private Button reset;
     private Button showSolution;
     private LinearLayout gameButtonsHolder;
+    private RelativeLayout gameTextHolder;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -128,6 +128,8 @@ public class GameGridActivity extends AppCompatActivity {
 
         binding.setGameinstance(gameInstance);
 
+        gameTextHolder = findViewById(R.id.game_text_view_holder);
+        gameTextHolder.setVisibility(View.VISIBLE);
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());
         gameButtonsHolder = findViewById(R.id.gameButtonsHolder);
@@ -233,20 +235,24 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void createShowSolutionButton() {
         showSolution = (Button) findViewById(R.id.solution);
+        showSolution.setBackgroundColor(getResources().getColor(R.color.Transparent));
         showSolution.setOnClickListener(v -> handleShowSolution());
     }
 
     private void handleShowSolution() {
         try {
-            if (this.gameInstance.isShowingSolution()) {
-                this.gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+            if (gameInstance.getIsShowingSolution()) {
+                gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+//                showSolution.setBackgroundColor(getResources().getColor(R.color.Transparent));
             } else {
-                this.gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+                gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+//                showSolution.setBackgroundColor(getResources().getColor(R.color.BULB_ON_COLOR));
             }
 
         } catch (UnknownSolutionException e) {
-            Log.d("UnknownSolutionFound", e.getMessage());
+            Log.d(TAG, "UnknownSolutionFound: " + e.getMessage());
         }
+        Log.d(TAG, "Button Alpha" + showSolution.getAlpha());
 
     }
 
@@ -256,7 +262,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void handleResetClick() {
-        if(gameInstance.isShowingSolution()) {
+        if(gameInstance.getIsShowingSolution()) {
             showSolution.callOnClick();
         }
         gameInstance.resetBoardToOriginalStartState();

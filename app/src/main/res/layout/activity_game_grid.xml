@@ -13,19 +13,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:keepScreenOn="true"
-        android:background="#33b5e5"
-        android:gravity="bottom">
+        android:background="@color/background_color">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="80dp">
+            android:paddingBottom="20dp">
+
+            <RelativeLayout
+                android:id="@+id/game_text_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="60dp"
+                android:layout_above="@+id/game_grid_holder"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/game_grid_title_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@{gameinstance.gameOverText}"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    android:layout_gravity="center_horizontal">
+                </TextView>
+            </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/game_grid_holder"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:orientation="vertical"
                 android:paddingBottom="60dp"
+                android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true">
                 <!--android:layout_marginTop="180dp">-->
             </RelativeLayout>
@@ -57,6 +81,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.25"
+                    android:enabled="@{!gameinstance.isGameOver}"
+                    android:background="@{(gameinstance.isShowingSolution &amp;&amp; !gameinstance.isGameOver) ? @color/BULB_ON_COLOR : @color/Transparent}"
                     android:text="@string/solution"/>
                 <Button
                     android:id="@+id/reset_to_original_start_state"

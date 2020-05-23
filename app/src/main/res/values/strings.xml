@@ -14,7 +14,7 @@
 
 
     <string name="level_chooser_button_label">%1$d x %2$d</string>
-    <string name="should_randomize">Randomize initial start state</string>
+    <string name="should_randomize">Randomize</string>
     <string name="level_picker_resume_or_restart_title">Resume Game</string>
     <string name="level_picker_resume_or_restart_message_prompt"> Would you like to resume your already existing %1$d x %2$d game?</string>
     <string name="restart_new_game">No (Restart New Game)</string>
@@ -33,4 +33,7 @@
 
     <string name="exit_game_title">Exit Lights Out</string>
     <string name="exit_game_question">Are you sure to exit?</string>
+    <string name="turn_off_all_the_lights">Turn off all the Lights!!</string>
+    <string name="play">Play</string>
+    <string name="all_lights_off">All lights are off!</string>
 </resources>

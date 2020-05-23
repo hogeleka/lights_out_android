@@ -6,4 +6,6 @@
     <color name="BULB_ON_COLOR">#ffff52</color>
     <color name="BULB_OFF_COLOR">#c7a500</color>
     <color name="black_overlay">#66000000</color>
+    <color name="background_color">#33b5e5</color>
+    <color name="Transparent">#00000000</color>
 </resources>
