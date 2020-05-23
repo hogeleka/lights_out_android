@@ -19,12 +19,14 @@ public class GameInstance extends BaseObservable {
     private int dimension;
     private byte[] toggledBulbs;
     private byte[] originalStartState;
+    private byte[] individualBulbStatus;
     private Stack<Integer> undoStack;
     private Stack<Integer> redoStack;
     private GridLayout grid;
     private boolean isShowingSolution;
     private boolean isUndoStackEmpty;
     private boolean isRedoStackEmpty;
+    private boolean isGameOver;
     private MediaPlayer onSound;
     private MediaPlayer offSound;
 
@@ -36,12 +38,13 @@ public class GameInstance extends BaseObservable {
         this.dimension = dimension;
         this.originalStartState = originalStartState;
         this.toggledBulbs = toggledBulbs;
+        this.individualBulbStatus = new byte[this.dimension*this.dimension];
         this.undoStack = undoStack;
         this.redoStack = redoStack;
         this.isUndoStackEmpty = undoStack.isEmpty();
         this.isRedoStackEmpty = redoStack.isEmpty();
         this.isShowingSolution = false;
-
+        this.isGameOver = false;
         this.onSound = MediaPlayer.create(context, R.raw.switchon);
         this.offSound = MediaPlayer.create(context, R.raw.switchoff);
 
@@ -51,8 +54,8 @@ public class GameInstance extends BaseObservable {
 
         this.drawGameBoard(context);
         this.setStartState();
+        this.updateIndividualBulbStatus();
     }
-
 
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
@@ -95,6 +98,7 @@ public class GameInstance extends BaseObservable {
         }
 
         b.toggle();
+        individualBulbStatus[b.getBulbId()] = b.isOnOrOff();
 
         Log.d(TAG, "Bulb: " +b.toString());
         int bulbIndex = b.getBulbId();
@@ -105,25 +109,48 @@ public class GameInstance extends BaseObservable {
         if (col != 0) {
             int left = (row * dimension) + (col - 1);
             ((Bulb) grid.getChildAt(left)).toggle();
+            individualBulbStatus[left] = b.isOnOrOff();
         }
 
         //toggle right neighbour
         if (col != dimension-1) {
             int right = (row * dimension) + (col + 1);
             ((Bulb) grid.getChildAt(right)).toggle();
+            individualBulbStatus[right] = b.isOnOrOff();
         }
 
         //toggle top neighbour
         if (row != 0) {
             int top = (row - 1) * dimension + col;
             ((Bulb) grid.getChildAt(top)).toggle();
+            individualBulbStatus[top] = b.isOnOrOff();
         }
 
         //toggle bottom neighbour
         if (row != dimension - 1) {
             int bottom = (row + 1) * dimension + col;
             ((Bulb) grid.getChildAt(bottom)).toggle();
+            individualBulbStatus[bottom] = b.isOnOrOff();
         }
+
+        this.updateIndividualBulbStatus();
+        this.isGameOver = this.checkIfAllLightsAreOff();
+    }
+
+    private void updateIndividualBulbStatus() {
+        for (int i = 0; i< dimension*dimension; i++) {
+            individualBulbStatus[i] = ((Bulb) this.grid.getChildAt(i)).isOnOrOff();
+        }
+    }
+
+    private boolean checkIfAllLightsAreOff() {
+        for (byte status : this.individualBulbStatus) {
+            if (status == 1) {
+                return false;
+            }
+        }
+        Log.d(TAG, "Game is over: All Lights are off");
+        return true;
     }
 
     public void drawGameBoard(Context context) {
@@ -232,13 +259,13 @@ public class GameInstance extends BaseObservable {
         Log.d(TAG, "Setting Start State:" + Arrays.toString(toggledBulbs));
     }
 
-    public void addToUndoStack(int id) {
+    private void addToUndoStack(int id) {
         this.undoStack.push(id);
         this.setIsUndoStackEmpty(false);
         Log.d(TAG, "Added " + id + " to current undo stack: " + this.undoStack.toString());
     }
 
-    public void addToRedoStack(int id) {
+    private void addToRedoStack(int id) {
         this.redoStack.push(id);
         this.setIsRedoStackEmpty(false);
         Log.d(TAG, "Added " + id + " to current redo stack: " + this.redoStack.toString());
