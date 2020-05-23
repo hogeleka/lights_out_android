@@ -28,7 +28,8 @@ public class GameInstance extends BaseObservable {
     private MediaPlayer onSound;
     private MediaPlayer offSound;
 
-    private static final int BULB_GAP = 16;
+    private static int BULB_GAP;
+    private static final double SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP = 1.5;
 
     public GameInstance(Context context, final int dimension, final byte[] originalStartState, final byte[]
             toggledBulbs, final Stack<Integer> undoStack, final Stack<Integer> redoStack) {
@@ -56,16 +57,18 @@ public class GameInstance extends BaseObservable {
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         if (c != this.dimension-1) {
-            params.rightMargin = BULB_GAP;
+            params.rightMargin = BULB_GAP / 2;
         } else {
-            params.rightMargin = 0;
+            params.rightMargin = BULB_GAP;
         }
 
         if (c == 0) {
             params.leftMargin = BULB_GAP;
         } else {
-            params.leftMargin = 0;
+            params.leftMargin = BULB_GAP / 2;
         }
+//        params.rightMargin = BULB_GAP / 2;
+//        params.leftMargin = BULB_GAP / 2;
 
         if (r == dimension - 1) {
             params.bottomMargin = BULB_GAP;
@@ -131,6 +134,9 @@ public class GameInstance extends BaseObservable {
         grid.removeAllViews();
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
+        Log.d(TAG, "Screen width: " + width);
+        BULB_GAP = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
+        Log.d(TAG, "Bulb gap: " + BULB_GAP);
         int size = Math.min(width, height);
         int marginCumulativeWidth = (dimension + 1) * BULB_GAP;
         int bulbWidth = (size - marginCumulativeWidth) / dimension;

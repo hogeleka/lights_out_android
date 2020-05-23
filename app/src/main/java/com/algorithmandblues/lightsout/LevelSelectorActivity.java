@@ -25,6 +25,8 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
     private CheckBox mCheckBox;
 
+    private LinearLayout boardSizesContainer;
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -103,6 +105,8 @@ public class LevelSelectorActivity extends AppCompatActivity {
             }
         });
 
+        boardSizesContainer = findViewById(R.id.board_sizes_container);
+
         prepareLevelSelectors();
     }
 
@@ -152,14 +156,14 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
     public void prepareLevelSelectors() {
         int dim = 2;
-        int numRows = mContentView.getChildCount() - 1; //last row of linear layout contains the checkbox for randomizing start state or not
-        int numCols = ((LinearLayout) mContentView.getChildAt(0)).getChildCount();
+        int numRows = boardSizesContainer.getChildCount();
+        int numCols = ((LinearLayout) boardSizesContainer.getChildAt(0)).getChildCount();
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
                 int dimension = dim;
                 String label = String.format(getString(R.string.level_chooser_button_label), dimension, dimension);
-                ( (Button) ( (LinearLayout) mContentView.getChildAt(row) ).getChildAt(col) ).setText(label);
-                ( (Button) ( (LinearLayout) mContentView.getChildAt(row) ).getChildAt(col) ).setOnClickListener(new View.OnClickListener() {
+                ( (Button) ( (LinearLayout) boardSizesContainer.getChildAt(row) ).getChildAt(col) ).setText(label);
+                ( (Button) ( (LinearLayout) boardSizesContainer.getChildAt(row) ).getChildAt(col) ).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         selectLevelLabel(dimension);
