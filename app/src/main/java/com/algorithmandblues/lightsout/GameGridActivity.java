@@ -40,6 +40,7 @@ public class GameGridActivity extends AppCompatActivity {
     private Button redo;
     private Button reset;
     private Button showSolution;
+    private Button randomize;
     private LinearLayout gameButtonsHolder;
     private RelativeLayout gameTextHolder;
 
@@ -139,6 +140,7 @@ public class GameGridActivity extends AppCompatActivity {
         createRedoButton();
         createResetButton();
         createShowSolutionButton();
+        createRandomizeButton();
     }
 
     @Override
@@ -243,10 +245,8 @@ public class GameGridActivity extends AppCompatActivity {
         try {
             if (gameInstance.getIsShowingSolution()) {
                 gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
-//                showSolution.setBackgroundColor(getResources().getColor(R.color.Transparent));
             } else {
                 gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
-//                showSolution.setBackgroundColor(getResources().getColor(R.color.BULB_ON_COLOR));
             }
 
         } catch (UnknownSolutionException e) {
@@ -262,10 +262,26 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void handleResetClick() {
-        if(gameInstance.getIsShowingSolution()) {
+        this.undoShowSolutionIfNeeded();
+        gameInstance.resetBoardToState(gameInstance.getOriginalStartState());
+    }
+
+
+    private void createRandomizeButton() {
+        randomize = (Button) findViewById(R.id.randomize_state);
+        randomize.setOnClickListener(v -> handleRandomizeClick());
+    }
+
+    private void handleRandomizeClick() {
+        this.undoShowSolutionIfNeeded();
+        gameInstance.setOriginalStartState(this.getRandomOriginalStartState(gameInstance.getDimension()));
+        gameInstance.resetBoardToState(gameInstance.getOriginalStartState());
+    }
+
+    private void undoShowSolutionIfNeeded() {
+        if (gameInstance.getIsShowingSolution()) {
             showSolution.callOnClick();
         }
-        gameInstance.resetBoardToOriginalStartState();
     }
 
     private void returnToLevelSelector() {

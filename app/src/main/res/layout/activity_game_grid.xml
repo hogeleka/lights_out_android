@@ -66,21 +66,21 @@
                     android:id="@+id/undo_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
+                    android:layout_weight="0.20"
                     android:text="@string/undo"
                     android:enabled="@{!gameinstance.isUndoStackEmpty}"/>
                 <Button
                     android:id="@+id/redo_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
+                    android:layout_weight="0.20"
                     android:text="@string/redo"
                     android:enabled="@{!gameinstance.isRedoStackEmpty}"/>
                 <Button
                     android:id="@+id/solution"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
+                    android:layout_weight="0.20"
                     android:enabled="@{!gameinstance.isGameOver}"
                     android:background="@{(gameinstance.isShowingSolution &amp;&amp; !gameinstance.isGameOver) ? @color/BULB_ON_COLOR : @color/Transparent}"
                     android:text="@string/solution"/>
@@ -88,8 +88,14 @@
                     android:id="@+id/reset_to_original_start_state"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.25"
+                    android:layout_weight="0.20"
                     android:text="@string/reset"/>
+                <Button
+                    android:id="@+id/randomize_state"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.20"
+                    android:text="@string/randomize"/>
             </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
