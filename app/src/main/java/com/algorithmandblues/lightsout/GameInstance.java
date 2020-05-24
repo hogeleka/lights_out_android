@@ -17,6 +17,7 @@ public class GameInstance extends BaseObservable {
 
     private static final String TAG = GameInstance.class.getSimpleName();
     private int dimension;
+    private int moveCounter;
     private byte[] toggledBulbs;
     private byte[] originalStartState;
     private byte[] individualBulbStatus;
@@ -38,13 +39,13 @@ public class GameInstance extends BaseObservable {
     private static String GAME_IS_NOT_OVER;
 
     public GameInstance(Context context, final int dimension, final byte[] originalStartState, final byte[]
-            toggledBulbs, final Stack<Integer> undoStack, final Stack<Integer> redoStack) {
+            toggledBulbs, final Stack<Integer> undoStack, final Stack<Integer> redoStack, final int moveCounter) {
         this.dimension = dimension;
         this.originalStartState = originalStartState;
         this.toggledBulbs = toggledBulbs;
         this.individualBulbStatus = new byte[this.dimension*this.dimension];
-        this.undoStack = undoStack;
-        this.redoStack = redoStack;
+        this.undoStack = (Stack<Integer>) undoStack.clone();
+        this.redoStack = (Stack<Integer>) undoStack.clone();
         this.isUndoStackEmpty = undoStack.isEmpty();
         this.isRedoStackEmpty = redoStack.isEmpty();
         this.isShowingSolution = false;
@@ -59,6 +60,9 @@ public class GameInstance extends BaseObservable {
         this.drawGameBoard(context);
         this.setStartState();
         this.updateIndividualBulbStatus();
+
+        //Always initialize after game board is drawn
+        this.setMoveCounter(moveCounter);
 
         GAME_IS_OVER = context.getString(R.string.all_lights_off);
         GAME_IS_NOT_OVER = context.getString(R.string.turn_off_all_the_lights);
@@ -104,6 +108,7 @@ public class GameInstance extends BaseObservable {
         }
 
         b.toggle();
+        this.incrementMoveCounter();
         individualBulbStatus[b.getBulbId()] = b.isOnOrOff();
 
         Log.d(TAG, "Bulb: " +b.toString());
@@ -229,16 +234,21 @@ public class GameInstance extends BaseObservable {
         this.clearRedoStack();
     }
 
-    public void resetBoardToState(byte[] state) {
+    public void resetBoardToState(byte[] state, int moveCounter, Stack<Integer> undo, Stack<Integer> redo) {
         this.toggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
-        this.clearUndoStack();
-        this.clearRedoStack();
+        Stack<Integer> undoStack = (Stack<Integer>) undo.clone();
+        Stack<Integer> redoStack = (Stack<Integer>) redo.clone();
+
         this.setStartState();
+        this.setUndoStack(undoStack);
+        this.setRedoStack(redoStack);
+        this.setMoveCounter(moveCounter);
         this.setGameOverText(GAME_IS_NOT_OVER);
         this.setIsGameOver(false);
         this.unHighlightAllBulbs();
 
-        Log.d(TAG, "Board Reset complete");
+        Log.d(TAG, "Board Reset complete. \nNew Start State:" + Arrays.toString(state) +
+                "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack);
     }
 
     public void highlightSolution(byte[] solution) {
@@ -348,6 +358,22 @@ public class GameInstance extends BaseObservable {
         notifyPropertyChanged(BR.isRedoStackEmpty);
     }
 
+    public void incrementMoveCounter() {
+        this.incrementMoveCounter(1);
+    }
+
+    public void decrementMoveCounter() {
+        this.decrementMoveCounter(1);
+    }
+
+    public void incrementMoveCounter(int incrementValue) {
+        this.setMoveCounter(this.moveCounter + incrementValue);
+    }
+
+    public void decrementMoveCounter(int decrementValue) {
+        this.setMoveCounter(this.moveCounter - decrementValue);
+    }
+
     @Bindable
     public boolean getIsUndoStackEmpty() {
         return this.isUndoStackEmpty;
@@ -380,6 +406,11 @@ public class GameInstance extends BaseObservable {
 
     public void setUndoStack(Stack<Integer> undoStack) {
         this.undoStack = undoStack;
+        if(this.undoStack.isEmpty()) {
+            this.setIsUndoStackEmpty(true);
+        } else {
+            this.setIsUndoStackEmpty(false);
+        }
     }
 
     public Stack<Integer> getRedoStack() {
@@ -388,6 +419,11 @@ public class GameInstance extends BaseObservable {
 
     public void setRedoStack(Stack<Integer> redoStack) {
         this.redoStack = redoStack;
+        if(this.redoStack.isEmpty()) {
+            this.setIsRedoStackEmpty(true);
+        } else {
+            this.setIsRedoStackEmpty(false);
+        }
     }
 
     public int getDimension() {
@@ -421,7 +457,16 @@ public class GameInstance extends BaseObservable {
     @Bindable
     public String getGameOverText() {
         return this.gameOverText;
-//        return this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER;
+    }
+
+    @Bindable
+    public int getMoveCounter() {
+        return moveCounter;
+    }
+
+    public void setMoveCounter(int moveCounter) {
+        this.moveCounter = moveCounter;
+        notifyPropertyChanged(BR.moveCounter);
     }
 
     public void setGameOverText(String gameOverText) {

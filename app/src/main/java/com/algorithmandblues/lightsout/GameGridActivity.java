@@ -43,6 +43,10 @@ public class GameGridActivity extends AppCompatActivity {
     private Button randomize;
     private LinearLayout gameButtonsHolder;
     private RelativeLayout gameTextHolder;
+    private RelativeLayout moveCounterTextHolder;
+    private Stack<Integer> undoStack;
+    private Stack<Integer> redoStack;
+    private int moveCounter;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -121,16 +125,18 @@ public class GameGridActivity extends AppCompatActivity {
         gameData = shouldResumeGameFromDB ? dbHandler.getGameData(dimension) : null;
         byte[] originalStartState = getOriginalStartState(dimension, shouldResumeGameFromDB, shouldSetRandomOriginalStartState);
         byte[] toggledBulbs = shouldResumeGameFromDB ? getToggledBulbStates() : Arrays.copyOf(originalStartState, dimension*dimension);
+        undoStack = shouldResumeGameFromDB ? getUndoStackFromDBValue(gameData) : new Stack<>();
+        redoStack = shouldResumeGameFromDB ? getRedoStackFromDBValue(gameData) : new Stack<>();
+        moveCounter = 0; // Get from db eventually
 
-        Stack<Integer> undoStack = shouldResumeGameFromDB ? getUndoStackFromDBValue(gameData) : new Stack<>();
-        Stack<Integer> redoStack = shouldResumeGameFromDB ? getRedoStackFromDBValue(gameData) : new Stack<>();
-
-        gameInstance = new GameInstance(this, dimension, originalStartState, toggledBulbs, undoStack, redoStack);
+        gameInstance = new GameInstance(this, dimension, originalStartState, toggledBulbs, undoStack, redoStack, moveCounter);
 
         binding.setGameinstance(gameInstance);
 
         gameTextHolder = findViewById(R.id.game_text_view_holder);
         gameTextHolder.setVisibility(View.VISIBLE);
+        moveCounterTextHolder = findViewById(R.id.moveCounter_text_view_holder);
+        moveCounterTextHolder.setVisibility(View.VISIBLE);
         gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());
         gameButtonsHolder = findViewById(R.id.gameButtonsHolder);
@@ -248,12 +254,11 @@ public class GameGridActivity extends AppCompatActivity {
             } else {
                 gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
             }
+            Log.d(TAG, "Showing Solution");
 
         } catch (UnknownSolutionException e) {
             Log.d(TAG, "UnknownSolutionFound: " + e.getMessage());
         }
-        Log.d(TAG, "Button Alpha" + showSolution.getAlpha());
-
     }
 
     private void createResetButton() {
@@ -263,19 +268,46 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void handleResetClick() {
         this.undoShowSolutionIfNeeded();
-        gameInstance.resetBoardToState(gameInstance.getOriginalStartState());
+        // currently move counter is 0 but this will need to be changed to moveCounter in gameData
+        gameInstance.resetBoardToState(gameInstance.getOriginalStartState(), moveCounter, undoStack, redoStack);
+        Log.d(TAG, "Resetting board to Last Saved Instance or Default state if there was no saved instance");
+
     }
 
 
     private void createRandomizeButton() {
         randomize = (Button) findViewById(R.id.randomize_state);
-        randomize.setOnClickListener(v -> handleRandomizeClick());
+        randomize.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(GameGridActivity.this);
+            builder.setTitle(getString(R.string.randomize_board))
+                    .setMessage(R.string.randomize_confirmation_text)
+                    .setCancelable(true)
+                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            handleRandomizeClick();
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            //Creating dialog box
+            AlertDialog dialog  = builder.create();
+            dialog.show();
+        });
     }
 
     private void handleRandomizeClick() {
         this.undoShowSolutionIfNeeded();
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
+        moveCounter = 0;
         gameInstance.setOriginalStartState(this.getRandomOriginalStartState(gameInstance.getDimension()));
-        gameInstance.resetBoardToState(gameInstance.getOriginalStartState());
+        gameInstance.resetBoardToState(gameInstance.getOriginalStartState(), moveCounter, undoStack, redoStack);
+        Log.d(TAG, "Resetting Board to new Randomized State");
     }
 
     private void undoShowSolutionIfNeeded() {
