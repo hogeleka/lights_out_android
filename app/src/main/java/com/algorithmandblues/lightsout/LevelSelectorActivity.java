@@ -25,6 +25,8 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
     private LinearLayout boardSizesContainer;
 
+    private static final String TAG = LevelSelectorActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,8 +86,9 @@ public class LevelSelectorActivity extends AppCompatActivity {
     public void selectLevelLabel(int dimension) {
         Log.d("Selected Level: ", Integer.toString(dimension));
         boolean setRandomStateFlag = ((CheckBox) findViewById(R.id.should_randomize_checkbox)).isChecked();
-        if (!checkForExistingGame(dimension, GameMode.ARCADE)) {
-            Log.d("Already Existing Game", "No existing game in DB");
+        int gameMode = setRandomStateFlag ? GameMode.ARCADE : GameMode.CLASSIC;
+        if (!checkForExistingGame(dimension, gameMode)) {
+            Log.d(TAG, "No existing game in DB");
             goToNewGameActivity(dimension, false, setRandomStateFlag);
         } else {
             buildDialogToRequestUserResponse(dimension, setRandomStateFlag);
