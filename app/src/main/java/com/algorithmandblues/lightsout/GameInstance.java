@@ -10,6 +10,9 @@ import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.GridLayout;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -40,6 +43,10 @@ public class GameInstance extends BaseObservable {
     private GridLayout grid;
     private MediaPlayer onSound;
     private MediaPlayer offSound;
+
+    public PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
+    private static String gameOverPropertyName = "isGameOver";
+
     private String gameOverText;
 
     GameInstance(Context context, final GameDataObject gameDataObject) {
@@ -456,8 +463,10 @@ public class GameInstance extends BaseObservable {
         return this.isGameOver;
     }
 
-    private void setIsGameOver(boolean isGameOver) {
+    public void setIsGameOver(boolean isGameOver) {
+        boolean oldValue = this.isGameOver;
         this.isGameOver = isGameOver;
+        this.gameOverChange.firePropertyChange(gameOverPropertyName, oldValue, isGameOver);
         notifyPropertyChanged(BR.isGameOver);
     }
 

@@ -12,6 +12,8 @@ import android.widget.RelativeLayout;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Stack;
 
 /**
@@ -35,6 +37,8 @@ public class GameGridActivity extends AppCompatActivity {
     private Button reset;
     private Button showSolution;
     private Button randomize;
+    public PropertyChangeListener listener;
+
 
 
     @Override
@@ -51,7 +55,18 @@ public class GameGridActivity extends AppCompatActivity {
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
         gameDataObject = shouldResumeGameFromDB ? gameDataObjectDao.getMostRecentGameDataForGameType(dimension, 1) : getDefaultGameDataObject(dimension, 1);
 
+
         gameInstance = new GameInstance(this, gameDataObject);
+
+        listener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (gameInstance.getIsGameOver()){
+                    Log.d(TAG, "Game is Over!");
+                }
+            }
+        };
+        gameInstance.gameOverChange.addPropertyChangeListener(listener);
         binding.setGameinstance(gameInstance);
 
         RelativeLayout gameTextHolder = findViewById(R.id.game_text_view_holder);
@@ -105,7 +120,7 @@ public class GameGridActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-         if (gameInstance.getHasMadeAtLeastOneMove()) {
+        if (gameInstance.getHasMadeAtLeastOneMove()) {
             saveCurrentGameInstance(gameInstance);
         } else {
             if (gameInstance.getGameMode() == GameMode.ARCADE) {
