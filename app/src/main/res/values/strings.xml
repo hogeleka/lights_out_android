@@ -37,4 +37,6 @@
     <string name="play">Play</string>
     <string name="all_lights_off">All lights are off!</string>
     <string name="randomize">Randomize</string>
+    <string name="randomize_board">Randomize Board</string>
+    <string name="randomize_confirmation_text">Are you sure? All current progress will be lost!</string>
 </resources>
