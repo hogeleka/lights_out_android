@@ -1,5 +1,7 @@
 package com.algorithmandblues.lightsout;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
@@ -71,6 +73,8 @@ public class GameGridActivity extends AppCompatActivity {
 
         RelativeLayout gameTextHolder = findViewById(R.id.game_text_view_holder);
         gameTextHolder.setVisibility(View.VISIBLE);
+        RelativeLayout powerConsumptionTextHolder = findViewById(R.id.power_text_view_holder);
+        powerConsumptionTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout moveCounterTextHolder = findViewById(R.id.moveCounter_text_view_holder);
         moveCounterTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout gridLayoutHolder = findViewById(R.id.game_grid_holder);
@@ -182,7 +186,21 @@ public class GameGridActivity extends AppCompatActivity {
     private void createShowSolutionButton() {
         showSolution = (Button) findViewById(R.id.solution);
         showSolution.setBackgroundColor(getResources().getColor(R.color.transparent));
-        showSolution.setOnClickListener(v -> handleShowSolution());
+        showSolution.setOnClickListener(v -> {
+            if (!gameInstance.getHasSeenSolution()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(GameGridActivity.this);
+                builder.setTitle(getString(R.string.show_solution_title))
+                        .setMessage(R.string.show_soltuion_confirmation)
+                        .setCancelable(true)
+                        .setPositiveButton(getString(R.string.yes), (dialog, which) -> handleShowSolution())
+                        .setNegativeButton(getString(R.string.no), (dialog, which) -> dialog.dismiss());
+                //Creating dialog box
+                AlertDialog dialog  = builder.create();
+                dialog.show();
+            } else {
+                handleShowSolution();
+            }
+        });
     }
 
     private void handleShowSolution() {

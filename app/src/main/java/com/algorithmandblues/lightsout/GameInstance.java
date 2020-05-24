@@ -10,8 +10,6 @@ import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.GridLayout;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Stack;
@@ -29,6 +27,8 @@ public class GameInstance extends BaseObservable {
     private int hintsAllowed;
     private int hintsUsed;
     private int hintsLeft;
+    private int currentPowerConsumption;
+    private int totalBoardPower;
     private boolean isShowingSolution;
     private boolean isUndoStackEmpty;
     private boolean isRedoStackEmpty;
@@ -44,7 +44,7 @@ public class GameInstance extends BaseObservable {
     private MediaPlayer onSound;
     private MediaPlayer offSound;
 
-    public PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
+    PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
     private static String gameOverPropertyName = "isGameOver";
 
     private String gameOverText;
@@ -75,6 +75,8 @@ public class GameInstance extends BaseObservable {
         this.drawGameBoard(context);
         this.setStartState();
         this.updateIndividualBulbStatus();
+        // Always call when this.updateIndividualBulbStatus() is called and CurrentBoardPower is initialized.
+        this.totalBoardPower = this.getCurrentPowerConsumption();
 
         //Always initialize after game board is drawn
         this.setMoveCounter(gameDataObject.getMoveCounter());
@@ -174,28 +176,24 @@ public class GameInstance extends BaseObservable {
         if (col != 0) {
             int left = (row * dimension) + (col - 1);
             ((Bulb) grid.getChildAt(left)).toggle();
-            individualBulbStatus[left] = b.isOnOrOff();
         }
 
         //toggle right neighbour
         if (col != dimension-1) {
             int right = (row * dimension) + (col + 1);
             ((Bulb) grid.getChildAt(right)).toggle();
-            individualBulbStatus[right] = b.isOnOrOff();
         }
 
         //toggle top neighbour
         if (row != 0) {
             int top = (row - 1) * dimension + col;
             ((Bulb) grid.getChildAt(top)).toggle();
-            individualBulbStatus[top] = b.isOnOrOff();
         }
 
         //toggle bottom neighbour
         if (row != dimension - 1) {
             int bottom = (row + 1) * dimension + col;
             ((Bulb) grid.getChildAt(bottom)).toggle();
-            individualBulbStatus[bottom] = b.isOnOrOff();
         }
 
         this.updateIndividualBulbStatus();
@@ -213,8 +211,10 @@ public class GameInstance extends BaseObservable {
     }
 
     private void updateIndividualBulbStatus() {
+        this.currentPowerConsumption = 0;
         for (int i = 0; i< dimension*dimension; i++) {
             individualBulbStatus[i] = ((Bulb) this.grid.getChildAt(i)).isOnOrOff();
+            this.setCurrentPowerConsumption(this.getCurrentPowerConsumption() + individualBulbStatus[i]);
         }
     }
 
@@ -258,6 +258,8 @@ public class GameInstance extends BaseObservable {
     void resetBoardToState(byte[] state, int moveCounter, Stack<Integer> undo, Stack<Integer> redo) {
         this.currentToggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
         this.setStartState();
+        this.updateIndividualBulbStatus();
+        this.setTotalBoardPower(this.getCurrentPowerConsumption());
         this.setUndoStack(undo);
         this.setRedoStack(redo);
         this.setMoveCounter(moveCounter);
@@ -267,7 +269,8 @@ public class GameInstance extends BaseObservable {
         this.unHighlightAllBulbs();
 
         Log.d(TAG, "Board Reset complete. \nNew Start State:" + Arrays.toString(state) +
-                "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack);
+                "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack +
+                "\nTotalBoardPower=" + this.getTotalBoardPower());
     }
 
     void highlightSolution(byte[] solution) {
@@ -529,5 +532,23 @@ public class GameInstance extends BaseObservable {
 
     private void setHasMadeAtLeastOneMove(boolean hasMadeAtLeastOneMove) {
         this.hasMadeAtLeastOneMove = hasMadeAtLeastOneMove;
+    }
+
+    @Bindable
+    public int getCurrentPowerConsumption() {
+        return currentPowerConsumption;
+    }
+
+    private void setCurrentPowerConsumption(int currentPowerConsumption) {
+        this.currentPowerConsumption = currentPowerConsumption;
+        notifyPropertyChanged(BR.currentPowerConsumption);
+    }
+
+    public int getTotalBoardPower() {
+        return totalBoardPower;
+    }
+
+    public void setTotalBoardPower(int totalBoardPower) {
+        this.totalBoardPower = totalBoardPower;
     }
 }
