@@ -1,7 +1,6 @@
 package com.algorithmandblues.lightsout;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +26,7 @@ public class GameGridActivity extends AppCompatActivity {
     DatabaseHelper databaseHelper;
 
     GameDataObjectDao gameDataObjectDao;
+    GameWinStateDao gameWinStateDao;
 
     private static final String TAG = GameGridActivity.class.getSimpleName();
 
@@ -49,13 +49,15 @@ public class GameGridActivity extends AppCompatActivity {
 
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
         gameDataObjectDao = GameDataObjectDao.getInstance(databaseHelper);
+        gameWinStateDao = GameWinStateDao.getInstance(databaseHelper);
 
         ActivityGameGridBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_game_grid);
 
         dimension = getIntent().getIntExtra(getString(R.string.dimension), 2);
         boolean shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
-        gameDataObject = shouldResumeGameFromDB ? gameDataObjectDao.getMostRecentGameDataForGameType(dimension, 1) : getDefaultGameDataObject(dimension, 1);
+        int gameMode = shouldSetRandomOriginalStartState ? GameMode.ARCADE : GameMode.CLASSIC;
+        gameDataObject = shouldResumeGameFromDB ? gameDataObjectDao.getMostRecentGameDataForGameType(dimension, gameMode) : getDefaultGameDataObject(dimension, gameMode);
 
 
         gameInstance = new GameInstance(this, gameDataObject);
@@ -65,6 +67,12 @@ public class GameGridActivity extends AppCompatActivity {
             public void propertyChange(PropertyChangeEvent evt) {
                 if (gameInstance.getIsGameOver()){
                     Log.d(TAG, "Game is Over!");
+                    GameWinState gameWinState = getGameWinStateFromGameInstance(gameInstance);
+                    removeCurrentGameFromTableOfCurrentGames(gameWinState.getDimension(), gameInstance.getGameMode());
+                    int insertedGameWinStateId = insertGameWinStateObjectIntoGameWinStateTable(gameWinState);
+                    gameWinState.setId(insertedGameWinStateId);
+                    sendGameWinStateToNewActivity(gameWinState);
+
                 }
             }
         };
@@ -87,6 +95,35 @@ public class GameGridActivity extends AppCompatActivity {
         createResetButton();
         createShowSolutionButton();
         createRandomizeButton();
+    }
+
+    private void sendGameWinStateToNewActivity(GameWinState gameWinState) {
+        Intent intent = new Intent(GameGridActivity.this, GameSummaryActivity.class);
+        intent.putExtra(getString(R.string.game_win_state_label), gameWinState);
+        startActivity(intent);
+        finish();
+    }
+
+    private int insertGameWinStateObjectIntoGameWinStateTable(GameWinState gameWinState) {
+        return gameWinStateDao.insertGameWinStateObjectToDatabase(gameWinState);
+    }
+
+    private void removeCurrentGameFromTableOfCurrentGames(int dimension, int gameMode) {
+        gameDataObjectDao.deleteMostRecentGameDataObjectForDimensionAndGameMode(dimension, gameMode);
+    }
+
+    private GameWinState getGameWinStateFromGameInstance(GameInstance gameInstance) {
+        //ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, NUMBER_OF_MOVES, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS
+        GameWinState gameWinState = new GameWinState(){{
+            setDimension(gameInstance.getDimension());
+            setOriginalStartState(GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState()));
+            setToggledBulbs(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
+            setNumberOfMoves(gameInstance.getMoveCounter());
+            setNumberOfStars(gameInstance.getStarCount());
+            setGameMode(gameInstance.getGameMode());
+            setTimeStampMs(System.currentTimeMillis());
+        }};
+        return gameWinState;
     }
 
     private GameDataObject getDefaultGameDataObject(int dimension, int gameMode) {
@@ -136,13 +173,6 @@ public class GameGridActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        if (gameInstance.getHasMadeAtLeastOneMove()) {
-            saveCurrentGameInstance(gameInstance);
-        } else {
-            if (gameInstance.getGameMode() == GameMode.ARCADE) {
-                saveCurrentGameInstance(gameInstance);
-            }
-        }
         super.onDestroy();
     }
 

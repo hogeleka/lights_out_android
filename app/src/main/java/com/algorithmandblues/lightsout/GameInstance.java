@@ -199,9 +199,11 @@ public class GameInstance extends BaseObservable {
         }
 
         this.updateIndividualBulbStatus();
-        this.setIsGameOver(this.checkIfAllLightsAreOff());
-        this.setGameOverText(this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER);
-        this.setStarCount(this.getIsGameOver() ? this.calculateStars() : this.getStarCount());
+        boolean gameOver = this.checkIfAllLightsAreOff();
+        this.setGameOverText(gameOver ? GAME_IS_OVER : GAME_IS_NOT_OVER);
+        this.setStarCount(gameOver ? this.calculateStars() : this.getStarCount());
+        this.setIsGameOver(gameOver);
+
         if (this.getIsShowingSolution() && this.getIsGameOver()) {
             this.unHighlightAllBulbs();
         }
@@ -586,7 +588,7 @@ public class GameInstance extends BaseObservable {
     }
 
     @Bindable
-    private int getStarCount() {
+    int getStarCount() {
         return this.starCount;
     }
 
