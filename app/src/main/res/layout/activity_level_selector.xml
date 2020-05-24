@@ -137,8 +137,10 @@
 
             <CheckBox
                 android:id="@+id/should_randomize_checkbox"
+                style="@style/Widget.AppCompat.CompoundButton.CheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:buttonTint="@color/bulb_on_color"
                 android:text="@string/should_randomize" />
 
         </LinearLayout>

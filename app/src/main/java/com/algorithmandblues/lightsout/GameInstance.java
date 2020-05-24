@@ -19,40 +19,37 @@ import java.util.Stack;
 public class GameInstance extends BaseObservable {
 
     private static final String TAG = GameInstance.class.getSimpleName();
+    private static final double SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP = 1.5;
+    private static int BULB_GAP;
+    private static String GAME_IS_OVER;
+    private static String GAME_IS_NOT_OVER;
     private int gameMode;
     private int dimension;
     private int moveCounter;
     private int hintsAllowed;
     private int hintsUsed;
     private int hintsLeft;
-
-    private byte[] currentToggledBulbs;
-    private byte[] originalStartState;
-    private byte[] individualBulbStatus;
-    private Stack<Integer> undoStack;
-    private Stack<Integer> redoStack;
-    private GridLayout grid;
     private boolean isShowingSolution;
     private boolean isUndoStackEmpty;
     private boolean isRedoStackEmpty;
     private boolean isGameOver;
     private boolean hasSeenSolution;
     private boolean hasMadeAtLeastOneMove;
+    private byte[] currentToggledBulbs;
+    private byte[] originalStartState;
+    private byte[] individualBulbStatus;
+    private Stack<Integer> undoStack;
+    private Stack<Integer> redoStack;
+    private GridLayout grid;
     private MediaPlayer onSound;
     private MediaPlayer offSound;
 
     public PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
     private static String gameOverPropertyName = "isGameOver";
 
-
-    private static int BULB_GAP;
-    private static final double SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP = 1.5;
-
     private String gameOverText;
-    private static String GAME_IS_OVER;
-    private static String GAME_IS_NOT_OVER;
 
-    public GameInstance(Context context, final GameDataObject gameDataObject) {
+    GameInstance(Context context, final GameDataObject gameDataObject) {
 
         this.gameMode = gameDataObject.getGameMode();
         this.dimension = gameDataObject.getDimension();
@@ -86,6 +83,39 @@ public class GameInstance extends BaseObservable {
         GAME_IS_OVER = context.getString(R.string.all_lights_off);
         GAME_IS_NOT_OVER = context.getString(R.string.turn_off_all_the_lights);
         this.gameOverText = GAME_IS_NOT_OVER;
+    }
+
+    private void drawGameBoard(Context context) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+
+        grid.removeAllViews();
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        Log.d(TAG, "Screen width: " + width);
+        BULB_GAP = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
+        Log.d(TAG, "Bulb gap: " + BULB_GAP);
+        int size = Math.min(width, height);
+        int marginCumulativeWidth = (dimension + 1) * BULB_GAP;
+        int bulbWidth = (size - marginCumulativeWidth) / dimension;
+
+        int id = 0;
+        for (int row = 0; row < dimension; row++) {
+            for (int col = 0; col < dimension; col++) {
+                final Bulb bulb = new Bulb(context, id);
+                bulb.setLayoutParams(this.createBulbParameters(row, col, bulbWidth));
+                bulb.setOnClickListener(v -> {
+                    recordBulbClick(bulb.getBulbId());
+                    handleStackOnBulbClick(bulb);
+                    playLightSwitchSound(bulb);
+                    clickBulb(bulb);
+                });
+                grid.addView(bulb);
+                id++;
+            }
+        }
+        Log.i(TAG, "GRID num buttons:" + Integer.toString(grid.getChildCount()));
     }
 
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
@@ -198,45 +228,12 @@ public class GameInstance extends BaseObservable {
         return true;
     }
 
-    public void drawGameBoard(Context context) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-
-        grid.removeAllViews();
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-        Log.d(TAG, "Screen width: " + width);
-        BULB_GAP = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
-        Log.d(TAG, "Bulb gap: " + BULB_GAP);
-        int size = Math.min(width, height);
-        int marginCumulativeWidth = (dimension + 1) * BULB_GAP;
-        int bulbWidth = (size - marginCumulativeWidth) / dimension;
-
-        int id = 0;
-        for (int row = 0; row < dimension; row++) {
-            for (int col = 0; col < dimension; col++) {
-                final Bulb bulb = new Bulb(context, id);
-                bulb.setLayoutParams(this.createBulbParameters(row, col, bulbWidth));
-                bulb.setOnClickListener(v -> {
-                    recordBulbClick(bulb.getBulbId());
-                    handleStackOnBulbClick(bulb);
-                    playLightSwitchSound(bulb);
-                    clickBulb(bulb);
-                });
-                grid.addView(bulb);
-                id++;
-            }
-        }
-        Log.i(TAG, "GRID num buttons:" + Integer.toString(grid.getChildCount()));
-    }
-
-    public void recordBulbClick(int id) {
+    private void recordBulbClick(int id) {
         byte newVal = (byte) (1 - this.currentToggledBulbs[id]);
         this.currentToggledBulbs[id] = newVal;
     }
 
-    public void playLightSwitchSound(Bulb bulb) {
+    private void playLightSwitchSound(Bulb bulb) {
         if (bulb.isOn()) {
             this.playLightOffSound();
         } else {
@@ -245,27 +242,24 @@ public class GameInstance extends BaseObservable {
     }
 
 
-    public void playLightOnSound() {
+    private void playLightOnSound() {
         this.onSound.start();
     }
 
-    public void playLightOffSound() {
+    private void playLightOffSound() {
         this.offSound.start();
     }
 
-    public void handleStackOnBulbClick(Bulb bulb) {
+    private void handleStackOnBulbClick(Bulb bulb) {
         this.addToUndoStack(bulb.getBulbId());
         this.clearRedoStack();
     }
 
-    public void resetBoardToState(byte[] state, int moveCounter, Stack<Integer> undo, Stack<Integer> redo) {
+    void resetBoardToState(byte[] state, int moveCounter, Stack<Integer> undo, Stack<Integer> redo) {
         this.currentToggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
-        Stack<Integer> undoStack = (Stack<Integer>) undo.clone();
-        Stack<Integer> redoStack = (Stack<Integer>) redo.clone();
-
         this.setStartState();
-        this.setUndoStack(undoStack);
-        this.setRedoStack(redoStack);
+        this.setUndoStack(undo);
+        this.setRedoStack(redo);
         this.setMoveCounter(moveCounter);
         this.setGameOverText(GAME_IS_NOT_OVER);
         this.setIsGameOver(false);
@@ -276,7 +270,7 @@ public class GameInstance extends BaseObservable {
                 "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack);
     }
 
-    public void highlightSolution(byte[] solution) {
+    void highlightSolution(byte[] solution) {
         for(int i = 0; i < solution.length; i++) {
             if (solution[i] == 1) {
                 ((Bulb) grid.getChildAt(i)).highlightBorder();
@@ -288,7 +282,7 @@ public class GameInstance extends BaseObservable {
 
     }
 
-    public void unHighlightSolution(byte[] solution) {
+    void unHighlightSolution(byte[] solution) {
         for(int i = 0; i < solution.length; i++) {
             if (solution[i] == 1) {
                 ((Bulb) grid.getChildAt(i)).unHighlightBorder();
@@ -299,7 +293,7 @@ public class GameInstance extends BaseObservable {
         Log.d(TAG, "Highlighting Solution:" + Arrays.toString(solution));
     }
 
-    public void setStartState() {
+    private void setStartState() {
         for (int i = 0; i < this.dimension*this.dimension; i++) {
             ((Bulb) grid.getChildAt(i)).setOn(true);
         }
@@ -325,7 +319,7 @@ public class GameInstance extends BaseObservable {
         Log.d(TAG, "Added " + id + " to current redo stack: " + this.redoStack.toString());
     }
 
-    public void removeFromUndoStack() {
+    void removeFromUndoStack() {
         int elementPopped = this.undoStack.pop();
         int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
         if(this.getIsGameOver()) {
@@ -343,7 +337,7 @@ public class GameInstance extends BaseObservable {
         }
     }
 
-    public void removeFromRedoStack() {
+    void removeFromRedoStack() {
         int elementPopped = this.redoStack.pop();
         int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
         this.recordBulbClick(id);
@@ -359,31 +353,16 @@ public class GameInstance extends BaseObservable {
         }
     }
 
-    public void clearUndoStack() {
-        this.undoStack.clear();
-        this.setIsUndoStackEmpty(true);
-    }
-
-    public void clearRedoStack() {
+    private void clearRedoStack() {
         this.redoStack.clear();
         this.setIsRedoStackEmpty(true);
     }
 
-    public GridLayout getGrid() {
+    GridLayout getGrid() {
         return this.grid;
     }
 
-    public void setIsUndoStackEmpty(boolean undoStackEmpty) {
-        this.isUndoStackEmpty = undoStackEmpty;
-        notifyPropertyChanged(BR.isUndoStackEmpty);
-    }
-
-    public void setIsRedoStackEmpty(boolean redoStackEmpty) {
-        this.isRedoStackEmpty = redoStackEmpty;
-        notifyPropertyChanged(BR.isRedoStackEmpty);
-    }
-
-    public void incrementMoveCounter() {
+    private void incrementMoveCounter() {
         this.incrementMoveCounter(1);
     }
 
@@ -391,11 +370,11 @@ public class GameInstance extends BaseObservable {
         this.decrementMoveCounter(1);
     }
 
-    public void incrementMoveCounter(int incrementValue) {
+    private void incrementMoveCounter(int incrementValue) {
         this.setMoveCounter(this.moveCounter + incrementValue);
     }
 
-    public void decrementMoveCounter(int decrementValue) {
+    private void decrementMoveCounter(int decrementValue) {
         this.setMoveCounter(this.moveCounter - decrementValue);
     }
 
@@ -404,12 +383,22 @@ public class GameInstance extends BaseObservable {
         return this.isUndoStackEmpty;
     }
 
+    private void setIsUndoStackEmpty(boolean undoStackEmpty) {
+        this.isUndoStackEmpty = undoStackEmpty;
+        notifyPropertyChanged(BR.isUndoStackEmpty);
+    }
+
     @Bindable
     public boolean getIsRedoStackEmpty() {
         return this.isRedoStackEmpty;
     }
 
-    public byte[] getCurrentToggledBulbs() {
+    private void setIsRedoStackEmpty(boolean redoStackEmpty) {
+        this.isRedoStackEmpty = redoStackEmpty;
+        notifyPropertyChanged(BR.isRedoStackEmpty);
+    }
+
+    byte[] getCurrentToggledBulbs() {
         return this.currentToggledBulbs;
     }
 
@@ -417,19 +406,19 @@ public class GameInstance extends BaseObservable {
         this.currentToggledBulbs = currentToggledBulbs;
     }
 
-    public byte[] getOriginalStartState() {
+    byte[] getOriginalStartState() {
         return this.originalStartState;
     }
 
-    public void setOriginalStartState(byte[] originalStartState) {
+    void setOriginalStartState(byte[] originalStartState) {
         this.originalStartState = originalStartState;
     }
 
-    public Stack<Integer> getUndoStack() {
+    Stack<Integer> getUndoStack() {
         return this.undoStack;
     }
 
-    public void setUndoStack(Stack<Integer> undoStack) {
+    private void setUndoStack(Stack<Integer> undoStack) {
         this.undoStack = undoStack;
         if(this.undoStack.isEmpty()) {
             this.setIsUndoStackEmpty(true);
@@ -438,11 +427,11 @@ public class GameInstance extends BaseObservable {
         }
     }
 
-    public Stack<Integer> getRedoStack() {
+    Stack<Integer> getRedoStack() {
         return this.redoStack;
     }
 
-    public void setRedoStack(Stack<Integer> redoStack) {
+    private void setRedoStack(Stack<Integer> redoStack) {
         this.redoStack = redoStack;
         if(this.redoStack.isEmpty()) {
             this.setIsRedoStackEmpty(true);
@@ -451,7 +440,7 @@ public class GameInstance extends BaseObservable {
         }
     }
 
-    public int getDimension() {
+    int getDimension() {
         return this.dimension;
     }
 
@@ -464,7 +453,7 @@ public class GameInstance extends BaseObservable {
         return this.isShowingSolution;
     }
 
-    public void setIsShowingSolution(boolean showingSolution) {
+    private void setIsShowingSolution(boolean showingSolution) {
         this.isShowingSolution = showingSolution;
         notifyPropertyChanged(BR.isShowingSolution);
     }
@@ -486,22 +475,22 @@ public class GameInstance extends BaseObservable {
         return this.gameOverText;
     }
 
+    private void setGameOverText(String gameOverText) {
+        this.gameOverText = gameOverText;
+        notifyPropertyChanged(BR.gameOverText);
+    }
+
     @Bindable
     public int getMoveCounter() {
         return moveCounter;
     }
 
-    public void setMoveCounter(int moveCounter) {
+    private void setMoveCounter(int moveCounter) {
         this.moveCounter = moveCounter;
         notifyPropertyChanged(BR.moveCounter);
     }
 
-    public void setGameOverText(String gameOverText) {
-        this.gameOverText = gameOverText;
-        notifyPropertyChanged(BR.gameOverText);
-    }
-
-    public int getGameMode() {
+    int getGameMode() {
         return this.gameMode;
     }
 
@@ -526,19 +515,19 @@ public class GameInstance extends BaseObservable {
         this.hintsUsed = hintsUsed;
     }
 
-    public boolean getHasSeenSolution() {
+    boolean getHasSeenSolution() {
         return this.hasSeenSolution;
     }
 
-    public void setHasSeenSolution(boolean hasSeenSolution) {
+    void setHasSeenSolution(boolean hasSeenSolution) {
         this.hasSeenSolution = hasSeenSolution;
     }
 
-    public boolean getHasMadeAtLeastOneMove() {
+    boolean getHasMadeAtLeastOneMove() {
         return this.hasMadeAtLeastOneMove;
     }
 
-    public void setHasMadeAtLeastOneMove(boolean hasMadeAtLeastOneMove) {
+    private void setHasMadeAtLeastOneMove(boolean hasMadeAtLeastOneMove) {
         this.hasMadeAtLeastOneMove = hasMadeAtLeastOneMove;
     }
 }

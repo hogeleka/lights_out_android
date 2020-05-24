@@ -9,8 +9,8 @@ public class Bulb extends AppCompatButton{
 
     private int bulbId;
     private boolean isOn;
-    private static final int ON_COLOR = R.color.BULB_ON_COLOR;
-    private static final int OFF_COLOR = R.color.BULB_OFF_COLOR;
+    private static final int ON_COLOR = R.color.bulb_on_color;
+    private static final int OFF_COLOR = R.color.bulb_off_color;
     private GradientDrawable background;
     private boolean isBorderHighlighted;
 
