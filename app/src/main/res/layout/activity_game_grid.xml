@@ -18,7 +18,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp">
+            android:paddingBottom="80dp">
 
             <RelativeLayout
                 android:id="@+id/game_text_view_holder"
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.20"
                     android:enabled="@{!gameinstance.isGameOver}"
-                    android:background="@{(gameinstance.isShowingSolution &amp;&amp; !gameinstance.isGameOver) ? @color/BULB_ON_COLOR : @color/Transparent}"
+                    android:background="@{(gameinstance.isShowingSolution &amp;&amp; !gameinstance.isGameOver) ? @color/bulb_on_color : @color/transparent}"
                     android:text="@string/solution"/>
                 <Button
                     android:id="@+id/reset_to_original_start_state"

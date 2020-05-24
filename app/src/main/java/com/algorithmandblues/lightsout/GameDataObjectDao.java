@@ -36,8 +36,8 @@ public class GameDataObjectDao {
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
-//        ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, LAST_SAVED_INSTANCE_STATE, UNDO_STACK_STRING,
-//        REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+        // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
+        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
         Cursor cursor = db.query(distinct, tableName, columns, whereClause, selectionArgs, null, null, null, limit);
         if (cursor.getCount() == 0) {
             Log.d(TAG, "Nothing found in database for dimension " + dimension + " of game type: " + gameMode);
@@ -49,13 +49,12 @@ public class GameDataObjectDao {
             gameDataObject.setDimension(cursor.getInt(1));
             gameDataObject.setOriginalStartState(cursor.getString(2));
             gameDataObject.setToggledBulbsState(cursor.getString(3));
-            gameDataObject.setLastSavedState(cursor.getString(4));
-            gameDataObject.setUndoStackString(cursor.getString(5));
-            gameDataObject.setRedoStackString(cursor.getString(6));
-            gameDataObject.setGameMode(cursor.getInt(7));
-            gameDataObject.setHasSeenSolution(cursor.getInt(8) == 1);
-            gameDataObject.setMoveCounter(cursor.getInt(9));
-            gameDataObject.setNumberOfHintsUsed(cursor.getInt(10));
+            gameDataObject.setUndoStackString(cursor.getString(4));
+            gameDataObject.setRedoStackString(cursor.getString(5));
+            gameDataObject.setGameMode(cursor.getInt(6));
+            gameDataObject.setHasSeenSolution(cursor.getInt(7) == 1);
+            gameDataObject.setMoveCounter(cursor.getInt(8));
+            gameDataObject.setNumberOfHintsUsed(cursor.getInt(9));
             Log.d(TAG, "Found data in database for dimension " + dimension + "of game type " + gameMode + "--" + gameDataObject.toString());
             db.close();
             return gameDataObject;
@@ -74,13 +73,12 @@ public class GameDataObjectDao {
     }
 
     private ContentValues getContentValuesFromGameDataObject(GameDataObject gameDataObject) {
-        //        ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, LAST_SAVED_INSTANCE_STATE, UNDO_STACK_STRING,
-//        REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+        // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
+        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseConstants.MostRecentGameTable.DIMENSION, gameDataObject.getDimension());
         contentValues.put(DatabaseConstants.MostRecentGameTable.ORIGINAL_START_STATE, gameDataObject.getOriginalStartState());
         contentValues.put(DatabaseConstants.MostRecentGameTable.TOGGLED_BULBS, gameDataObject.getToggledBulbsState());
-        contentValues.put(DatabaseConstants.MostRecentGameTable.LAST_SAVED_INSTANCE_STATE, gameDataObject.getLastSavedState());
         contentValues.put(DatabaseConstants.MostRecentGameTable.UNDO_STACK_STRING, gameDataObject.getUndoStackString());
         contentValues.put(DatabaseConstants.MostRecentGameTable.REDO_STACK_STRING, gameDataObject.getRedoStackString());
         contentValues.put(DatabaseConstants.MostRecentGameTable.GAME_MODE, gameDataObject.getGameMode());

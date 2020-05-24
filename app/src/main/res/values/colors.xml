@@ -2,10 +2,14 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="BULB_ON_COLOR">#ffff52</color>
-    <color name="BULB_OFF_COLOR">#c7a500</color>
+    <color name="colorAccent">#F44336</color>
+    <color name="bulb_on_color">#ffff52</color>
+    <color name="bulb_off_color">#c7a500</color>
     <color name="black_overlay">#66000000</color>
-    <color name="background_color">#33b5e5</color>
-    <color name="Transparent">#00000000</color>
+    <color name="background_color">#009688</color>
+
+
+<!--    Original Background Color-->
+<!--    <color name="background_color">#33b5e5</color>-->
+    <color name="transparent">#00000000</color>
 </resources>
