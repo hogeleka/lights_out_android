@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 
-import java.util.Arrays;
 import java.util.Stack;
 
 /**
@@ -26,7 +25,9 @@ import java.util.Stack;
  */
 public class GameGridActivity extends AppCompatActivity {
 
-    SQLiteDatabaseHandler dbHandler;
+    DatabaseHelper databaseHelper;
+
+    GameDataObjectDao gameDataObjectDao;
 
     private static final String TAG = GameGridActivity.class.getSimpleName();
 
@@ -34,7 +35,7 @@ public class GameGridActivity extends AppCompatActivity {
     private boolean shouldResumeGameFromDB;
     private boolean shouldSetRandomOriginalStartState;
     public GameInstance gameInstance;
-    GameData gameData;
+    GameDataObject gameDataObject;
     private RelativeLayout gridLayoutHolder;
     private Button undo;
     private Button redo;
@@ -110,7 +111,8 @@ public class GameGridActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
+        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+        gameDataObjectDao = GameDataObjectDao.getInstance(databaseHelper);
 
         ActivityGameGridBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_game_grid);
         mContentView = findViewById(R.id.fullscreen_content);
@@ -122,14 +124,15 @@ public class GameGridActivity extends AppCompatActivity {
         shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
 
-        gameData = shouldResumeGameFromDB ? dbHandler.getGameData(dimension) : null;
-        byte[] originalStartState = getOriginalStartState(dimension, shouldResumeGameFromDB, shouldSetRandomOriginalStartState);
-        byte[] toggledBulbs = shouldResumeGameFromDB ? getToggledBulbStates() : Arrays.copyOf(originalStartState, dimension*dimension);
-        undoStack = shouldResumeGameFromDB ? getUndoStackFromDBValue(gameData) : new Stack<>();
-        redoStack = shouldResumeGameFromDB ? getRedoStackFromDBValue(gameData) : new Stack<>();
-        moveCounter = 0; // Get from db eventually
+        gameDataObject = shouldResumeGameFromDB ? gameDataObjectDao.getMostRecentGameDataForGameType(dimension, 1) : getDefaultGameDataObject(dimension, 1);
+//        byte[] originalStartState = getOr(dimension, shouldResumeGameFromDB, shouldSetRandomOriginalStartState);
+//        String originalStartState =
+//        byte[] toggledBulbs = shouldResumeGameFromDB ? getToggledBulbStates(gameDataObject) : Arrays.copyOf(originalStartState, dimension*dimension);
+//        undoStack = shouldResumeGameFromDB ? getUndoStackFromDBValue(gameDataObject) : new Stack<>();
+//        redoStack = shouldResumeGameFromDB ? getRedoStackFromDBValue(gameDataObject) : new Stack<>();
+//        moveCounter = shouldResumeGameFromDB ? getMoveCounterFromDBValue(gameDataObject) : 0; // Get from db eventually
 
-        gameInstance = new GameInstance(this, dimension, originalStartState, toggledBulbs, undoStack, redoStack, moveCounter);
+        gameInstance = new GameInstance(this, gameDataObject);
 
         binding.setGameinstance(gameInstance);
 
@@ -147,6 +150,28 @@ public class GameGridActivity extends AppCompatActivity {
         createResetButton();
         createShowSolutionButton();
         createRandomizeButton();
+    }
+
+    private GameDataObject getDefaultGameDataObject(int dimension, int gameMode) {
+//        ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, LAST_SAVED_INSTANCE_STATE, UNDO_STACK_STRING,
+//        REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+        GameDataObject gameDataObject = new GameDataObject() {{
+            setDimension(dimension);
+            setOriginalStartState(getOriginalStartStateString(dimension));
+            setToggledBulbsState(getOriginalStartState());
+            setLastSavedState(getOriginalStartState());
+            setUndoStackString(GameDataUtil.EMPTY_STRING);
+            setRedoStackString(GameDataUtil.EMPTY_STRING);
+            setGameMode(gameMode);
+            setHasSeenSolution(false);
+            setMoveCounter(0);
+            setNumberOfHintsUsed(0);
+        }};
+        return gameDataObject;
+    }
+
+    private int getMoveCounterFromDBValue(GameDataObject gameDataObject) {
+        return gameDataObject.getMoveCounter();
     }
 
     @Override
@@ -170,46 +195,72 @@ public class GameGridActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        showDialogBoxAskingToSaveGame(gameInstance);
+         if (gameInstance.getHasMadeAtLeastOneMove()) {
+            saveCurrentGameInstance(gameInstance);
+        } else {
+            if (gameInstance.getGameMode() == GameMode.ARCADE) {
+                saveCurrentGameInstance(gameInstance);
+            }
+        }
+        Intent intent = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
+        startActivity(intent);
+//        showDialogBoxAskingToSaveGame(gameInstance);
     }
 
     @Override
     public void onDestroy() {
-        saveCurrentGameInstance(gameInstance);
+//        saveCurrentGameInstance(gameInstance);
+//        if (gameInstance.getHasMadeAtLeastOneMove()) {
+//            saveCurrentGameInstance(gameInstance);
+//        } else {
+//            if (gameInstance.getGameMode() == GameMode.ARCADE) {
+//                saveCurrentGameInstance(gameInstance);
+//            }
+//        }
+        if (gameInstance.getHasMadeAtLeastOneMove()) {
+            saveCurrentGameInstance(gameInstance);
+        } else {
+            if (gameInstance.getGameMode() == GameMode.ARCADE) {
+                saveCurrentGameInstance(gameInstance);
+            }
+        }
         super.onDestroy();
     }
 
-    private Stack<Integer> getRedoStackFromDBValue(GameData gameData) {
-        return GameDataUtil.StringToIntegerStack(gameData.getRedoStackString());
+
+
+
+    private Stack<Integer> getRedoStackFromDBValue(GameDataObject gameDataObject) {
+        return GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString());
     }
 
-    private Stack<Integer> getUndoStackFromDBValue(GameData gameData) {
-        return GameDataUtil.StringToIntegerStack(gameData.getUndoStackString());
+    private Stack<Integer> getUndoStackFromDBValue(GameDataObject gameDataObject) {
+        return GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString());
     }
 
-    private byte[] getToggledBulbStates() {
-        return GameDataUtil.stringToByteArray(gameData.getToggledBulbsState());
+    private byte[] getToggledBulbStates(GameDataObject gameDataObject) {
+        return GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState());
     }
 
-    private byte[] getOriginalStartState(int dimension, boolean shouldResumeGameFromDB, boolean shouldSetRandomOriginalStartState) {
-        byte[] originalStartState = new byte[dimension * dimension];
-        if (shouldResumeGameFromDB) {
-            originalStartState = getOriginalStartStateFromGameData(gameData);
-        } else {
-            if (shouldSetRandomOriginalStartState) {
-                originalStartState = getRandomOriginalStartState(dimension);
-            } else {
-                Arrays.fill(originalStartState, (byte)1);
-            }
-        }
-        return originalStartState;
+//    private byte[] getOriginalStartState(int dimension, boolean shouldResumeGameFromDB, boolean shouldSetRandomOriginalStartState) {
+//        byte[] originalStartState = new byte[dimension * dimension];
+//        if (shouldResumeGameFromDB) {
+//            originalStartState = getOriginalStartStateFromGameData(gameDataObject);
+//        } else {
+//            if (shouldSetRandomOriginalStartState) {
+//                originalStartState = getRandomOriginalStartState(dimension);
+//            } else {
+//                Arrays.fill(originalStartState, (byte)1);
+//            }
+//        }
+//        return originalStartState;
+//    }
+
+    private byte[] getOriginalStartStateFromGameData(GameDataObject gameDataObject) {
+        return GameDataUtil.stringToByteArray(gameDataObject.getOriginalStartState());
     }
 
-    private byte[] getOriginalStartStateFromGameData(GameData gameData) {
-        return GameDataUtil.stringToByteArray(gameData.getOriginalStartState());
-    }
-
-    private byte[] getRandomOriginalStartState(int dimension) {
+    private byte[] getRandomOriginalStartStateByteArray(int dimension) {
         byte[] originalStartState = new byte[dimension * dimension];
         for (int i = 0; i < originalStartState.length; i++) {
             if (Math.random() <= 0.5) {
@@ -219,6 +270,23 @@ public class GameGridActivity extends AppCompatActivity {
             }
         }
         return originalStartState;
+    }
+
+    private String getOriginalStartStateString(int dimension) {
+        StringBuilder originalStartState = new StringBuilder();
+        for (int i = 0; i < dimension*dimension; i++) {
+            if(!shouldSetRandomOriginalStartState) {
+                originalStartState.append("1,");
+            } else {
+                if (Math.random() <= 0.5) {
+                    originalStartState.append("0,");
+                } else {
+                    originalStartState.append("1,");
+                }
+            }
+        }
+        originalStartState.deleteCharAt(originalStartState.length() - 1);
+        return originalStartState.toString();
     }
 
 
@@ -248,11 +316,14 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void handleShowSolution() {
+        if(!gameInstance.getHasSeenSolution()) {
+            gameInstance.setHasSeenSolution(true);
+        }
         try {
             if (gameInstance.getIsShowingSolution()) {
-                gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+                gameInstance.unHighlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getCurrentToggledBulbs()));
             } else {
-                gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getToggledBulbs()));
+                gameInstance.highlightSolution(SolutionProvider.getSolution(gameInstance.getDimension(), gameInstance.getCurrentToggledBulbs()));
             }
             Log.d(TAG, "Showing Solution");
 
@@ -269,7 +340,13 @@ public class GameGridActivity extends AppCompatActivity {
     private void handleResetClick() {
         this.undoShowSolutionIfNeeded();
         // currently move counter is 0 but this will need to be changed to moveCounter in gameData
-        gameInstance.resetBoardToState(gameInstance.getOriginalStartState(), moveCounter, undoStack, redoStack);
+        gameInstance.resetBoardToState(
+                GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState()),
+                gameDataObject.getMoveCounter(),
+                GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
+                GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString())
+        );
+
         Log.d(TAG, "Resetting board to Last Saved Instance or Default state if there was no saved instance");
 
     }
@@ -277,36 +354,19 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void createRandomizeButton() {
         randomize = (Button) findViewById(R.id.randomize_state);
-        randomize.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(GameGridActivity.this);
-            builder.setTitle(getString(R.string.randomize_board))
-                    .setMessage(R.string.randomize_confirmation_text)
-                    .setCancelable(true)
-                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            handleRandomizeClick();
-                        }
-                    })
-                    .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            //Creating dialog box
-            AlertDialog dialog  = builder.create();
-            dialog.show();
-        });
+        randomize.setOnClickListener(v -> handleRandomizeClick());
     }
 
     private void handleRandomizeClick() {
         this.undoShowSolutionIfNeeded();
-        undoStack = new Stack<>();
-        redoStack = new Stack<>();
-        moveCounter = 0;
-        gameInstance.setOriginalStartState(this.getRandomOriginalStartState(gameInstance.getDimension()));
+        gameDataObject = getDefaultGameDataObject(dimension, GameMode.ARCADE);
+        undoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString());
+        redoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString());
+        moveCounter = gameDataObject.getMoveCounter();
+        gameInstance.setOriginalStartState(GameDataUtil.stringToByteArray(gameDataObject.getOriginalStartState()));
+        gameInstance.setHasSeenSolution(gameDataObject.getHasSeenSolution());
         gameInstance.resetBoardToState(gameInstance.getOriginalStartState(), moveCounter, undoStack, redoStack);
+
         Log.d(TAG, "Resetting Board to new Randomized State");
     }
 
@@ -322,21 +382,43 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void removeDataForCurrentDimensionFromDB(GameInstance gameInstance) {
-        dbHandler.deleteRowForSpecificDimension(gameInstance.getDimension());
+//        dbHandler.deleteRowForSpecificDimension(gameInstance.getDimension());
     }
 
     private void saveCurrentGameInstance(GameInstance gameInstance) {
-        GameData gameData = getGameDataFromCurrentGameInstance(gameInstance);
-        dbHandler.addGameData(gameData);
+        GameDataObject gameDataObject = getGameDataObjectFromCurrentGameInstance(gameInstance);
+        gameDataObjectDao.addGameDataObjectToDatabase(gameDataObject);
+//        dbHandler.addGameData(gameData);
     }
 
-    private GameData getGameDataFromCurrentGameInstance(GameInstance gameInstance) {
-        int dimension = gameInstance.getDimension();
-        String originalStartStateString = GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState());
-        String toggledBulbsStateString = GameDataUtil.byteArrayToString(gameInstance.getToggledBulbs());
-        String undoStackString = GameDataUtil.IntegerStackToString(gameInstance.getUndoStack());
-        String redoStackString = GameDataUtil.IntegerStackToString(gameInstance.getRedoStack());
-        return new GameData(dimension, originalStartStateString, toggledBulbsStateString, undoStackString, redoStackString);
+    private GameDataObject getGameDataObjectFromCurrentGameInstance(GameInstance gameInstance) {
+//        int dimension = gameInstance.getDimension();
+
+        //        ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, LAST_SAVED_INSTANCE_STATE, UNDO_STACK_STRING,
+//        REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+        GameDataObject gameDataObject = new GameDataObject(){{
+            setDimension(gameInstance.getDimension());
+            setOriginalStartState(GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState()));
+            setToggledBulbsState(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
+            setLastSavedState("1,0,1,0,1,0,1,0,0");
+            setUndoStackString(GameDataUtil.IntegerStackToString(gameInstance.getUndoStack()));
+            setRedoStackString(GameDataUtil.IntegerStackToString(gameInstance.getRedoStack()));
+            setGameMode(GameMode.ARCADE); //TODO: replace with real data from level selector
+            setHasSeenSolution(gameInstance.getHasSeenSolution());
+            setMoveCounter(gameInstance.getMoveCounter());
+            setNumberOfHintsUsed(10);
+
+        }};
+
+        return gameDataObject;
+//        gameDataObject.setDimension(dimension);
+//        String originalStartStateString = GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState());
+//        String toggledBulbsStateString = GameDataUtil.byteArrayToString(gameInstance.getToggledBulbs());
+//        String lastSavedInstance = GameDataUtil.byteArrayToString(new byte[9]);
+//        String undoStackString = GameDataUtil.IntegerStackToString(gameInstance.getUndoStack());
+//        String redoStackString = GameDataUtil.IntegerStackToString(gameInstance.getRedoStack());
+//
+//        return new GameData(dimension, originalStartStateString, toggledBulbsStateString, undoStackString, redoStackString);
     }
 
     private void showDialogBoxAskingToSaveGame(GameInstance instance) {

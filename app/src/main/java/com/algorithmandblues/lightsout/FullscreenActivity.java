@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
  */
 public class FullscreenActivity extends AppCompatActivity {
 
-    SQLiteDatabaseHandler dbHandler;
+    DatabaseHelper databaseHelper;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -93,7 +93,8 @@ public class FullscreenActivity extends AppCompatActivity {
         Button button = (Button) findViewById(R.id.goToLevelSelector);
         button.setOnClickListener(v -> goToLevelSelector());
 
-        dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
+        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+//        databaseHelper.resetDatabase();
     }
 
     @Override
@@ -113,7 +114,8 @@ public class FullscreenActivity extends AppCompatActivity {
         ab.setMessage(getResources().getString(R.string.exit_game_question));
         ab.setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {
             //if you want to finish just current activity
-            FullscreenActivity.this.finish();
+//            FullscreenActivity.this.finish();
+            super.onBackPressed();
         });
         ab.setNegativeButton(getResources().getString(R.string.no), (dialog, which) -> dialog.dismiss());
         ab.show();
