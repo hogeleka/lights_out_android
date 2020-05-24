@@ -78,8 +78,6 @@ public class GameInstance extends BaseObservable {
         } else {
             params.leftMargin = BULB_GAP / 2;
         }
-//        params.rightMargin = BULB_GAP / 2;
-//        params.leftMargin = BULB_GAP / 2;
 
         if (r == dimension - 1) {
             params.bottomMargin = BULB_GAP;
@@ -143,8 +141,6 @@ public class GameInstance extends BaseObservable {
 
         this.updateIndividualBulbStatus();
         this.setIsGameOver(this.checkIfAllLightsAreOff());
-//        this.isGameOver = this.checkIfAllLightsAreOff();
-//        String gameOverText = this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER;
         this.setGameOverText(this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER);
         if (this.getIsShowingSolution() && this.getIsGameOver()) {
             this.unHighlightAllBulbs();
@@ -233,8 +229,8 @@ public class GameInstance extends BaseObservable {
         this.clearRedoStack();
     }
 
-    public void resetBoardToOriginalStartState() {
-        this.toggledBulbs = Arrays.copyOf(this.originalStartState, this.dimension * this.dimension);
+    public void resetBoardToState(byte[] state) {
+        this.toggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
         this.clearUndoStack();
         this.clearRedoStack();
         this.setStartState();
