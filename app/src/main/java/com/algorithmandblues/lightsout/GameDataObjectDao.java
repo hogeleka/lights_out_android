@@ -107,9 +107,6 @@ public class GameDataObjectDao {
     private void insertGameDatabaseObjectToDatabase(GameDataObject gameDataObject, ContentValues contentValues) {
         SQLiteDatabase db = this.databaseHelper.getWritableDatabase();
         String tableName = DatabaseConstants.MostRecentGameTable.TABLE_NAME;
-        String whereClause = DatabaseConstants.MostRecentGameTable.DIMENSION + " = ? AND "
-                + DatabaseConstants.MostRecentGameTable.GAME_MODE + " = ?";
-        String[] whereArgs = {String.valueOf(gameDataObject.getDimension()), String.valueOf(gameDataObject.getGameMode())};
         db.insert(tableName, null, contentValues);
         Log.d(TAG, "Added row to database for dimension " + gameDataObject.getDimension() + " of game mode " + gameDataObject.getGameMode()
                 + " with value: " + gameDataObject.toString());

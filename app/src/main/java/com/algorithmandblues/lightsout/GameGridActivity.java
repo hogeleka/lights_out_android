@@ -2,9 +2,12 @@ package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +20,8 @@ import android.widget.RelativeLayout;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Stack;
 
 /**
@@ -48,6 +53,7 @@ public class GameGridActivity extends AppCompatActivity {
     private Stack<Integer> undoStack;
     private Stack<Integer> redoStack;
     private int moveCounter;
+    public PropertyChangeListener listener;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -132,8 +138,18 @@ public class GameGridActivity extends AppCompatActivity {
 //        redoStack = shouldResumeGameFromDB ? getRedoStackFromDBValue(gameDataObject) : new Stack<>();
 //        moveCounter = shouldResumeGameFromDB ? getMoveCounterFromDBValue(gameDataObject) : 0; // Get from db eventually
 
+
         gameInstance = new GameInstance(this, gameDataObject);
 
+        listener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (gameInstance.getIsGameOver()){
+                    Log.d(TAG, "Game is Over!");
+                }
+            }
+        };
+        gameInstance.gameOverChange.addPropertyChangeListener(listener);
         binding.setGameinstance(gameInstance);
 
         gameTextHolder = findViewById(R.id.game_text_view_holder);
@@ -195,16 +211,16 @@ public class GameGridActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-         if (gameInstance.getHasMadeAtLeastOneMove()) {
-            saveCurrentGameInstance(gameInstance);
-        } else {
-            if (gameInstance.getGameMode() == GameMode.ARCADE) {
-                saveCurrentGameInstance(gameInstance);
-            }
-        }
-        Intent intent = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
-        startActivity(intent);
-//        showDialogBoxAskingToSaveGame(gameInstance);
+//         if (gameInstance.getHasMadeAtLeastOneMove()) {
+//            saveCurrentGameInstance(gameInstance);
+//        } else {
+//            if (gameInstance.getGameMode() == GameMode.ARCADE) {
+//                saveCurrentGameInstance(gameInstance);
+//            }
+//        }
+//        Intent intent = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
+//        startActivity(intent);
+        showDialogBoxAskingToSaveGame(gameInstance);
     }
 
     @Override
@@ -382,7 +398,6 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void removeDataForCurrentDimensionFromDB(GameInstance gameInstance) {
-//        dbHandler.deleteRowForSpecificDimension(gameInstance.getDimension());
     }
 
     private void saveCurrentGameInstance(GameInstance gameInstance) {
