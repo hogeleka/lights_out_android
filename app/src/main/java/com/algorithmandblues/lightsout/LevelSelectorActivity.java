@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,9 +22,11 @@ import android.widget.LinearLayout;
  * status bar and navigation/system bar) with user interaction.
  */
 public class LevelSelectorActivity extends AppCompatActivity {
-    SQLiteDatabaseHandler dbHandler;
+    DatabaseHelper databaseHelper;
 
     private CheckBox mCheckBox;
+
+    GameDataObjectDao gameDataObjectDao;
 
     private LinearLayout boardSizesContainer;
 
@@ -95,13 +98,14 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(view -> toggle());
-        dbHandler = SQLiteDatabaseHandler.getInstance(getApplicationContext());
+        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+        gameDataObjectDao = GameDataObjectDao.getInstance(databaseHelper);
         mCheckBox = (CheckBox) findViewById(R.id.should_randomize_checkbox);
-        mCheckBox.setChecked(dbHandler.checkPreferenceForRandomState());
+        mCheckBox.setChecked(true);
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                dbHandler.updateSetRandomStatePreference(isChecked);
+
             }
         });
 
@@ -177,7 +181,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
     public void selectLevelLabel(int dimension) {
         Log.d("Selected Level: ", Integer.toString(dimension));
         boolean setRandomStateFlag = ((CheckBox) findViewById(R.id.should_randomize_checkbox)).isChecked();
-        if (!checkForExistingGame(dimension)) {
+        if (!checkForExistingGame(dimension, GameMode.ARCADE)) {
             Log.d("Already Existing Game", "No existing game in DB");
             goToNewGameActivity(dimension, false, setRandomStateFlag);
         } else {
@@ -216,7 +220,8 @@ public class LevelSelectorActivity extends AppCompatActivity {
         finish();
     }
 
-    public boolean checkForExistingGame(int dimension) {
-        return dbHandler.getGameData(dimension) != null;
+    public boolean checkForExistingGame(int dimension, int gameMode) {
+        return gameDataObjectDao.getMostRecentGameDataForGameType(dimension, gameMode) != null;
+//        return dbHandler.getGameData(dimension) != null;
     }
 }

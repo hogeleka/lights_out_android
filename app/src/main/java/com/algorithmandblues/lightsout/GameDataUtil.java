@@ -4,6 +4,8 @@ import java.util.Stack;
 
 public class GameDataUtil {
 
+    static final String EMPTY_STRING = "";
+
     public static byte[] stringToByteArray(String str) {
         String[] split = str.split(",");
         byte[] numbers = new byte[split.length];
@@ -26,7 +28,7 @@ public class GameDataUtil {
         return str.toString();
     }
 
-    public static Stack<Integer> StringToIntegerStack(String str) {
+    public static Stack<Integer> stringToIntegerStack(String str) {
         Stack<Integer> stack = new Stack<>();
 
         if(str == null || str.isEmpty()) {
