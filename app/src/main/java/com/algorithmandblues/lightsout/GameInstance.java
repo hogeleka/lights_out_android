@@ -11,7 +11,12 @@ import android.view.WindowManager;
 import android.widget.GridLayout;
 
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Stack;
 
 public class GameInstance extends BaseObservable {
@@ -47,8 +52,18 @@ public class GameInstance extends BaseObservable {
 
     PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
     private static String gameOverPropertyName = "isGameOver";
-
     private String gameOverText;
+    private static final Map<Integer, Integer> HINTS_ALLOWED_MAP = new HashMap<Integer, Integer>() {{
+        put(2, 1);
+        put(3, 1);
+        put(4, 1);
+        put(5, 5);
+        put(6, 6);
+        put(7, 10);
+        put(8, 15);
+        put(9, 20);
+        put(10, 30);
+    }};
 
     GameInstance(Context context, final GameDataObject gameDataObject) {
 
@@ -56,11 +71,12 @@ public class GameInstance extends BaseObservable {
         this.dimension = gameDataObject.getDimension();
         this.originalStartState = GameDataUtil.stringToByteArray(gameDataObject.getOriginalStartState());
         this.currentToggledBulbs = GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState());
-        this.individualBulbStatus = new byte[this.dimension*this.dimension];
+        this.individualBulbStatus = new byte[this.dimension * this.dimension];
         this.undoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString());
         this.redoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString());
-        this.hintsAllowed = this.dimension * this.dimension;
+        this.hintsAllowed = HINTS_ALLOWED_MAP.get(this.dimension);
         this.hintsUsed = gameDataObject.getNumberOfHintsUsed();
+        this.hintsLeft = this.calculateHintsLeft(this.hintsAllowed, this.hintsUsed);
         this.hasSeenSolution = gameDataObject.getHasSeenSolution();
         this.isUndoStackEmpty = this.undoStack.isEmpty();
         this.isRedoStackEmpty = this.redoStack.isEmpty();
@@ -124,7 +140,7 @@ public class GameInstance extends BaseObservable {
 
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-        if (c != this.dimension-1) {
+        if (c != this.dimension - 1) {
             params.rightMargin = BULB_GAP / 2;
         } else {
             params.rightMargin = BULB_GAP;
@@ -152,7 +168,7 @@ public class GameInstance extends BaseObservable {
     }
 
     private void clickBulb(Bulb b) {
-        if(this.isShowingSolution) {
+        if (this.getIsShowingSolution()) {
             if (b.isBorderHighlighted()) {
                 b.unHighlightBorder();
             } else {
@@ -161,6 +177,11 @@ public class GameInstance extends BaseObservable {
         }
 
         b.toggle();
+
+        if (b.getIsHintHighlighted()) {
+            b.unhighlightHint();
+        }
+
         this.incrementMoveCounter();
 
         if (!this.getHasMadeAtLeastOneMove()) {
@@ -169,8 +190,9 @@ public class GameInstance extends BaseObservable {
 
         individualBulbStatus[b.getBulbId()] = b.isOnOrOff();
 
-        Log.d(TAG, "Bulb: " +b.toString());
+        Log.d(TAG, "Bulb: " + b.toString());
         int bulbIndex = b.getBulbId();
+        int dimension = this.dimension;
         int row = bulbIndex / dimension;
         int col = bulbIndex % dimension;
 
@@ -181,7 +203,7 @@ public class GameInstance extends BaseObservable {
         }
 
         //toggle right neighbour
-        if (col != dimension-1) {
+        if (col != dimension - 1) {
             int right = (row * dimension) + (col + 1);
             ((Bulb) grid.getChildAt(right)).toggle();
         }
@@ -217,7 +239,7 @@ public class GameInstance extends BaseObservable {
 
     private void updateIndividualBulbStatus() {
         this.currentPowerConsumption = 0;
-        for (int i = 0; i< dimension*dimension; i++) {
+        for (int i = 0; i < dimension * dimension; i++) {
             individualBulbStatus[i] = ((Bulb) this.grid.getChildAt(i)).isOnOrOff();
             this.setCurrentPowerConsumption(this.getCurrentPowerConsumption() + individualBulbStatus[i]);
         }
@@ -260,7 +282,7 @@ public class GameInstance extends BaseObservable {
         this.clearRedoStack();
     }
 
-    void resetBoardToState(byte[] state, int moveCounter, Stack<Integer> undo, Stack<Integer> redo) {
+    void resetBoardToState(byte[] state, Stack<Integer> undo, Stack<Integer> redo, int moveCounter, int hintsUsed) {
         this.currentToggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
         this.setStartState();
         this.updateIndividualBulbStatus();
@@ -268,10 +290,13 @@ public class GameInstance extends BaseObservable {
         this.setUndoStack(undo);
         this.setRedoStack(redo);
         this.setMoveCounter(moveCounter);
+        this.setHintsUsed(hintsUsed);
+        this.setHintsLeft(this.calculateHintsLeft(this.hintsAllowed, this.hintsUsed));
         this.setGameOverText(GAME_IS_NOT_OVER);
         this.setIsGameOver(false);
         this.setHasMadeAtLeastOneMove(false);
         this.unHighlightAllBulbs();
+        this.unhighlightAllHints();
 
         Log.d(TAG, "Board Reset complete. \nNew Start State:" + Arrays.toString(state) +
                 "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack +
@@ -279,7 +304,7 @@ public class GameInstance extends BaseObservable {
     }
 
     void highlightSolution(byte[] solution) {
-        for(int i = 0; i < solution.length; i++) {
+        for (int i = 0; i < solution.length; i++) {
             if (solution[i] == 1) {
                 ((Bulb) grid.getChildAt(i)).highlightBorder();
             }
@@ -291,7 +316,7 @@ public class GameInstance extends BaseObservable {
     }
 
     void unHighlightSolution(byte[] solution) {
-        for(int i = 0; i < solution.length; i++) {
+        for (int i = 0; i < solution.length; i++) {
             if (solution[i] == 1) {
                 ((Bulb) grid.getChildAt(i)).unHighlightBorder();
             }
@@ -302,13 +327,13 @@ public class GameInstance extends BaseObservable {
     }
 
     private void setStartState() {
-        for (int i = 0; i < this.dimension*this.dimension; i++) {
+        for (int i = 0; i < this.dimension * this.dimension; i++) {
             ((Bulb) grid.getChildAt(i)).setOn(true);
         }
 
         for (int i = 0; i < this.currentToggledBulbs.length; i++) {
             if (this.currentToggledBulbs[i] == 0) {
-                clickBulb((Bulb)(grid.getChildAt(i)));
+                clickBulb((Bulb) (grid.getChildAt(i)));
             }
         }
 
@@ -330,7 +355,7 @@ public class GameInstance extends BaseObservable {
     void removeFromUndoStack() {
         int elementPopped = this.undoStack.pop();
         int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
-        if(this.getIsGameOver()) {
+        if (this.getIsGameOver()) {
             this.setIsShowingSolution(false);
         }
         this.recordBulbClick(id);
@@ -374,16 +399,52 @@ public class GameInstance extends BaseObservable {
         this.incrementMoveCounter(1);
     }
 
-    public void decrementMoveCounter() {
-        this.decrementMoveCounter(1);
-    }
-
     private void incrementMoveCounter(int incrementValue) {
         this.setMoveCounter(this.moveCounter + incrementValue);
     }
 
-    private void decrementMoveCounter(int decrementValue) {
-        this.setMoveCounter(this.moveCounter - decrementValue);
+    private void incrementHintsUsed() {
+        this.incrementHintsUsed(1);
+    }
+
+    private void incrementHintsUsed(int incrementValue) {
+        this.setHintsUsed(this.hintsUsed + incrementValue);
+    }
+
+    void showHint() {
+        try {
+            this.incrementHintsUsed();
+            this.setHintsLeft(this.calculateHintsLeft(this.hintsAllowed, this.hintsUsed));
+            byte[] solutionVector = SolutionProvider.getSolution(this.dimension, this.currentToggledBulbs);
+            List<Integer> solutionIds = new ArrayList<>();
+            for (int i = 0; i < solutionVector.length; i++) {
+                if (solutionVector[i] == 1 && !((Bulb) grid.getChildAt(i)).getIsHintHighlighted()) {
+                    solutionIds.add(i);
+                }
+            }
+
+            if (!solutionIds.isEmpty()) {
+                Random rand = new Random();
+                int hintId = solutionIds.get(rand.nextInt(solutionIds.size()));
+                ((Bulb) grid.getChildAt(hintId)).highlightHint();
+            }
+
+        } catch (UnknownSolutionException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    void unhighlightAllHints() {
+        for (int i = 0; i < this.dimension * this.dimension; i++) {
+            if (((Bulb) this.grid.getChildAt(i)).getIsHintHighlighted()) {
+                ((Bulb) this.grid.getChildAt(i)).unhighlightHint();
+            }
+        }
+    }
+
+    private int calculateHintsLeft(int hintsAllowed, int hintsUsed) {
+        return hintsAllowed - hintsUsed;
     }
 
     private int calculateStars() {
@@ -458,7 +519,7 @@ public class GameInstance extends BaseObservable {
 
     private void setUndoStack(Stack<Integer> undoStack) {
         this.undoStack = undoStack;
-        if(this.undoStack.isEmpty()) {
+        if (this.undoStack.isEmpty()) {
             this.setIsUndoStackEmpty(true);
         } else {
             this.setIsUndoStackEmpty(false);
@@ -471,7 +532,7 @@ public class GameInstance extends BaseObservable {
 
     private void setRedoStack(Stack<Integer> redoStack) {
         this.redoStack = redoStack;
-        if(this.redoStack.isEmpty()) {
+        if (this.redoStack.isEmpty()) {
             this.setIsRedoStackEmpty(true);
         } else {
             this.setIsRedoStackEmpty(false);
@@ -551,6 +612,16 @@ public class GameInstance extends BaseObservable {
 
     public void setHintsUsed(int hintsUsed) {
         this.hintsUsed = hintsUsed;
+    }
+
+    @Bindable
+    public int getHintsLeft() {
+        return this.hintsLeft;
+    }
+
+    public void setHintsLeft(int hintsLeft) {
+        this.hintsLeft = hintsLeft;
+        notifyPropertyChanged(BR.hintsLeft);
     }
 
     boolean getHasSeenSolution() {
