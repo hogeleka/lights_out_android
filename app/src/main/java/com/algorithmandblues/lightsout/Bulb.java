@@ -18,6 +18,7 @@ public class Bulb extends AppCompatButton{
     private static final int HINT_START_COLOR = R.color.hint_start_color;
     private static final int HINT_END_COLOR = R.color.hint_end_color;
     private static final int HINT_BORDER_COLOR = R.color.hint_border_color;
+    private static final int SOLUTION_BORDER_COLOR = R.color.colorAccent;
     private static final int BULB_CORNER_RADIUS = 15;
     private static final int BORDER_WIDTH = 3;
 
@@ -28,6 +29,7 @@ public class Bulb extends AppCompatButton{
     private GradientDrawable hintBackGround;
     private boolean isBorderHighlighted;
     private boolean isHintHighlighted;
+    private boolean isHintBorderHighlighted;
 
     public Bulb (Context context, int bulbId) {
         super(context, null, R.style.AppTheme);
@@ -35,6 +37,7 @@ public class Bulb extends AppCompatButton{
         this.isOn = true;
         this.isBorderHighlighted = false;
         this.isHintHighlighted = false;
+        this.isBorderHighlighted = false;
 
         hintGradientStartColor = ContextCompat.getColor(context, HINT_START_COLOR);
         hintGradientEndColor = ContextCompat.getColor(context, HINT_END_COLOR);
@@ -81,14 +84,18 @@ public class Bulb extends AppCompatButton{
     }
 
     public void highlightBorder() {
-        int pixels = this.getBorderWidthInPixels();
-        ((GradientDrawable) this.getBackground()).setStroke(pixels, Color.RED);
+        ((GradientDrawable) this.getBackground()).setStroke(this.getBorderWidthInPixels(), getResources().getColor(SOLUTION_BORDER_COLOR));
         this.setBackground(this.getBackground());
         this.isBorderHighlighted = true;
     }
 
     public void unHighlightBorder() {
-        ((GradientDrawable) this.getBackground()).setStroke(0, Color.RED);
+        if(this.getIsHintBorderHighlighted()) {
+            ((GradientDrawable) this.getBackground()).setStroke(this.getBorderWidthInPixels(), getResources().getColor(HINT_BORDER_COLOR));
+
+        } else {
+            ((GradientDrawable) this.getBackground()).setStroke(0, getResources().getColor(R.color.transparent));
+        }
         this.setBackground(this.getBackground());
         this.isBorderHighlighted = false;
     }
@@ -96,9 +103,11 @@ public class Bulb extends AppCompatButton{
     public void highlightHint() {
         this.setBackground(this.getHintBackGround());
         this.setIsHintHighlighted(true);
+        this.setIsHintBorderHighlighted(true);
         if (this.isBorderHighlighted()) {
             this.highlightBorder();
         }
+
     }
 
     public void unhighlightHint() {
@@ -174,6 +183,14 @@ public class Bulb extends AppCompatButton{
 
     public void setIsHintHighlighted(boolean hintHighlighted) {
         this.isHintHighlighted = hintHighlighted;
+    }
+
+    public boolean getIsHintBorderHighlighted() {
+        return this.isHintBorderHighlighted;
+    }
+
+    public void setIsHintBorderHighlighted(boolean hintBorderHighlighted) {
+        this.isHintBorderHighlighted = hintBorderHighlighted;
     }
 }
 
