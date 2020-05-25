@@ -34,6 +34,7 @@ public class GameInstance extends BaseObservable {
     private int hintsLeft;
     private int currentPowerConsumption;
     private int totalBoardPower;
+    private int starCount;
     private boolean isShowingSolution;
     private boolean isUndoStackEmpty;
     private boolean isRedoStackEmpty;
@@ -97,6 +98,7 @@ public class GameInstance extends BaseObservable {
         //Always initialize after game board is drawn
         this.setMoveCounter(gameDataObject.getMoveCounter());
         this.hasMadeAtLeastOneMove = false;
+        this.starCount = 0;
 
         GAME_IS_OVER = context.getString(R.string.all_lights_off);
         GAME_IS_NOT_OVER = context.getString(R.string.turn_off_all_the_lights);
@@ -219,8 +221,11 @@ public class GameInstance extends BaseObservable {
         }
 
         this.updateIndividualBulbStatus();
-        this.setIsGameOver(this.checkIfAllLightsAreOff());
-        this.setGameOverText(this.getIsGameOver() ? GAME_IS_OVER : GAME_IS_NOT_OVER);
+        boolean gameOver = this.checkIfAllLightsAreOff();
+        this.setGameOverText(gameOver ? GAME_IS_OVER : GAME_IS_NOT_OVER);
+        this.setStarCount(gameOver ? this.calculateStars() : this.getStarCount());
+        this.setIsGameOver(gameOver);
+
         if (this.getIsShowingSolution() && this.getIsGameOver()) {
             this.unHighlightAllBulbs();
         }
@@ -442,6 +447,36 @@ public class GameInstance extends BaseObservable {
         return hintsAllowed - hintsUsed;
     }
 
+    private int calculateStars() {
+
+        try {
+            if (this.getHasSeenSolution() && this.gameMode == GameMode.ARCADE) {
+                Log.d(TAG, "Score is 0 because user has seen solution");
+                return 0;
+            } else {
+                int numberOfBulbTogglesNeededForSolving = 0;
+                byte[] ogSolution = SolutionProvider.getSolution(this.dimension, this.originalStartState);
+                for (int i = 0; i < ogSolution.length; i++) {
+                    numberOfBulbTogglesNeededForSolving += ogSolution[i];
+                }
+
+                float stars = ((float) this.getMoveCounter() / numberOfBulbTogglesNeededForSolving);
+                int result = Math.max((int) Math.floor(4 - stars), 1);
+
+                Log.d(TAG, "Calculating Stars: " +
+                        "\nOptimal Solution Count : " + numberOfBulbTogglesNeededForSolving +
+                        "\nNumber of Moves: " + this.getMoveCounter() +
+                        "\nStars: " + result);
+                return result;
+            }
+
+        } catch (UnknownSolutionException e) {
+            Log.d(TAG, e.getMessage());
+            return 0;
+        }
+    }
+
+
     @Bindable
     public boolean getIsUndoStackEmpty() {
         return this.isUndoStackEmpty;
@@ -615,11 +650,21 @@ public class GameInstance extends BaseObservable {
         notifyPropertyChanged(BR.currentPowerConsumption);
     }
 
-    public int getTotalBoardPower() {
+    private int getTotalBoardPower() {
         return totalBoardPower;
     }
 
-    public void setTotalBoardPower(int totalBoardPower) {
+    private void setTotalBoardPower(int totalBoardPower) {
         this.totalBoardPower = totalBoardPower;
+    }
+
+    @Bindable
+    int getStarCount() {
+        return this.starCount;
+    }
+
+    private void setStarCount(int starCount) {
+        this.starCount = starCount;
+        notifyPropertyChanged(BR.starCount);
     }
 }
