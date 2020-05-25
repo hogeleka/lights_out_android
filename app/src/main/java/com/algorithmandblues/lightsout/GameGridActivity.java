@@ -1,7 +1,6 @@
 package com.algorithmandblues.lightsout;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
-
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Stack;
+import java.util.Random;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -36,8 +33,9 @@ public class GameGridActivity extends AppCompatActivity {
     GameDataObject gameDataObject;
     private Button undo;
     private Button redo;
-    private Button reset;
+    private Button hint;
     private Button showSolution;
+    private Button reset;
     private Button randomize;
     public PropertyChangeListener listener;
 
@@ -60,14 +58,12 @@ public class GameGridActivity extends AppCompatActivity {
 
         gameInstance = new GameInstance(this, gameDataObject);
 
-        listener = new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (gameInstance.getIsGameOver()){
-                    Log.d(TAG, "Game is Over!");
-                }
+        listener = evt -> {
+            if (gameInstance.getIsGameOver()){
+                Log.d(TAG, "Game is Over!");
             }
         };
+
         gameInstance.gameOverChange.addPropertyChangeListener(listener);
         binding.setGameinstance(gameInstance);
 
@@ -75,6 +71,8 @@ public class GameGridActivity extends AppCompatActivity {
         gameTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout powerConsumptionTextHolder = findViewById(R.id.power_text_view_holder);
         powerConsumptionTextHolder.setVisibility(View.VISIBLE);
+        RelativeLayout hintsLeftTextHolder = findViewById(R.id.hints_left_text_view_holder);
+        hintsLeftTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout moveCounterTextHolder = findViewById(R.id.moveCounter_text_view_holder);
         moveCounterTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout gridLayoutHolder = findViewById(R.id.game_grid_holder);
@@ -85,6 +83,7 @@ public class GameGridActivity extends AppCompatActivity {
         createUndoButton();
         createRedoButton();
         createResetButton();
+        createHintButton();
         createShowSolutionButton();
         createRandomizeButton();
     }
@@ -104,6 +103,7 @@ public class GameGridActivity extends AppCompatActivity {
             setMoveCounter(0);
             setNumberOfHintsUsed(0);
         }};
+
         return gameDataObject;
     }
 
@@ -159,7 +159,17 @@ public class GameGridActivity extends AppCompatActivity {
                 }
             }
         }
-        originalStartState.deleteCharAt(originalStartState.length() - 1);
+
+        // To accommodate accidentally generating all off state.
+        if(dimension <= 4) {
+            originalStartState.deleteCharAt(originalStartState.length() - 1);
+            Random random = new Random();
+            if (!originalStartState.toString().contains("1")) {
+                int odd = random.nextInt((dimension*2-1) / 2) * 2 + 1;
+                originalStartState.replace(odd-1, odd, "1");
+            }
+        }
+
         return originalStartState.toString();
     }
 
@@ -180,7 +190,15 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void handleRedoClick() {
         gameInstance.removeFromRedoStack();
-        redo.setEnabled(!gameInstance.getRedoStack().empty());
+    }
+
+    private void createHintButton() {
+        hint = (Button) findViewById(R.id.hint_button);
+        hint.setOnClickListener(v -> handleHintClick());
+    }
+
+    private void handleHintClick() {
+        gameInstance.showHint();
     }
 
     private void createShowSolutionButton() {
@@ -230,9 +248,11 @@ public class GameGridActivity extends AppCompatActivity {
         // currently move counter is 0 but this will need to be changed to moveCounter in gameData
         gameInstance.resetBoardToState(
                 GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState()),
-                gameDataObject.getMoveCounter(),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
-                GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString())
+                GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
+                gameDataObject.getMoveCounter(),
+                // to prevent user from not resetting hints used
+                gameInstance.getHintsUsed()
         );
 
         Log.d(TAG, "Resetting board to Last Saved Instance or Default state if there was no saved instance");
@@ -248,12 +268,15 @@ public class GameGridActivity extends AppCompatActivity {
     private void handleRandomizeClick() {
         this.undoShowSolutionIfNeeded();
         gameDataObject = getDefaultGameDataObject(dimension, GameMode.ARCADE);
-        Stack<Integer> undoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString());
-        Stack<Integer> redoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString());
-        int moveCounter = gameDataObject.getMoveCounter();
         gameInstance.setOriginalStartState(GameDataUtil.stringToByteArray(gameDataObject.getOriginalStartState()));
         gameInstance.setHasSeenSolution(gameDataObject.getHasSeenSolution());
-        gameInstance.resetBoardToState(gameInstance.getOriginalStartState(), moveCounter, undoStack, redoStack);
+        gameInstance.resetBoardToState(
+                gameInstance.getOriginalStartState(),
+                GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
+                GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
+                gameDataObject.getMoveCounter(),
+                gameDataObject.getNumberOfHintsUsed()
+        );
 
         Log.d(TAG, "Resetting Board to new Randomized State");
     }

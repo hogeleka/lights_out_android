@@ -5,11 +5,16 @@
     <color name="colorAccent">#F44336</color>
     <color name="bulb_on_color">#ffff52</color>
     <color name="bulb_off_color">#c7a500</color>
+    <color name="hint_start_color">#ffff52</color>
+    <color name="hint_end_color">#c7a500</color>
     <color name="black_overlay">#66000000</color>
     <color name="background_color">#009688</color>
+    <color name="hint_border_color">#33b5e5</color>
 
 
 <!--    Original Background Color-->
 <!--    <color name="background_color">#33b5e5</color>-->
+<!--    <color name="bulb_on_color">#ffff52</color>-->
+<!--    <color name="bulb_off_color">#c7a500</color>-->
     <color name="transparent">#00000000</color>
 </resources>
