@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingTop="10dp"
-                android:layout_above="@+id/moveCounter_text_view_holder"
+                android:layout_above="@+id/hints_left_text_view_holder"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:visibility="gone">
@@ -58,7 +58,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="@{`Power : ` + gameinstance.currentPowerConsumption + `W`}"
+                    android:text="@{`Power: ` + gameinstance.currentPowerConsumption + `W`}"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    android:layout_gravity="center_horizontal">
+                </TextView>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/hints_left_text_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:layout_above="@+id/moveCounter_text_view_holder"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/hints_left_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@{`Hints Left: ` + gameinstance.hintsLeft }"
                     android:textAlignment="center"
                     android:textSize="24sp"
                     android:layout_gravity="center_horizontal">
@@ -111,21 +133,28 @@
                     android:id="@+id/undo_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.20"
+                    android:layout_weight="0.16"
                     android:text="@string/undo"
                     android:enabled="@{!gameinstance.isUndoStackEmpty}"/>
                 <Button
                     android:id="@+id/redo_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.20"
+                    android:layout_weight="0.16"
                     android:text="@string/redo"
                     android:enabled="@{!gameinstance.isRedoStackEmpty}"/>
+                <Button
+                    android:id="@+id/hint_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.16"
+                    android:enabled="@{gameinstance.hintsLeft > 0 &amp;&amp; !gameinstance.isShowingSolution}"
+                    android:text="@string/show_hint"/>
                 <Button
                     android:id="@+id/solution"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.20"
+                    android:layout_weight="0.16"
                     android:enabled="@{!gameinstance.isGameOver}"
                     android:background="@{(gameinstance.isShowingSolution &amp;&amp; !gameinstance.isGameOver) ? @color/bulb_on_color : @color/transparent}"
                     android:text="@string/solution"/>
@@ -133,13 +162,13 @@
                     android:id="@+id/reset_to_original_start_state"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.20"
+                    android:layout_weight="0.16"
                     android:text="@string/reset"/>
                 <Button
                     android:id="@+id/randomize_state"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.20"
+                    android:layout_weight="0.16"
                     android:text="@string/randomize"/>
             </LinearLayout>
         </RelativeLayout>

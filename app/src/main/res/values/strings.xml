@@ -27,21 +27,23 @@
 
 
     <string name="undo">undo</string>
-    <string name="reset">reset</string>
     <string name="redo">redo</string>
+    <string name="show_hint">hint</string>
     <string name="solution">solution</string>
+    <string name="reset">reset</string>
+    <string name="randomize">Randomize</string>
+
 
     <string name="exit_game_title">Exit Lights Out</string>
     <string name="exit_game_question">Are you sure to exit?</string>
     <string name="turn_off_all_the_lights">Turn off all the Lights!!</string>
     <string name="play">Play</string>
     <string name="all_lights_off">All lights are off!</string>
-    <string name="randomize">Randomize</string>
     <string name="randomize_board">Randomize Board</string>
     <string name="randomize_confirmation_text">Are you sure? All current progress will be lost!</string>
     <string name="reset_board">Randomize Board</string>
     <string name="reset_board_confirmation_text">Are you sure? Board will reset to the last saved state!</string>
-    <string name="show_solution_title">show Solution</string>
+    <string name="show_solution_title">Show Solution</string>
     <string name="show_soltuion_confirmation"> Are you sure? Your progress will not count!</string>
     <string name="game_win_state_label">gameWinState</string>
 </resources>
