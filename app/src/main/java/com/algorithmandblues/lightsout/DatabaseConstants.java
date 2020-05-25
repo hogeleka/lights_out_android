@@ -1,18 +1,25 @@
 package com.algorithmandblues.lightsout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class DatabaseConstants {
+class DatabaseConstants {
+
+    private static final int MAX_DIMENSION = 10;
+    private static final int MIN_DIMENSION = 2;
 
     static Map<String, String> databaseTableNamesAndCreationStrings = new HashMap<String, String>() {{
         put(MostRecentGameTable.TABLE_NAME, MostRecentGameTable.getStringToCreateTable());
         put(GameWinStateTable.TABLE_NAME, GameWinStateTable.getStringToCreateTable());
+        put(LevelTable.TABLE_NAME, LevelTable.getStringToCreateTable());
     }};
 
     static Map<String, String[]> databaseTableNamesAndColumns = new HashMap<String, String[]>() {{
         put(MostRecentGameTable.TABLE_NAME, MostRecentGameTable.TABLE_COLUMNS);
         put(GameWinStateTable.TABLE_NAME, GameWinStateTable.TABLE_COLUMNS);
+        put(LevelTable.TABLE_NAME, LevelTable.TABLE_COLUMNS);
     }};
 
 
@@ -30,12 +37,12 @@ public class DatabaseConstants {
         static final String MOVE_COUNTER = "moveCounter";
         static final String NUMBER_OF_HINTS_USED = "numberOfHintsUsed";
 
-        public static final String[] TABLE_COLUMNS = {
+        static final String[] TABLE_COLUMNS = {
                 ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
                 REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
         };
 
-        public static String getStringToCreateTable() {
+        static String getStringToCreateTable() {
             String sqlStringToCreateTable = "CREATE TABLE " + TABLE_NAME + " ( " +
                     ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     DIMENSION + " INTEGER, " +
@@ -58,28 +65,71 @@ public class DatabaseConstants {
         static final String DIMENSION = "dimension";
         static final String ORIGINAL_START_STATE = "originalStartState";
         static final String TOGGLED_BULBS = "toggledBulbs";
+        static final String ORIGINAL_BULB_CONFIGURATION = "originalBulbConfiguration";
         static final String NUMBER_OF_MOVES = "numberOfMoves";
+        static final String NUMBER_OF_HINTS_USED = "numberOfHintsUsed";
         static final String NUMBER_OF_STARS = "score";
         static final String GAME_MODE = "gameMode";
         static final String TIME_STAMP_MS = "timeStampMs";
 
-        public static final String[] TABLE_COLUMNS = {
-                ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, NUMBER_OF_MOVES, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS
+        static final String[] TABLE_COLUMNS = {
+                ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, ORIGINAL_BULB_CONFIGURATION, NUMBER_OF_MOVES,
+                NUMBER_OF_HINTS_USED, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS
         };
 
-        public static String getStringToCreateTable() {
+        static String getStringToCreateTable() {
             String sqlString = "CREATE TABLE " + TABLE_NAME + " ( " +
                     ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     DIMENSION + " INTEGER, " +
                     ORIGINAL_START_STATE + " STRING, " +
                     TOGGLED_BULBS + " STRING, " +
+                    ORIGINAL_BULB_CONFIGURATION + ", " +
                     NUMBER_OF_MOVES + " INTEGER, " +
+                    NUMBER_OF_HINTS_USED + " INTEGER, " +
                     NUMBER_OF_STARS + " INTEGER, " +
                     GAME_MODE + " INTEGER, " +
                     TIME_STAMP_MS + " INTEGER )";
-
             return sqlString;
         }
 
+    }
+
+    static class LevelTable {
+        static final String TABLE_NAME = "level";
+        static final String ID = "id";
+        static final String DIMENSION = "dimension";
+        static final String NUMBER_OF_STARS = "numberOfStars";
+        static final String GAME_MODE = "gameMode";
+
+        static final String [] TABLE_COLUMNS = {
+                ID, DIMENSION, NUMBER_OF_STARS, GAME_MODE
+        };
+
+        static String getStringToCreateTable() {
+            String sqlString = "CREATE TABLE " + TABLE_NAME + " ( " +
+                    ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    DIMENSION + " INTEGER, " +
+                    NUMBER_OF_STARS + " INTEGER, " +
+                    GAME_MODE + " INTEGER )";
+            return sqlString;
+        }
+
+        static List<Level> defaultLevelValues() {
+            int[] gameModes = {GameMode.ARCADE, GameMode.CLASSIC};
+            List<Level> levels = new ArrayList<>();
+            for (int dimension = DatabaseConstants.MIN_DIMENSION; dimension <= DatabaseConstants.MAX_DIMENSION; dimension++) {
+                for (int j = 0; j < gameModes.length; j++) {
+                    int currentDimension = dimension;
+                    int currentGameMode = gameModes[j];
+                    Level level = new Level(){{
+                        setDimension(currentDimension);
+                        setNumberOfStars(0);
+                        setGameMode(currentGameMode);
+                    }};
+                    levels.add(level);
+                }
+            }
+            return levels;
+        }
     }
 }
