@@ -21,7 +21,8 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
     private CheckBox mCheckBox;
 
-    GameDataObjectDao gameDataObjectDao;
+    GameDataObjectDBHandler gameDataObjectDBHandler;
+    LevelDBHandler levelDBHandler;
 
     private LinearLayout boardSizesContainer;
 
@@ -34,7 +35,12 @@ public class LevelSelectorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_level_selector);
 
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-        gameDataObjectDao = GameDataObjectDao.getInstance(databaseHelper);
+        gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
+        levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
+
+        levelDBHandler.fetchLevelsForGameMode(GameMode.ARCADE);
+        levelDBHandler.fetchLevelsForGameMode(GameMode.CLASSIC);
+
         mCheckBox = (CheckBox) findViewById(R.id.should_randomize_checkbox);
         mCheckBox.setChecked(true);
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -56,7 +62,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(LevelSelectorActivity.this, FullscreenActivity.class);
+        Intent intent = new Intent(LevelSelectorActivity.this, HomePageActivity.class);
         startActivity(intent);
         finish();
         super.onBackPressed();
@@ -127,6 +133,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
     }
 
     public boolean checkForExistingGame(int dimension, int gameMode) {
-        return gameDataObjectDao.getMostRecentGameDataForGameType(dimension, gameMode) != null;
+        return gameDataObjectDBHandler.getMostRecentGameDataForGameType(dimension, gameMode) != null;
     }
 }

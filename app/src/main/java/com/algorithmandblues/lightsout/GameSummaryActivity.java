@@ -8,8 +8,8 @@ import android.util.Log;
 public class GameSummaryActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
-    GameDataObjectDao gameDataObjectDao;
-    GameWinStateDao gameWinStateDao;
+    GameDataObjectDBHandler gameDataObjectDBHandler;
+    GameWinStateDBHandler gameWinStateDBHandler;
     GameWinState gameWinState;
 
     private static final String TAG = GameSummaryActivity.class.getSimpleName();
@@ -20,8 +20,8 @@ public class GameSummaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_summary);
         
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-        gameDataObjectDao = GameDataObjectDao.getInstance(databaseHelper);
-        gameWinStateDao = GameWinStateDao.getInstance(databaseHelper);
+        gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
+        gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);
         gameWinState = fetchGameWinStateFromLastCompletedGameGridActivity();
         
     }
@@ -37,7 +37,7 @@ public class GameSummaryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         GameWinState gameWinState = intent.getParcelableExtra(getString(R.string.game_win_state_label));
         Log.d(TAG, "Recieved game win state from previous activity: " + gameWinState.toString());
-        gameWinStateDao.fetchAllGameWinStatesInReverseChronological(gameWinState.getGameMode());
+        gameWinStateDBHandler.fetchAllGameWinStatesInReverseChronological(gameWinState.getGameMode());
         return gameWinState;
     }
 }

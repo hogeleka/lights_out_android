@@ -6,11 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-public class FullscreenActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
 
@@ -18,7 +14,7 @@ public class FullscreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(0, 0);
-        setContentView(R.layout.activity_fullscreen);
+        setContentView(R.layout.activity_home_page);
 
         //set onclick listener for "play button")
         Button button = (Button) findViewById(R.id.goToLevelSelector);
@@ -35,7 +31,7 @@ public class FullscreenActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder ab = new AlertDialog.Builder(FullscreenActivity.this);
+        AlertDialog.Builder ab = new AlertDialog.Builder(HomePageActivity.this);
         ab.setTitle(getResources().getString(R.string.exit_game_title));
         ab.setMessage(getResources().getString(R.string.exit_game_question));
         ab.setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {
@@ -47,7 +43,7 @@ public class FullscreenActivity extends AppCompatActivity {
 
 
     public void goToLevelSelector() {
-        Intent intent = new Intent(FullscreenActivity.this, LevelSelectorActivity.class);
+        Intent intent = new Intent(HomePageActivity.this, LevelSelectorActivity.class);
         startActivity(intent);
         finish();
     }

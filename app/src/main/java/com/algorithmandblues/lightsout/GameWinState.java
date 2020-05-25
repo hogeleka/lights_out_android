@@ -3,26 +3,31 @@ package com.algorithmandblues.lightsout;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class GameWinState implements Parcelable {
+public class GameWinState implements Parcelable{
 
     private int id;
     private int dimension;
     private String originalStartState;
     private String toggledBulbs;
+    private String originalBulbConfiguration;
     private int numberOfMoves;
+    private int numberOfHintsUsed;
     private int numberOfStars;
     private int gameMode;
     private long timeStampMs;
 
-    public GameWinState() {
+    GameWinState() {
     }
 
-    protected GameWinState(Parcel in) {
+
+    private GameWinState(Parcel in) {
         id = in.readInt();
         dimension = in.readInt();
         originalStartState = in.readString();
         toggledBulbs = in.readString();
+        originalBulbConfiguration = in.readString();
         numberOfMoves = in.readInt();
+        numberOfHintsUsed = in.readInt();
         numberOfStars = in.readInt();
         gameMode = in.readInt();
         timeStampMs = in.readLong();
@@ -34,7 +39,9 @@ public class GameWinState implements Parcelable {
         dest.writeInt(dimension);
         dest.writeString(originalStartState);
         dest.writeString(toggledBulbs);
+        dest.writeString(originalBulbConfiguration);
         dest.writeInt(numberOfMoves);
+        dest.writeInt(numberOfHintsUsed);
         dest.writeInt(numberOfStars);
         dest.writeInt(gameMode);
         dest.writeLong(timeStampMs);
@@ -73,35 +80,51 @@ public class GameWinState implements Parcelable {
         this.dimension = dimension;
     }
 
-    public String getOriginalStartState() {
+    String getOriginalStartState() {
         return this.originalStartState;
     }
 
-    public void setOriginalStartState(String originalStartState) {
+    void setOriginalStartState(String originalStartState) {
         this.originalStartState = originalStartState;
     }
 
-    public String getToggledBulbs() {
+    String getToggledBulbs() {
         return this.toggledBulbs;
     }
 
-    public void setToggledBulbs(String toggledBulbs) {
+    void setToggledBulbs(String toggledBulbs) {
         this.toggledBulbs = toggledBulbs;
     }
 
-    public int getNumberOfMoves() {
+    String getOriginalBulbConfiguration() {
+        return originalBulbConfiguration;
+    }
+
+    void setOriginalBulbConfiguration(String originalBulbConfiguration) {
+        this.originalBulbConfiguration = originalBulbConfiguration;
+    }
+
+    int getNumberOfMoves() {
         return this.numberOfMoves;
     }
 
-    public void setNumberOfMoves(int numberOfMoves) {
+    void setNumberOfMoves(int numberOfMoves) {
         this.numberOfMoves = numberOfMoves;
     }
 
-    public int getNumberOfStars() {
+    int getNumberOfHintsUsed() {
+        return numberOfHintsUsed;
+    }
+
+    void setNumberOfHintsUsed(int numberOfHintsUsed) {
+        this.numberOfHintsUsed = numberOfHintsUsed;
+    }
+
+    int getNumberOfStars() {
         return this.numberOfStars;
     }
 
-    public void setNumberOfStars(int numberOfStars) {
+    void setNumberOfStars(int numberOfStars) {
         this.numberOfStars = numberOfStars;
     }
 
@@ -114,25 +137,27 @@ public class GameWinState implements Parcelable {
         this.gameMode = gameMode;
     }
 
-    public long getTimeStampMs() {
+    long getTimeStampMs() {
         return this.timeStampMs;
     }
 
-    public void setTimeStampMs(long timeStampMs) {
+    void setTimeStampMs(long timeStampMs) {
         this.timeStampMs = timeStampMs;
     }
 
     @Override
     public String toString() {
         return "GameWinState{" +
-                "id=" + id +
-                ", dimension=" + dimension +
-                ", originalStartState='" + originalStartState + '\'' +
-                ", toggledBulbs='" + toggledBulbs + '\'' +
-                ", numberOfMoves=" + numberOfMoves +
-                ", numberOfStars=" + numberOfStars +
-                ", gameMode=" + gameMode +
-                ", timeStampMs=" + timeStampMs +
+                "id=" + this.id +
+                ", dimension=" + this.dimension +
+                ", originalStartState='" + this.originalStartState + '\'' +
+                ", toggledBulbs='" + this.toggledBulbs + '\'' +
+                ", originalBulbConfiguration='" + this.originalBulbConfiguration + '\'' +
+                ", numberOfMoves=" + this.numberOfMoves +
+                ", numberOfHintsUsed=" + this.numberOfHintsUsed +
+                ", numberOfStars=" + this.numberOfStars +
+                ", gameMode=" + this.gameMode +
+                ", timeStampMs=" + this.timeStampMs +
                 '}';
     }
 }

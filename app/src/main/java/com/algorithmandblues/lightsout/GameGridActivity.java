@@ -17,16 +17,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Stack;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
+
 public class GameGridActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
 
-    GameDataObjectDao gameDataObjectDao;
-    GameWinStateDao gameWinStateDao;
+    GameDataObjectDBHandler gameDataObjectDBHandler;
+    GameWinStateDBHandler gameWinStateDBHandler;
 
     private static final String TAG = GameGridActivity.class.getSimpleName();
 
@@ -48,8 +45,8 @@ public class GameGridActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-        gameDataObjectDao = GameDataObjectDao.getInstance(databaseHelper);
-        gameWinStateDao = GameWinStateDao.getInstance(databaseHelper);
+        gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
+        gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);
 
         ActivityGameGridBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_game_grid);
 
@@ -57,23 +54,20 @@ public class GameGridActivity extends AppCompatActivity {
         boolean shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
         int gameMode = shouldSetRandomOriginalStartState ? GameMode.ARCADE : GameMode.CLASSIC;
-        gameDataObject = shouldResumeGameFromDB ? gameDataObjectDao.getMostRecentGameDataForGameType(dimension, gameMode) : getDefaultGameDataObject(dimension, gameMode);
+        gameDataObject = shouldResumeGameFromDB ? gameDataObjectDBHandler.getMostRecentGameDataForGameType(dimension, gameMode) : getDefaultGameDataObject(dimension, gameMode);
 
 
         gameInstance = new GameInstance(this, gameDataObject);
 
-        listener = new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (gameInstance.getIsGameOver()){
-                    Log.d(TAG, "Game is Over!");
-                    GameWinState gameWinState = getGameWinStateFromGameInstance(gameInstance);
-                    removeCurrentGameFromTableOfCurrentGames(gameWinState.getDimension(), gameInstance.getGameMode());
-                    int insertedGameWinStateId = insertGameWinStateObjectIntoGameWinStateTable(gameWinState);
-                    gameWinState.setId(insertedGameWinStateId);
-                    sendGameWinStateToNewActivity(gameWinState);
+        listener = evt -> {
+            if (gameInstance.getIsGameOver()){
+                Log.d(TAG, "Game is Over!");
+                GameWinState gameWinState = getGameWinStateFromGameInstance(gameInstance);
+                removeCurrentGameFromTableOfCurrentGames(gameWinState.getDimension(), gameInstance.getGameMode());
+                int insertedGameWinStateId = insertGameWinStateObjectIntoGameWinStateTable(gameWinState);
+                gameWinState.setId(insertedGameWinStateId);
+                sendGameWinStateToNewActivity(gameWinState);
 
-                }
             }
         };
         gameInstance.gameOverChange.addPropertyChangeListener(listener);
@@ -105,20 +99,23 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private int insertGameWinStateObjectIntoGameWinStateTable(GameWinState gameWinState) {
-        return gameWinStateDao.insertGameWinStateObjectToDatabase(gameWinState);
+        return gameWinStateDBHandler.insertGameWinStateObjectToDatabase(gameWinState);
     }
 
     private void removeCurrentGameFromTableOfCurrentGames(int dimension, int gameMode) {
-        gameDataObjectDao.deleteMostRecentGameDataObjectForDimensionAndGameMode(dimension, gameMode);
+        gameDataObjectDBHandler.deleteMostRecentGameDataObjectForDimensionAndGameMode(dimension, gameMode);
     }
 
     private GameWinState getGameWinStateFromGameInstance(GameInstance gameInstance) {
-        //ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, NUMBER_OF_MOVES, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS
+        //ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, ORIGINAL_BULB_CONFIGURATION, NUMBER_OF_MOVES,
+        //NUMBER_OF_HINTS_USED, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS
         GameWinState gameWinState = new GameWinState(){{
             setDimension(gameInstance.getDimension());
             setOriginalStartState(GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState()));
             setToggledBulbs(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
+            setOriginalBulbConfiguration(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs())); //TODO: change this to use actual variable from GameInstance
             setNumberOfMoves(gameInstance.getMoveCounter());
+            setNumberOfHintsUsed(gameInstance.getHintsUsed());
             setNumberOfStars(gameInstance.getStarCount());
             setGameMode(gameInstance.getGameMode());
             setTimeStampMs(System.currentTimeMillis());
@@ -302,7 +299,7 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void saveCurrentGameInstance(GameInstance gameInstance) {
         GameDataObject gameDataObject = getGameDataObjectFromCurrentGameInstance(gameInstance);
-        gameDataObjectDao.addGameDataObjectToDatabase(gameDataObject);
+        gameDataObjectDBHandler.addGameDataObjectToDatabase(gameDataObject);
     }
 
     private GameDataObject getGameDataObjectFromCurrentGameInstance(GameInstance gameInstance) {
@@ -314,10 +311,10 @@ public class GameGridActivity extends AppCompatActivity {
             setToggledBulbsState(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
             setUndoStackString(GameDataUtil.IntegerStackToString(gameInstance.getUndoStack()));
             setRedoStackString(GameDataUtil.IntegerStackToString(gameInstance.getRedoStack()));
-            setGameMode(GameMode.ARCADE); //TODO: replace with real data from level selector
+            setGameMode(gameInstance.getGameMode());
             setHasSeenSolution(gameInstance.getHasSeenSolution());
             setMoveCounter(gameInstance.getMoveCounter());
-            setNumberOfHintsUsed(10);
+            setNumberOfHintsUsed(gameInstance.getHintsUsed());
         }};
 
         return gameDataObject;

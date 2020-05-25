@@ -3,28 +3,27 @@ package com.algorithmandblues.lightsout;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.ContactsContract;
 import android.util.Log;
 
-public class GameDataObjectDao {
+class GameDataObjectDBHandler {
 
-    private static final String TAG = GameDataObjectDao.class.getSimpleName();
+    private static final String TAG = GameDataObjectDBHandler.class.getSimpleName();
 
-    private static GameDataObjectDao sInstance;
+    private static GameDataObjectDBHandler sInstance;
     private DatabaseHelper databaseHelper;
 
-    private GameDataObjectDao(DatabaseHelper databaseHelper) {
+    private GameDataObjectDBHandler(DatabaseHelper databaseHelper) {
         this.databaseHelper = databaseHelper;
     }
 
-    public static synchronized  GameDataObjectDao getInstance (DatabaseHelper databaseHelper) {
+    static synchronized GameDataObjectDBHandler getInstance(DatabaseHelper databaseHelper) {
         if (sInstance == null) {
-            sInstance = new GameDataObjectDao(databaseHelper);
+            sInstance = new GameDataObjectDBHandler(databaseHelper);
         }
         return sInstance;
     }
 
-    public GameDataObject getMostRecentGameDataForGameType(int dimension, int gameMode) {
+    GameDataObject getMostRecentGameDataForGameType(int dimension, int gameMode) {
         Log.d(TAG, "Fetching game data for dimension size: " + dimension + " by " + dimension + " of game type " + gameMode);
         boolean distinct = true;
         String tableName = DatabaseConstants.MostRecentGameTable.TABLE_NAME;
@@ -36,13 +35,14 @@ public class GameDataObjectDao {
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
-        // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
-        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+
         Cursor cursor = db.query(distinct, tableName, columns, whereClause, selectionArgs, null, null, null, limit);
         if (cursor.getCount() == 0) {
             Log.d(TAG, "Nothing found in database for dimension " + dimension + " of game type: " + gameMode);
             return null;
         } else {
+            // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
+            // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
             cursor.moveToFirst();
             GameDataObject gameDataObject = new GameDataObject();
             gameDataObject.setId(cursor.getInt(0));
@@ -61,7 +61,7 @@ public class GameDataObjectDao {
         }
     }
 
-    public void addGameDataObjectToDatabase(GameDataObject gameDataObject) {
+    void addGameDataObjectToDatabase(GameDataObject gameDataObject) {
         int dimension = gameDataObject.getDimension();
         int gameMode = gameDataObject.getGameMode();
         ContentValues contentValues = this.getContentValuesFromGameDataObject(gameDataObject);
@@ -111,7 +111,7 @@ public class GameDataObjectDao {
         db.close();
     }
 
-    public void deleteMostRecentGameDataObjectForDimensionAndGameMode(int dimension, int gameMode) {
+    void deleteMostRecentGameDataObjectForDimensionAndGameMode(int dimension, int gameMode) {
         SQLiteDatabase db = this.databaseHelper.getWritableDatabase();
         String tableName = DatabaseConstants.MostRecentGameTable.TABLE_NAME;
         String whereClause = DatabaseConstants.MostRecentGameTable.DIMENSION + " = ? AND "
