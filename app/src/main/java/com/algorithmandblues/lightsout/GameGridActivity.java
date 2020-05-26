@@ -66,13 +66,13 @@ public class GameGridActivity extends AppCompatActivity {
         gameInstance.gameOverChange.addPropertyChangeListener(listener);
         binding.setGameinstance(gameInstance);
 
-        RelativeLayout gameTextHolder = findViewById(R.id.game_text_view_holder);
+        RelativeLayout gameTextHolder = findViewById(R.id.game_title_text_view_holder);
         gameTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout powerConsumptionTextHolder = findViewById(R.id.power_text_view_holder);
         powerConsumptionTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout hintsLeftTextHolder = findViewById(R.id.hints_left_text_view_holder);
         hintsLeftTextHolder.setVisibility(View.VISIBLE);
-        RelativeLayout moveCounterTextHolder = findViewById(R.id.moveCounter_text_view_holder);
+        RelativeLayout moveCounterTextHolder = findViewById(R.id.move_counter_text_view_holder);
         moveCounterTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());

@@ -17,30 +17,47 @@
         android:background="@color/background_color">
 
         <RelativeLayout
+            android:id="@+id/game_title_text_view_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="100dp"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/game_grid_title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/lights_out"
+                android:textAlignment="center"
+                android:textSize="50sp"
+                android:layout_gravity="center_horizontal">
+            </TextView>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="0dp">
-
-
             <RelativeLayout
-                android:id="@+id/game_text_view_holder"
+                android:id="@+id/move_counter_text_view_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingTop="60dp"
-                android:layout_above="@+id/power_text_view_holder"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:visibility="gone">
+                android:paddingTop="10dp"
+                android:layout_above="@+id/game_grid_holder"
+                android:visibility="gone"
+                android:paddingStart="@{gameinstance.bulbGap*2}"
+                android:paddingLeft="@{gameinstance.bulbGap*2}">
                 <TextView
-                    android:id="@+id/game_grid_title_text_view"
+                    android:id="@+id/move_counter_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="@{gameinstance.gameOverText}"
-                    android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:layout_gravity="center_horizontal">
+                    android:text="@{`moves: ` + gameinstance.moveCounter}"
+                    android:layout_gravity="left">
                 </TextView>
             </RelativeLayout>
 
@@ -50,21 +67,20 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingTop="10dp"
-                android:layout_above="@+id/hints_left_text_view_holder"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
+                android:layout_above="@+id/game_grid_holder"
+                android:gravity="center"
                 android:visibility="gone">
                 <TextView
                     android:id="@+id/power_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="@{`Power: ` + gameinstance.currentPowerConsumption + `W`}"
+                    android:text="@{`power: ` + gameinstance.currentPowerConsumption + `W`}"
                     android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:layout_gravity="center_horizontal">
+                   android:layout_gravity="center_horizontal">
                 </TextView>
             </RelativeLayout>
+
 
             <RelativeLayout
                 android:id="@+id/hints_left_text_view_holder"
@@ -72,41 +88,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingTop="10dp"
-                android:layout_above="@+id/moveCounter_text_view_holder"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:visibility="gone">
+                android:gravity="end"
+                android:visibility="gone"
+                android:layout_above="@+id/game_grid_holder"
+                android:paddingRight="@{gameinstance.bulbGap*2}"
+                android:paddingEnd="@{gameinstance.bulbGap*2}">
                 <TextView
                     android:id="@+id/hints_left_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:textAlignment="viewEnd"
                     android:maxLines="1"
-                    android:text="@{`Hints Left: ` + gameinstance.hintsLeft }"
-                    android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:layout_gravity="center_horizontal">
-                </TextView>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/moveCounter_text_view_holder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="10dp"
-                android:layout_above="@+id/game_grid_holder"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:visibility="gone">
-                <TextView
-                    android:id="@+id/move_counter_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:text="@{`Move Counter: ` + gameinstance.moveCounter}"
-                    android:textAlignment="center"
-                    android:textSize="24sp"
-                    android:layout_gravity="center_horizontal">
+                    android:text="@{`hints: ` + gameinstance.hintsLeft }"
+                    android:layout_gravity="end"
+                    android:layout_alignParentEnd="true">
                 </TextView>
             </RelativeLayout>
 
