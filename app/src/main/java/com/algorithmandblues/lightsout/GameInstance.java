@@ -24,6 +24,7 @@ public class GameInstance extends BaseObservable {
     private static final String TAG = GameInstance.class.getSimpleName();
     private static final double SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP = 1.5;
     public int bulbGap;
+    public int boardPadding;
     private static String GAME_IS_OVER;
     private static String GAME_IS_NOT_OVER;
     private int gameMode;
@@ -35,6 +36,7 @@ public class GameInstance extends BaseObservable {
     private int currentPowerConsumption;
     private int totalBoardPower;
     private int starCount;
+    private boolean lastBulbToggleIsOn;
     private boolean isShowingSolution;
     private boolean isUndoStackEmpty;
     private boolean isRedoStackEmpty;
@@ -114,6 +116,7 @@ public class GameInstance extends BaseObservable {
         this.setMoveCounter(gameDataObject.getMoveCounter());
         this.hasMadeAtLeastOneMove = false;
         this.starCount = 0;
+        this.lastBulbToggleIsOn = false;
 
         GAME_IS_OVER = context.getString(R.string.all_lights_off);
         GAME_IS_NOT_OVER = context.getString(R.string.turn_off_all_the_lights);
@@ -129,12 +132,13 @@ public class GameInstance extends BaseObservable {
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
         Log.d(TAG, "Screen width: " + width);
-        this.bulbGap = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
+
+        this.boardPadding = this.getPixels(16);
         this.bulbGap = BULB_GAP_MAP.get(this.dimension);
         this.bulbGap = this.getPixels(this.bulbGap);
         Log.d(TAG, "Bulb gap: " + this.bulbGap);
         int size = Math.min(width, height);
-        int marginCumulativeWidth = (dimension + 1) * this.bulbGap;
+        int marginCumulativeWidth = (dimension - 1) * this.bulbGap + 2*this.boardPadding;
         int bulbWidth = (size - marginCumulativeWidth) / dimension;
 
         int id = 0;
@@ -160,23 +164,24 @@ public class GameInstance extends BaseObservable {
         if (c != this.dimension - 1) {
             params.rightMargin = this.bulbGap / 2;
         } else {
-            params.rightMargin = this.bulbGap;
+            params.rightMargin = this.boardPadding;
         }
 
         if (c == 0) {
-            params.leftMargin = this.bulbGap;
+            params.leftMargin = this.boardPadding;
         } else {
             params.leftMargin = this.bulbGap / 2;
         }
 
-        if (r == dimension - 1) {
-            params.bottomMargin = this.bulbGap;
+        if (r == 0) {
+            params.topMargin = this.boardPadding/3;
+        } else {
+            params.topMargin = this.bulbGap;
         }
 
         params.height = length;
         params.width = length;
 
-        params.topMargin = this.bulbGap;
         params.setGravity(Gravity.CENTER);
         params.columnSpec = GridLayout.spec(c);
         params.rowSpec = GridLayout.spec(r);
@@ -242,6 +247,8 @@ public class GameInstance extends BaseObservable {
             int bottom = (row + 1) * dimension + col;
             ((Bulb) grid.getChildAt(bottom)).toggle();
         }
+
+        this.setLastBulbToggleIsOn(b.isOn());
 
         this.updateIndividualBulbStatus();
         boolean gameOver = this.checkIfAllLightsAreOff();
@@ -712,6 +719,16 @@ public class GameInstance extends BaseObservable {
     private void setStarCount(int starCount) {
         this.starCount = starCount;
         notifyPropertyChanged(BR.starCount);
+    }
+
+    @Bindable
+    public boolean getIsLastBulbToggleIsOn() {
+        return this.lastBulbToggleIsOn;
+    }
+
+    public void setLastBulbToggleIsOn(boolean lastBulbToggleIsOn) {
+        this.lastBulbToggleIsOn = lastBulbToggleIsOn;
+        notifyPropertyChanged(BR.isLastBulbToggleIsOn);
     }
 
     public Context getContext() {

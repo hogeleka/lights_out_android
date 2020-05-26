@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -14,13 +16,15 @@ import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 import java.beans.PropertyChangeListener;
 import java.util.Random;
 
-
 public class GameGridActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
 
     GameDataObjectDBHandler gameDataObjectDBHandler;
     GameWinStateDBHandler gameWinStateDBHandler;
+
+    private View mPendulum;
+    private Animation mAnimation;
 
     private static final String TAG = GameGridActivity.class.getSimpleName();
 
@@ -85,6 +89,21 @@ public class GameGridActivity extends AppCompatActivity {
         createHintButton();
         createShowSolutionButton();
         createNewGameButton();
+
+        mPendulum = findViewById(R.id.pendulum);
+        mAnimation = AnimationUtils.loadAnimation(this, R.anim.swinging);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPendulum.startAnimation(mAnimation);
+    }
+
+    @Override
+    public void onPause() {
+        mPendulum.clearAnimation();
+        super.onPause();
     }
 
     private void sendGameWinStateToNewActivity(GameWinState gameWinState) {

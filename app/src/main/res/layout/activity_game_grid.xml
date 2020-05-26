@@ -9,12 +9,35 @@
         <import type="com.algorithmandblues.lightsout.GameInstance"/>
         <variable name="gameinstance" type="GameInstance" />
     </data>
+
     <RelativeLayout
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:keepScreenOn="true"
         android:background="@color/background_color">
+
+
+        <LinearLayout
+            android:id="@+id/pendulum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:src="@drawable/line"
+                android:layout_width="3dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+
+                />
+            <ImageView
+                android:src="@{gameinstance.isLastBulbToggleIsOn ? @drawable/ball : @drawable/hangingoffbulb}"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
 
 
         <RelativeLayout
@@ -25,8 +48,8 @@
             android:clickable="true"
             android:gravity="end"
             android:focusable="true"
-            android:paddingRight="@{gameinstance.bulbGap}"
-            android:paddingEnd="@{gameinstance.bulbGap}">
+            android:paddingRight="@{gameinstance.boardPadding}"
+            android:paddingEnd="@{gameinstance.boardPadding}">
 
             <ImageView
                 android:layout_width="@dimen/button_icon_size"
@@ -70,8 +93,8 @@
                 android:paddingTop="10dp"
                 android:layout_above="@+id/game_grid_holder"
                 android:visibility="gone"
-                android:paddingStart="@{gameinstance.bulbGap*2}"
-                android:paddingLeft="@{gameinstance.bulbGap*2}">
+                android:paddingStart="@{gameinstance.boardPadding + 5}"
+                android:paddingLeft="@{gameinstance.boardPadding + 5}">
                 <TextView
                     android:id="@+id/move_counter_text_view"
                     android:layout_width="match_parent"
@@ -112,8 +135,8 @@
                 android:gravity="end"
                 android:visibility="gone"
                 android:layout_above="@+id/game_grid_holder"
-                android:paddingRight="@{gameinstance.bulbGap*2}"
-                android:paddingEnd="@{gameinstance.bulbGap*2}">
+                android:paddingRight="@{gameinstance.boardPadding + 5}"
+                android:paddingEnd="@{gameinstance.boardPadding + 5}">
                 <TextView
                     android:id="@+id/hints_left_text_view"
                     android:layout_width="match_parent"
