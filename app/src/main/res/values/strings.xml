@@ -46,4 +46,8 @@
     <string name="show_solution_title">Show Solution</string>
     <string name="show_soltuion_confirmation"> Are you sure? Your progress will not count!</string>
     <string name="game_win_state_label">gameWinState</string>
+
+    <string name="arcade_tab_name">Arcade</string>
+    <string name="classic_tab_name">Classic</string>
+    <string name="best_score_level_gameType">bestScore</string>
 </resources>

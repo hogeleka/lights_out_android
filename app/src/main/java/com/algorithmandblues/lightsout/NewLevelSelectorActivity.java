@@ -16,7 +16,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -39,12 +38,10 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
     Map<Integer, Level> classicLevelMap;
     TabHost tabHost;
 
+    int nextLevelToUnlock;
 
-    private static final int TABLE_ROW_HEIGHT = 80;
     private static final int STAR_IMAGE_SIZE_PX = 15;
     private static final int TABLE_ROW_MARGIN_HORIZONTAL = 8;
-    private static final int TABLE_ROW_MARGIN_VERTICAL = 4;
-    private static final int ROW_OF_STARS_PADDING = 10;
     private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
     private static final int TEXT_SIZE = 16;
 
@@ -63,17 +60,18 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
         List<Level> classicLevels = levelDBHandler.fetchLevelsForGameMode(GameMode.CLASSIC);
         arcadeLevelMap = getHashMapForLevels(arcadeLevels);
         classicLevelMap = getHashMapForLevels(classicLevels);
+        nextLevelToUnlock = calculateNextLevelToUnlock(arcadeLevelMap);
         arcadeModeGrid = findViewById(R.id.arcadeTab);
         classicModeGrid = findViewById(R.id.classicTab);
         tabHost = findViewById(R.id.tabhost);
         tabHost.setup();
         TabHost.TabSpec spec = tabHost.newTabSpec(String.valueOf(GameMode.ARCADE));
         spec.setContent(R.id.arcadeTab);
-        spec.setIndicator("Arcade");
+        spec.setIndicator(getString(R.string.arcade_tab_name));
         tabHost.addTab(spec);
         spec = tabHost.newTabSpec(String.valueOf(GameMode.CLASSIC));
         spec.setContent(R.id.classicTab);
-        spec.setIndicator("Classic");
+        spec.setIndicator(getString(R.string.classic_tab_name));
         tabHost.addTab(spec);
         prepareTableForGameMode(arcadeModeGrid, GameMode.ARCADE);
         prepareTableForGameMode(classicModeGrid, GameMode.CLASSIC);
@@ -88,6 +86,16 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private int calculateNextLevelToUnlock(Map<Integer, Level> levelMap) {
+        //start looping from 3 bc 2 is always unlocked!
+        for (int i = DatabaseConstants.MIN_DIMENSION; i < DatabaseConstants.MAX_DIMENSION; i++) {
+            if (levelMap.get(i).getNumberOfStars() == 0) {
+                return i;
+            }
+        }
+        return DatabaseConstants.MAX_DIMENSION;
     }
 
     @Override
@@ -151,7 +159,6 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
         linearLayout.setClickable(isLevelEnabled);
         TextView textView = new TextView(this);
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//        float textSize = (float) convertIntValueToAppropriatePixelValueForScreenSize(TEXT_SIZE);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
         textView.setTextColor(getResources().getColor(R.color.black_overlay));
         String label = String.format(getString(R.string.level_chooser_button_label), level.getDimension(), level.getDimension());
@@ -189,7 +196,7 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
     private boolean checkIfEnabled(Level level) {
         if (level.getGameMode() == GameMode.CLASSIC) {
             return true;
-        } else return level.getDimension() == DatabaseConstants.MIN_DIMENSION || level.getNumberOfStars() > 0;
+        } else return level.getDimension() == DatabaseConstants.MIN_DIMENSION || level.getDimension() == nextLevelToUnlock || level.getNumberOfStars() > 0;
     }
 
     public int convertIntValueToAppropriatePixelValueForScreenSize(int value) {
@@ -200,7 +207,6 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
     public void selectLevelLabel(int dimension) {
         Log.d(TAG, "selected level " +  Integer.toString(dimension));
         boolean setRandomStateFlag = selectedGameMode == GameMode.ARCADE;
-//        int gameMode = setRandomStateFlag ? GameMode.ARCADE : GameMode.CLASSIC;
         if (!checkForExistingGame(dimension, selectedGameMode)) {
             Log.d(TAG, "No existing game in DB");
             goToNewGameActivity(dimension, false, setRandomStateFlag);
@@ -236,6 +242,8 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
         intent.putExtra(getString(R.string.dimension), dimension);
         intent.putExtra(getString(R.string.resume_from_db_flag), resumeGameFromDBFlag);
         intent.putExtra(getString(R.string.set_random_state_flag), setRandomStateFlag);
+        int currentBestScoreForLevelAndGameType = selectedGameMode == GameMode.ARCADE ? arcadeLevelMap.get(dimension).getNumberOfStars() : classicLevelMap.get(dimension).getNumberOfStars();
+        intent.putExtra(getString(R.string.best_score_level_gameType), currentBestScoreForLevelAndGameType);
         startActivity(intent);
         finish();
     }
