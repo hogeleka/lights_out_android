@@ -10,9 +10,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name=".NewLevelSelectorActivity" >
-        </activity>
-        <activity android:name=".GameSummaryActivity" />
+        <activity
+            android:name=".NewLevelSelectorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_level_selector"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme"
+            tools:ignore="LockedOrientationActivity"/>
+        <activity android:name=".GameSummaryActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/game_win_state_label"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme"
+            tools:ignore="LockedOrientationActivity"/>
         <activity
             android:name=".LevelSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

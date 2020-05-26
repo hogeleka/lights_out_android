@@ -59,12 +59,12 @@ public class GameInstance extends BaseObservable {
         put(2, 1);
         put(3, 1);
         put(4, 1);
-        put(5, 5);
-        put(6, 6);
-        put(7, 10);
-        put(8, 15);
-        put(9, 20);
-        put(10, 30);
+        put(5, 10);
+        put(6, 12);
+        put(7, 20);
+        put(8, 30);
+        put(9, 35);
+        put(10, 40);
     }};
 
     private static final Map<Integer, Integer> BULB_GAP_MAP = new HashMap<Integer, Integer>() {{

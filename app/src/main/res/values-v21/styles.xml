@@ -9,7 +9,5 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:navigationBarColor">@color/navigation_bar_color</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-
     </style>
 </resources>
