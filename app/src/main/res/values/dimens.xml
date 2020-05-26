@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_length">40dp</dimen>
+    <dimen name="scale_factor" format="float">0.75</dimen>
+</resources>

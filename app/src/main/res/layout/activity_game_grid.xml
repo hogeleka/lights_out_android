@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:orientation="vertical"
-                android:paddingBottom="60dp"
+                android:paddingBottom="80dp"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true">
                 <!--android:layout_marginTop="180dp">-->
@@ -125,51 +125,161 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:paddingBottom="10dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_alignParentBottom="true">
-                <Button
-                    android:id="@+id/undo_button"
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.16"
-                    android:text="@string/undo"
-                    android:enabled="@{!gameinstance.isUndoStackEmpty}"/>
-                <Button
-                    android:id="@+id/redo_button"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/undo_button"
+                        android:layout_width="@dimen/button_length"
+                        android:layout_height="@dimen/button_length"
+                        android:scaleX="@dimen/scale_factor"
+                        android:scaleY="@dimen/scale_factor"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:alpha="@{!gameinstance.isUndoStackEmpty ? (float) 1.0 : (float) 0.2}"
+                        android:background="@drawable/undo"
+                        android:layout_gravity="center"
+                        android:enabled="@{!gameinstance.isUndoStackEmpty}"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/undo"
+                        android:textAlignment="center"
+                        android:alpha="@{!gameinstance.isUndoStackEmpty ? (float) 1.0 : (float) 0.2}"
+                        android:gravity="center_horizontal">
+                    </TextView>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.16"
-                    android:text="@string/redo"
-                    android:enabled="@{!gameinstance.isRedoStackEmpty}"/>
-                <Button
-                    android:id="@+id/hint_button"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/redo_button"
+                        android:layout_width="@dimen/button_length"
+                        android:layout_height="@dimen/button_length"
+                        android:background="@drawable/redo"
+                        android:layout_gravity="center"
+                        android:scaleX="@dimen/scale_factor"
+                        android:scaleY="@dimen/scale_factor"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:alpha="@{!gameinstance.isRedoStackEmpty ? (float) 1.0 : (float) 0.2}"
+                        android:enabled="@{!gameinstance.isRedoStackEmpty}"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="@{!gameinstance.isRedoStackEmpty ? (float) 1.0 : (float) 0.2}"
+                        android:gravity="center_horizontal"
+                        android:text="@string/redo"
+                        android:textAlignment="center"/>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.16"
-                    android:enabled="@{gameinstance.hintsLeft > 0 &amp;&amp; !gameinstance.isShowingSolution}"
-                    android:text="@string/show_hint"/>
-                <Button
-                    android:id="@+id/solution"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/hint_button"
+                        android:layout_width="@dimen/button_length"
+                        android:layout_height="@dimen/button_length"
+                        android:layout_gravity="center"
+                        android:alpha="@{gameinstance.hintsLeft > 0 &amp;&amp; !gameinstance.isShowingSolution ? (float) 1.0 : (float) 0.2}"
+                        android:background="@drawable/hint"
+                        android:enabled="@{gameinstance.hintsLeft > 0 &amp;&amp; !gameinstance.isShowingSolution}"
+                        android:scaleX="@dimen/scale_factor"
+                        android:scaleY="@dimen/scale_factor"
+                        android:foreground="?attr/selectableItemBackgroundBorderless" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="@{gameinstance.hintsLeft > 0 &amp;&amp; !gameinstance.isShowingSolution ? (float) 1.0 : (float) 0.2}"
+                        android:gravity="center_horizontal"
+                        android:text="@string/show_hint"
+                        android:textAlignment="center"/>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.16"
-                    android:enabled="@{!gameinstance.isGameOver}"
-                    android:background="@{(gameinstance.isShowingSolution &amp;&amp; !gameinstance.isGameOver) ? @color/bulb_on_color : @color/transparent}"
-                    android:text="@string/solution"/>
-                <Button
-                    android:id="@+id/reset_to_original_start_state"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/solution"
+                        android:layout_width="@dimen/button_length"
+                        android:layout_height="@dimen/button_length"
+                        android:layout_gravity="center"
+                        android:scaleX="@dimen/scale_factor"
+                        android:scaleY="@dimen/scale_factor"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:enabled="@{!gameinstance.isGameOver}"
+                        android:background="@{(gameinstance.isShowingSolution &amp;&amp; !gameinstance.isGameOver) ? @drawable/showsolution : @drawable/dontshowsolution}"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/solution"
+                        android:textAlignment="center"
+                        android:enabled="@{!gameinstance.isGameOver}"
+                        android:gravity="center_horizontal">
+                    </TextView>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.16"
-                    android:text="@string/reset"/>
-                <Button
-                    android:id="@+id/randomize_state"
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/reset"
+                        android:layout_width="@dimen/button_length"
+                        android:layout_height="@dimen/button_length"
+                        android:scaleX="@dimen/scale_factor"
+                        android:scaleY="@dimen/scale_factor"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:layout_gravity="center"
+                        android:background="@drawable/reset"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reset"
+                        android:textAlignment="center"
+                        android:gravity="center_horizontal">
+                    </TextView>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.16"
-                    android:text="@string/randomize"/>
+                    android:orientation="vertical">
+                    <Button
+                        android:id="@+id/randomize_state"
+                        android:layout_width="@dimen/button_length"
+                        android:layout_height="@dimen/button_length"
+                        android:scaleX="@dimen/scale_factor"
+                        android:scaleY="@dimen/scale_factor"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:layout_gravity="center"
+                        android:background="@drawable/newgame"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/randomize"
+                        android:textAlignment="center"
+                        android:gravity="center_horizontal">
+                    </TextView>
+                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
