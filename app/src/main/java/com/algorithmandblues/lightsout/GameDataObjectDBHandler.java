@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.List;
+
 class GameDataObjectDBHandler {
 
     private static final String TAG = GameDataObjectDBHandler.class.getSimpleName();
@@ -121,4 +123,8 @@ class GameDataObjectDBHandler {
         db.close();
         Log.d(TAG, "Cleared data for " + dimension + " by " + dimension + " and game mode " + gameMode + " from database");
     }
+
+//    List<GameDataObject> getAllGameDataObjectsForGameType(int gameMode) {
+//
+//    };
 }
