@@ -123,19 +123,7 @@ class DatabaseConstants {
                     int currentGameMode = gameModes[j];
                     Level level = new Level(){{
                         setDimension(currentDimension);
-//                        setNumberOfStars();
-                        double val = Math.random();
-                        int numStars;
-                        if (val <= 0.25) {
-                            numStars = 0;
-                        } else if (val <= 0.5) {
-                            numStars = 1;
-                        } else if (val <= 0.75) {
-                            numStars = 2;
-                        } else {
-                            numStars = 3;
-                        }
-                        setNumberOfStars(numStars);
+                        setNumberOfStars(0);
                         setGameMode(currentGameMode);
                     }};
                     levels.add(level);

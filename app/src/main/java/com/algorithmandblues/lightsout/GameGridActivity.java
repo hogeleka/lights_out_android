@@ -319,7 +319,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void returnToLevelSelector() {
-        Intent i = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
+        Intent i = new Intent(GameGridActivity.this, NewLevelSelectorActivity.class);
         startActivity(i);
         finish();
     }

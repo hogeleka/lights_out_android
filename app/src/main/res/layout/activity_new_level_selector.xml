@@ -1,213 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:orientation="vertical"
+    android:background="@color/background_color"
     tools:context=".NewLevelSelectorActivity">
-
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-
-
-    <LinearLayout
-        android:id="@+id/fullscreen_content"
+    <TabHost android:id="@+id/tabhost"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:keepScreenOn="true"
-        android:background="@color/background_color"
-        android:gravity="center"
-        android:orientation="vertical">
-
+        android:layout_height="match_parent" >
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TabHost
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+            <TabWidget android:id="@android:id/tabs"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+            <FrameLayout android:id="@android:id/tabcontent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+                <LinearLayout
+                    android:id="@+id/arcadeTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+<!--                    <Button-->
+<!--                        android:id="@+id/button"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="tab1" />-->
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/classicTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+<!--                    <Button-->
+<!--                        android:id="@+id/button2"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="tab2" />-->
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
-        <LinearLayout
-            android:id="@+id/overall_levels_holder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <LinearLayout
-                android:id="@+id/arcade_mode_grid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:shrinkColumns="3"
-                android:orientation="vertical">
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/classic_mode_grid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:shrinkColumns="3"
-                android:orientation="vertical">
-            </LinearLayout>
-        </LinearLayout>
-
-
-<!--        <LinearLayout-->
-<!--            android:id="@+id/board_sizes_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal"-->
-<!--                android:gravity="center_horizontal"-->
-<!--                android:paddingLeft="10dp"-->
-<!--                android:paddingRight="10dp">-->
-
-<!--                <LinearLayout-->
-<!--                    android:id="@+id/select_2_by_2"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="100dp"-->
-<!--                    android:layout_weight="0.33"-->
-<!--                    android:orientation="vertical">-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content">-->
-<!--                    </TextView>-->
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:orientation="horizontal">-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                    </LinearLayout>-->
-<!--                </LinearLayout>-->
-<!--                <LinearLayout-->
-<!--                    android:id="@+id/select_3_by_3"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="100dp"-->
-<!--                    android:layout_weight="0.33"-->
-<!--                    android:scaleX="@dimen/scale_factor"-->
-<!--                    android:scaleY="@dimen/scale_factor"-->
-<!--                    android:orientation="vertical">-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content">-->
-<!--                    </TextView>-->
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:orientation="horizontal">-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                    </LinearLayout>-->
-<!--                </LinearLayout>-->
-<!--                <LinearLayout-->
-<!--                    android:id="@+id/select_4_by_4"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="100dp"-->
-<!--                    android:layout_weight="0.33"-->
-<!--                    android:orientation="vertical">-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content">-->
-<!--                    </TextView>-->
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:orientation="horizontal">-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                        <Button-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="0.33"-->
-<!--                            android:scaleX="@dimen/scale_factor"-->
-<!--                            android:scaleY="@dimen/scale_factor"-->
-<!--                            android:background="@drawable/help">-->
-<!--                        </Button>-->
-<!--                    </LinearLayout>-->
-<!--                </LinearLayout>-->
-<!--            </LinearLayout>-->
-
-<!--        </LinearLayout>-->
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:gravity="center_horizontal"-->
-<!--            android:paddingLeft="10dp"-->
-<!--            android:paddingRight="10dp">-->
-
-<!--&lt;!&ndash;            <CheckBox&ndash;&gt;-->
-<!--&lt;!&ndash;                android:id="@+id/should_randomize_checkbox"&ndash;&gt;-->
-<!--&lt;!&ndash;                style="@style/Widget.AppCompat.CompoundButton.CheckBox"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_width="match_parent"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:buttonTint="@color/bulb_on_color"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:text="@string/should_randomize" />&ndash;&gt;-->
-
-<!--        </LinearLayout>-->
-    </LinearLayout>
-
-
-</FrameLayout>
+    </TabHost>
+</LinearLayout>
