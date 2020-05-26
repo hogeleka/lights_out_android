@@ -14,7 +14,7 @@
     <string name="title_activity_level_selector">LevelSelectorActivity</string>
 
 
-    <string name="level_chooser_button_label">%1$d x %2$d</string>
+    <string name="level_chooser_button_label">%1$dx%2$d</string>
     <string name="should_randomize">Randomize</string>
     <string name="level_picker_resume_or_restart_title">Resume Game</string>
     <string name="level_picker_resume_or_restart_message_prompt"> Would you like to resume your already existing %1$d x %2$d game?</string>
@@ -46,4 +46,8 @@
     <string name="show_solution_title">Show Solution</string>
     <string name="show_soltuion_confirmation"> Are you sure? Your progress will not count!</string>
     <string name="game_win_state_label">gameWinState</string>
+
+    <string name="arcade_tab_name">Arcade</string>
+    <string name="classic_tab_name">Classic</string>
+    <string name="best_score_level_gameType">bestScore</string>
 </resources>

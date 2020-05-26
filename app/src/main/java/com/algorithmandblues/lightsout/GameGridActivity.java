@@ -19,6 +19,10 @@ public class GameGridActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
 
+    LevelDBHandler levelDBHandler;
+
+    int currentBestScoreForDimensionAndGameType;
+
     GameDataObjectDBHandler gameDataObjectDBHandler;
     GameWinStateDBHandler gameWinStateDBHandler;
 
@@ -40,8 +44,11 @@ public class GameGridActivity extends AppCompatActivity {
         gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
         gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);
 
+        levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
+
         ActivityGameGridBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_game_grid);
 
+        currentBestScoreForDimensionAndGameType = getIntent().getIntExtra(getString(R.string.best_score_level_gameType), 0);
         dimension = getIntent().getIntExtra(getString(R.string.dimension), 2);
         boolean shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
@@ -58,6 +65,7 @@ public class GameGridActivity extends AppCompatActivity {
                 removeCurrentGameFromTableOfCurrentGames(gameWinState.getDimension(), gameInstance.getGameMode());
                 int insertedGameWinStateId = insertGameWinStateObjectIntoGameWinStateTable(gameWinState);
                 gameWinState.setId(insertedGameWinStateId);
+                updateDBForBestScorePerLevel(gameWinState);
                 sendGameWinStateToNewActivity(gameWinState);
 
             }
@@ -85,6 +93,12 @@ public class GameGridActivity extends AppCompatActivity {
         createHintButton();
         createShowSolutionButton();
         createNewGameButton();
+    }
+
+    private void updateDBForBestScorePerLevel(GameWinState gameWinState) {
+        if (gameWinState.getNumberOfStars() > currentBestScoreForDimensionAndGameType){
+            levelDBHandler.updateLevelWithNewNumberOfStars(gameWinState.getDimension(), gameWinState.getGameMode(), gameWinState.getNumberOfStars());
+        }
     }
 
     private void sendGameWinStateToNewActivity(GameWinState gameWinState) {
@@ -311,7 +325,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void returnToLevelSelector() {
-        Intent i = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
+        Intent i = new Intent(GameGridActivity.this, NewLevelSelectorActivity.class);
         startActivity(i);
         finish();
     }

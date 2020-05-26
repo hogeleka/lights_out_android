@@ -144,20 +144,6 @@
                 android:text="@string/should_randomize" />
 
         </LinearLayout>
-
-
-
-        <!--<Button-->
-            <!--android:id="@+id/goToGrid"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Play Game" />-->
-
-        <!--<Button-->
-            <!--android:id="@+id/playRandom"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Random" />-->
     </LinearLayout>
 
 </FrameLayout>

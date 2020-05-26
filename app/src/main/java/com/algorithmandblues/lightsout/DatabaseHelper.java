@@ -34,13 +34,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String sqlQuery = entry.getValue();
             db.execSQL(sqlQuery);
         }
-        insertDefaultValuesForLevelsAndNumberOfStars();
+        insertDefaultValuesForLevelsAndNumberOfStars(db);
         Log.d(TAG, "Created " + DatabaseConstants.databaseTableNamesAndColumns.entrySet().size()
         + " tables: " + DatabaseConstants.databaseTableNamesAndColumns.keySet().toString());
     }
 
-    private void insertDefaultValuesForLevelsAndNumberOfStars() {
-        SQLiteDatabase db = this.getWritableDatabase();
+    private void insertDefaultValuesForLevelsAndNumberOfStars(SQLiteDatabase db) {
+//        SQLiteDatabase db = this.getWritableDatabase();
         List<Level> defaultLevels = DatabaseConstants.LevelTable.defaultLevelValues();
         Log.d(TAG, "inserting the following levels: " + defaultLevels.toString());
         db.beginTransaction();

@@ -7,8 +7,8 @@ import java.util.Map;
 
 class DatabaseConstants {
 
-    private static final int MAX_DIMENSION = 10;
-    private static final int MIN_DIMENSION = 2;
+    static final int MAX_DIMENSION = 10;
+    static final int MIN_DIMENSION = 2;
 
     static Map<String, String> databaseTableNamesAndCreationStrings = new HashMap<String, String>() {{
         put(MostRecentGameTable.TABLE_NAME, MostRecentGameTable.getStringToCreateTable());
