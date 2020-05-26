@@ -23,7 +23,7 @@ public class GameInstance extends BaseObservable {
 
     private static final String TAG = GameInstance.class.getSimpleName();
     private static final double SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP = 1.5;
-    private static int BULB_GAP;
+    public int bulbGap;
     private static String GAME_IS_OVER;
     private static String GAME_IS_NOT_OVER;
     private int gameMode;
@@ -114,10 +114,10 @@ public class GameInstance extends BaseObservable {
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
         Log.d(TAG, "Screen width: " + width);
-        BULB_GAP = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
-        Log.d(TAG, "Bulb gap: " + BULB_GAP);
+        bulbGap = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
+        Log.d(TAG, "Bulb gap: " + bulbGap);
         int size = Math.min(width, height);
-        int marginCumulativeWidth = (dimension + 1) * BULB_GAP;
+        int marginCumulativeWidth = (dimension + 1) * bulbGap;
         int bulbWidth = (size - marginCumulativeWidth) / dimension;
 
         int id = 0;
@@ -141,25 +141,25 @@ public class GameInstance extends BaseObservable {
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         if (c != this.dimension - 1) {
-            params.rightMargin = BULB_GAP / 2;
+            params.rightMargin = bulbGap / 2;
         } else {
-            params.rightMargin = BULB_GAP;
+            params.rightMargin = bulbGap;
         }
 
         if (c == 0) {
-            params.leftMargin = BULB_GAP;
+            params.leftMargin = bulbGap;
         } else {
-            params.leftMargin = BULB_GAP / 2;
+            params.leftMargin = bulbGap / 2;
         }
 
         if (r == dimension - 1) {
-            params.bottomMargin = BULB_GAP;
+            params.bottomMargin = bulbGap;
         }
 
         params.height = length;
         params.width = length;
 
-        params.topMargin = BULB_GAP;
+        params.topMargin = bulbGap;
         params.setGravity(Gravity.CENTER);
         params.columnSpec = GridLayout.spec(c);
         params.rowSpec = GridLayout.spec(r);
@@ -169,7 +169,7 @@ public class GameInstance extends BaseObservable {
 
     private void clickBulb(Bulb b) {
         if (this.getIsShowingSolution()) {
-            if (b.isBorderHighlighted()) {
+            if (b.getIsBorderHighlighted()) {
                 b.unHighlightBorder();
             } else {
                 b.highlightBorder();
@@ -180,6 +180,12 @@ public class GameInstance extends BaseObservable {
 
         if (b.getIsHintHighlighted()) {
             b.unhighlightHint();
+        }
+
+        if(b.getIsHint()) {
+            if(b.getIsHintUsed()) {
+                b.highlightHintBorder();
+            }
         }
 
         this.incrementMoveCounter();
@@ -282,7 +288,7 @@ public class GameInstance extends BaseObservable {
         this.clearRedoStack();
     }
 
-    void resetBoardToState(byte[] state, Stack<Integer> undo, Stack<Integer> redo, int moveCounter, int hintsUsed) {
+    void resetBoardToState(byte[] state, Stack<Integer> undo, Stack<Integer> redo, int moveCounter, int hintsUsed, boolean isNewGame) {
         this.currentToggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
         this.setStartState();
         this.updateIndividualBulbStatus();
@@ -295,8 +301,13 @@ public class GameInstance extends BaseObservable {
         this.setGameOverText(GAME_IS_NOT_OVER);
         this.setIsGameOver(false);
         this.setHasMadeAtLeastOneMove(false);
+        this.setIsShowingSolution(false);
         this.unHighlightAllBulbs();
-        this.unhighlightAllHints();
+        if(isNewGame) {
+            this.unhighlightAllHints();
+        } else {
+            this.highlightBorderForKnownHints();
+        }
 
         Log.d(TAG, "Board Reset complete. \nNew Start State:" + Arrays.toString(state) +
                 "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack +
@@ -437,8 +448,22 @@ public class GameInstance extends BaseObservable {
 
     void unhighlightAllHints() {
         for (int i = 0; i < this.dimension * this.dimension; i++) {
-            if (((Bulb) this.grid.getChildAt(i)).getIsHintHighlighted()) {
-                ((Bulb) this.grid.getChildAt(i)).unhighlightHint();
+            if (((Bulb) grid.getChildAt(i)).getIsHintHighlighted()) {
+                ((Bulb) grid.getChildAt(i)).unhighlightHint();
+            }
+            ((Bulb) grid.getChildAt(i)).unhighlightHintBorder();
+            ((Bulb) grid.getChildAt(i)).setIsHint(false);
+        }
+    }
+
+    void highlightBorderForKnownHints() {
+        for (int i = 0; i < this.dimension * this.dimension; i++) {
+            if (((Bulb) grid.getChildAt(i)).getIsHint()) {
+                if(((Bulb) grid.getChildAt(i)).getIsHintUsed()) {
+                    ((Bulb) grid.getChildAt(i)).highlightHintBorder();
+                } else {
+                    ((Bulb) grid.getChildAt(i)).highlightHint();
+                }
             }
         }
     }
