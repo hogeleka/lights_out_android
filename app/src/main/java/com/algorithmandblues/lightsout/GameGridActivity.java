@@ -270,7 +270,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void createResetButton() {
-        reset = (Button) findViewById(R.id.reset_to_original_start_state);
+        reset = (Button) findViewById(R.id.reset);
         reset.setOnClickListener(v -> handleResetClick());
     }
 

@@ -10,6 +10,7 @@
     <color name="black_overlay">#66000000</color>
     <color name="background_color">#009688</color>
     <color name="hint_border_color">#0d47a1</color>
+    <color name="button_text_color_disabled">#757575</color>
 
 
 <!--    Original Background Color-->
