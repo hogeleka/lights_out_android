@@ -31,7 +31,7 @@
     <string name="show_hint">hint</string>
     <string name="solution">solution</string>
     <string name="reset">reset</string>
-    <string name="randomize">randomize</string>
+    <string name="new_game">new</string>
 
 
     <string name="exit_game_title">Exit Lights Out</string>
