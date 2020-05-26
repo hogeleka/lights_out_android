@@ -7,8 +7,8 @@ import java.util.Map;
 
 class DatabaseConstants {
 
-    private static final int MAX_DIMENSION = 10;
-    private static final int MIN_DIMENSION = 2;
+    static final int MAX_DIMENSION = 10;
+    static final int MIN_DIMENSION = 2;
 
     static Map<String, String> databaseTableNamesAndCreationStrings = new HashMap<String, String>() {{
         put(MostRecentGameTable.TABLE_NAME, MostRecentGameTable.getStringToCreateTable());
@@ -123,7 +123,19 @@ class DatabaseConstants {
                     int currentGameMode = gameModes[j];
                     Level level = new Level(){{
                         setDimension(currentDimension);
-                        setNumberOfStars(0);
+//                        setNumberOfStars();
+                        double val = Math.random();
+                        int numStars;
+                        if (val <= 0.25) {
+                            numStars = 0;
+                        } else if (val <= 0.5) {
+                            numStars = 1;
+                        } else if (val <= 0.75) {
+                            numStars = 2;
+                        } else {
+                            numStars = 3;
+                        }
+                        setNumberOfStars(numStars);
                         setGameMode(currentGameMode);
                     }};
                     levels.add(level);

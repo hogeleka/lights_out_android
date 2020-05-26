@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.algorithmandblues.lightsout">
+    package="com.algorithmandblues.lightsout" >
 
     <application
         android:allowBackup="true"
@@ -9,8 +9,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".GameSummaryActivity"></activity>
+        android:theme="@style/AppTheme" >
+        <activity android:name=".NewLevelSelectorActivity" >
+        </activity>
+        <activity android:name=".GameSummaryActivity" />
         <activity
             android:name=".LevelSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -31,7 +33,7 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="LockedOrientationActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
