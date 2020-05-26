@@ -1,6 +1,7 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +19,8 @@ public class GameSummaryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_summary);
-        
+
+        overridePendingTransition(0, 0);
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
         gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
         gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);

@@ -6,6 +6,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 @SuppressLint("ViewConstructor")
 public class Bulb extends AppCompatButton{
@@ -27,6 +29,7 @@ public class Bulb extends AppCompatButton{
 
     private GradientDrawable bulbBackground;
     private GradientDrawable hintBackGround;
+    private Animation bounce;
     private boolean isBorderHighlighted;
     private boolean isHint;
     private boolean isHintUsed;
@@ -44,6 +47,11 @@ public class Bulb extends AppCompatButton{
 
         hintGradientStartColor = ContextCompat.getColor(context, HINT_START_COLOR);
         hintGradientEndColor = ContextCompat.getColor(context, HINT_END_COLOR);
+
+        bounce = AnimationUtils.loadAnimation(context, R.anim.bounce);
+        // Use bounce interpolator with amplitude 0.2 and frequency 20
+        BounceInterpolator interpolator = new BounceInterpolator(0.15, 15);
+        bounce.setInterpolator(interpolator);
 
         this.createBulbBackground();
         this.createHintBackGround();
@@ -111,6 +119,7 @@ public class Bulb extends AppCompatButton{
         if (this.getIsBorderHighlighted()) {
             this.highlightBorder();
         }
+        this.startAnimation(this.bounce);
     }
 
     public void unhighlightHint() {
