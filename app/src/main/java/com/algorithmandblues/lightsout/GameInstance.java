@@ -49,10 +49,12 @@ public class GameInstance extends BaseObservable {
     private GridLayout grid;
     private MediaPlayer onSound;
     private MediaPlayer offSound;
+    private Context context;
 
     PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
     private static String gameOverPropertyName = "isGameOver";
     private String gameOverText;
+
     private static final Map<Integer, Integer> HINTS_ALLOWED_MAP = new HashMap<Integer, Integer>() {{
         put(2, 1);
         put(3, 1);
@@ -65,8 +67,21 @@ public class GameInstance extends BaseObservable {
         put(10, 30);
     }};
 
-    GameInstance(Context context, final GameDataObject gameDataObject) {
+    private static final Map<Integer, Integer> BULB_GAP_MAP = new HashMap<Integer, Integer>() {{
+        put(2, 20);
+        put(3, 18);
+        put(4, 16);
+        put(5, 14);
+        put(6, 10);
+        put(7, 9);
+        put(8, 8);
+        put(9, 7);
+        put(10, 6);
+    }};
 
+
+    GameInstance(Context context, final GameDataObject gameDataObject) {
+        this.context = context;
         this.gameMode = gameDataObject.getGameMode();
         this.dimension = gameDataObject.getDimension();
         this.originalStartState = GameDataUtil.stringToByteArray(gameDataObject.getOriginalStartState());
@@ -114,10 +129,12 @@ public class GameInstance extends BaseObservable {
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
         Log.d(TAG, "Screen width: " + width);
-        bulbGap = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
-        Log.d(TAG, "Bulb gap: " + bulbGap);
+        this.bulbGap = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
+        this.bulbGap = BULB_GAP_MAP.get(this.dimension);
+        this.bulbGap = this.getPixels(this.bulbGap);
+        Log.d(TAG, "Bulb gap: " + this.bulbGap);
         int size = Math.min(width, height);
-        int marginCumulativeWidth = (dimension + 1) * bulbGap;
+        int marginCumulativeWidth = (dimension + 1) * this.bulbGap;
         int bulbWidth = (size - marginCumulativeWidth) / dimension;
 
         int id = 0;
@@ -141,25 +158,25 @@ public class GameInstance extends BaseObservable {
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         if (c != this.dimension - 1) {
-            params.rightMargin = bulbGap / 2;
+            params.rightMargin = this.bulbGap / 2;
         } else {
-            params.rightMargin = bulbGap;
+            params.rightMargin = this.bulbGap;
         }
 
         if (c == 0) {
-            params.leftMargin = bulbGap;
+            params.leftMargin = this.bulbGap;
         } else {
-            params.leftMargin = bulbGap / 2;
+            params.leftMargin = this.bulbGap / 2;
         }
 
         if (r == dimension - 1) {
-            params.bottomMargin = bulbGap;
+            params.bottomMargin = this.bulbGap;
         }
 
         params.height = length;
         params.width = length;
 
-        params.topMargin = bulbGap;
+        params.topMargin = this.bulbGap;
         params.setGravity(Gravity.CENTER);
         params.columnSpec = GridLayout.spec(c);
         params.rowSpec = GridLayout.spec(r);
@@ -501,6 +518,10 @@ public class GameInstance extends BaseObservable {
         }
     }
 
+    private int getPixels(int value) {
+        final float scale = this.getContext().getResources().getDisplayMetrics().density;
+        return (int) (value * scale + 0.5f);
+    }
 
     @Bindable
     public boolean getIsUndoStackEmpty() {
@@ -691,5 +712,13 @@ public class GameInstance extends BaseObservable {
     private void setStarCount(int starCount) {
         this.starCount = starCount;
         notifyPropertyChanged(BR.starCount);
+    }
+
+    public Context getContext() {
+        return this.context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 }

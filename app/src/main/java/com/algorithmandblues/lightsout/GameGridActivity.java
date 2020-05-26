@@ -84,7 +84,7 @@ public class GameGridActivity extends AppCompatActivity {
         createResetButton();
         createHintButton();
         createShowSolutionButton();
-        createRandomizeButton();
+        createNewGameButton();
     }
 
     private void sendGameWinStateToNewActivity(GameWinState gameWinState) {
@@ -268,7 +268,6 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void handleResetClick() {
-//        this.undoShowSolutionIfNeeded();
         // currently move counter is 0 but this will need to be changed to moveCounter in gameData
         gameInstance.resetBoardToState(
                 GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState()),
@@ -279,14 +278,11 @@ public class GameGridActivity extends AppCompatActivity {
                 gameInstance.getHintsUsed(),
                 false
         );
-
-//        gameInstance.highlightBorderForKnownHints();
         Log.d(TAG, "Resetting board to Last Saved Instance or Default state if there was no saved instance");
-
     }
 
 
-    private void createRandomizeButton() {
+    private void createNewGameButton() {
         LinearLayout randomize = findViewById(R.id.new_game_button_holder);
         randomize.setOnClickListener(v -> handleRandomizeClick());
     }
