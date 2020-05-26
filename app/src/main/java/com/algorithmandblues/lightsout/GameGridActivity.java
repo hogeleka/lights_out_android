@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -29,12 +28,6 @@ public class GameGridActivity extends AppCompatActivity {
     private boolean shouldSetRandomOriginalStartState;
     public GameInstance gameInstance;
     GameDataObject gameDataObject;
-    private Button undo;
-    private Button redo;
-    private Button hint;
-    private Button showSolution;
-    private Button reset;
-    private Button randomize;
     public PropertyChangeListener listener;
 
 
@@ -73,13 +66,13 @@ public class GameGridActivity extends AppCompatActivity {
         gameInstance.gameOverChange.addPropertyChangeListener(listener);
         binding.setGameinstance(gameInstance);
 
-        RelativeLayout gameTextHolder = findViewById(R.id.game_text_view_holder);
+        RelativeLayout gameTextHolder = findViewById(R.id.game_title_text_view_holder);
         gameTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout powerConsumptionTextHolder = findViewById(R.id.power_text_view_holder);
         powerConsumptionTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout hintsLeftTextHolder = findViewById(R.id.hints_left_text_view_holder);
         hintsLeftTextHolder.setVisibility(View.VISIBLE);
-        RelativeLayout moveCounterTextHolder = findViewById(R.id.moveCounter_text_view_holder);
+        RelativeLayout moveCounterTextHolder = findViewById(R.id.move_counter_text_view_holder);
         moveCounterTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout gridLayoutHolder = findViewById(R.id.game_grid_holder);
         gridLayoutHolder.addView(gameInstance.getGrid());
@@ -91,7 +84,7 @@ public class GameGridActivity extends AppCompatActivity {
         createResetButton();
         createHintButton();
         createShowSolutionButton();
-        createRandomizeButton();
+        createNewGameButton();
     }
 
     private void sendGameWinStateToNewActivity(GameWinState gameWinState) {
@@ -206,7 +199,7 @@ public class GameGridActivity extends AppCompatActivity {
 
 
     private void createUndoButton() {
-        undo = (Button) findViewById(R.id.undo_button);
+        LinearLayout undo = findViewById(R.id.undo_button_holder);
         undo.setOnClickListener(v -> handleUndoClick());
     }
 
@@ -215,16 +208,16 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void createRedoButton() {
-        redo = (Button) findViewById(R.id.redo_button);
+        LinearLayout redo = findViewById(R.id.redo_button_holder);
         redo.setOnClickListener(v -> handleRedoClick());
     }
 
-    private void handleRedoClick() {
+    public void handleRedoClick() {
         gameInstance.removeFromRedoStack();
     }
 
     private void createHintButton() {
-        hint = (Button) findViewById(R.id.hint_button);
+        LinearLayout hint = findViewById(R.id.hint_button_holder);
         hint.setOnClickListener(v -> handleHintClick());
     }
 
@@ -233,7 +226,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void createShowSolutionButton() {
-        showSolution = (Button) findViewById(R.id.solution);
+        LinearLayout showSolution = findViewById(R.id.solution_button_holder);
         showSolution.setBackgroundColor(getResources().getColor(R.color.transparent));
         showSolution.setOnClickListener(v -> {
             if (!gameInstance.getHasSeenSolution()) {
@@ -270,12 +263,11 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void createResetButton() {
-        reset = (Button) findViewById(R.id.reset);
+        LinearLayout reset = findViewById(R.id.reset_button_holder);
         reset.setOnClickListener(v -> handleResetClick());
     }
 
     private void handleResetClick() {
-        this.undoShowSolutionIfNeeded();
         // currently move counter is 0 but this will need to be changed to moveCounter in gameData
         gameInstance.resetBoardToState(
                 GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState()),
@@ -283,16 +275,15 @@ public class GameGridActivity extends AppCompatActivity {
                 GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
                 gameDataObject.getMoveCounter(),
                 // to prevent user from not resetting hints used
-                gameInstance.getHintsUsed()
+                gameInstance.getHintsUsed(),
+                false
         );
-
         Log.d(TAG, "Resetting board to Last Saved Instance or Default state if there was no saved instance");
-
     }
 
 
-    private void createRandomizeButton() {
-        randomize = (Button) findViewById(R.id.randomize_state);
+    private void createNewGameButton() {
+        LinearLayout randomize = findViewById(R.id.new_game_button_holder);
         randomize.setOnClickListener(v -> handleRandomizeClick());
     }
 
@@ -306,7 +297,8 @@ public class GameGridActivity extends AppCompatActivity {
                 GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
                 gameDataObject.getMoveCounter(),
-                gameDataObject.getNumberOfHintsUsed()
+                gameDataObject.getNumberOfHintsUsed(),
+                true
         );
 
         Log.d(TAG, "Resetting Board to new Randomized State");
@@ -314,7 +306,7 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void undoShowSolutionIfNeeded() {
         if (gameInstance.getIsShowingSolution()) {
-            showSolution.callOnClick();
+            this.handleShowSolution();
         }
     }
 

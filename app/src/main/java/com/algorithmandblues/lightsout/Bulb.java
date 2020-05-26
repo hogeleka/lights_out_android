@@ -2,11 +2,12 @@ package com.algorithmandblues.lightsout;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 @SuppressLint("ViewConstructor")
 public class Bulb extends AppCompatButton{
@@ -19,6 +20,7 @@ public class Bulb extends AppCompatButton{
     private static final int HINT_END_COLOR = R.color.hint_end_color;
     private static final int HINT_BORDER_COLOR = R.color.hint_border_color;
     private static final int SOLUTION_BORDER_COLOR = R.color.colorAccent;
+    private static final int TRANSPARENT_COLOR = R.color.transparent;
     private static final int BULB_CORNER_RADIUS = 15;
     private static final int BORDER_WIDTH = 3;
 
@@ -27,7 +29,10 @@ public class Bulb extends AppCompatButton{
 
     private GradientDrawable bulbBackground;
     private GradientDrawable hintBackGround;
+    private Animation bounce;
     private boolean isBorderHighlighted;
+    private boolean isHint;
+    private boolean isHintUsed;
     private boolean isHintHighlighted;
     private boolean isHintBorderHighlighted;
 
@@ -35,12 +40,18 @@ public class Bulb extends AppCompatButton{
         super(context, null, R.style.AppTheme);
         this.bulbId = bulbId;
         this.isOn = true;
+        this.isHint = false;
         this.isBorderHighlighted = false;
         this.isHintHighlighted = false;
         this.isBorderHighlighted = false;
 
         hintGradientStartColor = ContextCompat.getColor(context, HINT_START_COLOR);
         hintGradientEndColor = ContextCompat.getColor(context, HINT_END_COLOR);
+
+        bounce = AnimationUtils.loadAnimation(context, R.anim.bounce);
+        // Use bounce interpolator with amplitude 0.2 and frequency 20
+        BounceInterpolator interpolator = new BounceInterpolator(0.15, 15);
+        bounce.setInterpolator(interpolator);
 
         this.createBulbBackground();
         this.createHintBackGround();
@@ -84,47 +95,63 @@ public class Bulb extends AppCompatButton{
     }
 
     public void highlightBorder() {
-        ((GradientDrawable) this.getBackground()).setStroke(this.getBorderWidthInPixels(), getResources().getColor(SOLUTION_BORDER_COLOR));
+        this.setBulbStroke(SOLUTION_BORDER_COLOR);
         this.setBackground(this.getBackground());
         this.isBorderHighlighted = true;
     }
 
     public void unHighlightBorder() {
-        if(this.getIsHintBorderHighlighted()) {
-            ((GradientDrawable) this.getBackground()).setStroke(this.getBorderWidthInPixels(), getResources().getColor(HINT_BORDER_COLOR));
-
+        this.setIsBorderHighlighted(false);
+        if(this.getIsHint() && this.getIsHintUsed()) {
+            this.setBulbStroke(HINT_BORDER_COLOR);
+            this.setIsHintBorderHighlighted(true);
         } else {
-            ((GradientDrawable) this.getBackground()).setStroke(0, getResources().getColor(R.color.transparent));
+            this.setBulbStroke(TRANSPARENT_COLOR);
+            this.setIsHintBorderHighlighted(false);
         }
         this.setBackground(this.getBackground());
-        this.isBorderHighlighted = false;
     }
 
     public void highlightHint() {
+        this.setIsHint(true);
         this.setBackground(this.getHintBackGround());
         this.setIsHintHighlighted(true);
-        this.setIsHintBorderHighlighted(true);
-        if (this.isBorderHighlighted()) {
+        if (this.getIsBorderHighlighted()) {
             this.highlightBorder();
         }
-
+        this.startAnimation(this.bounce);
     }
 
     public void unhighlightHint() {
-
-        int pixels = this.getBorderWidthInPixels();
-        this.getBulbBackground().setStroke(pixels, getResources().getColor(HINT_BORDER_COLOR));
         this.setBackground(this.getBulbBackground());
+        this.setBulbStroke(HINT_BORDER_COLOR);
+        this.setIsHintUsed(true);
         this.setIsHintHighlighted(false);
-        if (this.isBorderHighlighted()) {
+        if (this.getIsBorderHighlighted()) {
             this.highlightBorder();
         }
 
     }
 
-    private int getBorderWidthInPixels() {
+    void highlightHintBorder() {
+        if(!this.getIsHintUsed()) {
+            this.setBulbStroke(HINT_BORDER_COLOR);
+            this.setIsHintBorderHighlighted(true);
+        }
+    }
+
+    public void unhighlightHintBorder() {
+        ((GradientDrawable) this.getBackground()).setStroke(0, getResources().getColor(TRANSPARENT_COLOR));
+        this.setIsHintBorderHighlighted(false);
+    }
+
+    private int getPixels(int value) {
         final float scale = getContext().getResources().getDisplayMetrics().density;
-        return (int) (BORDER_WIDTH * scale + 0.5f);
+        return (int) (value * scale + 0.5f);
+    }
+
+    private void setBulbStroke(int color) {
+        ((GradientDrawable) this.getBackground()).setStroke(this.getPixels(BORDER_WIDTH), getResources().getColor(color));
     }
 
     @Override
@@ -145,11 +172,11 @@ public class Bulb extends AppCompatButton{
         return this.isOn() ? (byte) 1 : (byte) 0;
     }
 
-    public boolean isBorderHighlighted() {
+    public boolean getIsBorderHighlighted() {
         return isBorderHighlighted;
     }
 
-    public void setBorderHighlighted(boolean borderHighlighted) {
+    public void setIsBorderHighlighted(boolean borderHighlighted) {
         isBorderHighlighted = borderHighlighted;
     }
 
@@ -191,6 +218,22 @@ public class Bulb extends AppCompatButton{
 
     public void setIsHintBorderHighlighted(boolean hintBorderHighlighted) {
         this.isHintBorderHighlighted = hintBorderHighlighted;
+    }
+
+    public boolean getIsHint() {
+        return this.isHint;
+    }
+
+    public void setIsHint(boolean hint) {
+        this.isHint = hint;
+    }
+
+    public boolean getIsHintUsed() {
+        return this.isHintUsed;
+    }
+
+    public void setIsHintUsed(boolean hintUsed) {
+        this.isHintUsed = hintUsed;
     }
 }
 
