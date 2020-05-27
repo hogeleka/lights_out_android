@@ -6,13 +6,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @SuppressLint("ViewConstructor")
 public class Bulb extends AppCompatButton{
@@ -27,31 +22,17 @@ public class Bulb extends AppCompatButton{
     private static final int TRANSPARENT_COLOR = R.color.transparent;
     private static final int BULB_CORNER_RADIUS = 15;
     private static final int BORDER_WIDTH = 3;
-    private static final int NO_BORDER_WIDTH = 0;
 
     private int hintGradientStartColor;
     private int hintGradientEndColor;
 
     private GradientDrawable bulbBackground;
-    private GradientDrawable hintBackGround;
-    private Animation bounce;
+    private GradientDrawable hintBackground;
+    private Animation bounceAnimation;
     private boolean isBorderHighlighted;
     private boolean isHint;
     private boolean isHintUsed;
     private boolean isHintHighlighted;
-    private boolean isHintEmojiAdded;
-
-    private static final Map<Integer, Float> HINT_ICON_SCALE_FACTOR_MAP = new HashMap<Integer, Float>() {{
-        put(2, (float) 0.70);
-        put(3, (float) 0.70);
-        put(4, (float) 0.70);
-        put(5, (float) 0.70);
-        put(6, (float) 0.85);
-        put(7, (float) 0.85);
-        put(8, (float) 0.85);
-        put(9, (float) 0.85);
-        put(10,(float) 0.85);
-    }};
 
 
     public Bulb (Context context, int bulbId) {
@@ -61,94 +42,91 @@ public class Bulb extends AppCompatButton{
         this.isHint = false;
         this.isBorderHighlighted = false;
         this.isHintHighlighted = false;
-        this.isBorderHighlighted = false;
 
-        hintGradientStartColor = ContextCompat.getColor(context, HINT_START_COLOR);
-        hintGradientEndColor = ContextCompat.getColor(context, HINT_END_COLOR);
+        this.hintGradientStartColor = ContextCompat.getColor(context, HINT_START_COLOR);
+        this.hintGradientEndColor = ContextCompat.getColor(context, HINT_END_COLOR);
 
-        bounce = AnimationUtils.loadAnimation(context, R.anim.bounce);
+        bounceAnimation = AnimationUtils.loadAnimation(context, R.anim.bounce);
         // Use bounce interpolator with amplitude 0.2 and frequency 20
-        BounceInterpolator interpolator = new BounceInterpolator(0.15, 15);
-        bounce.setInterpolator(interpolator);
+        BounceInterpolator interpolator = new BounceInterpolator(0.05, 15);
+        bounceAnimation.setInterpolator(interpolator);
 
-        this.createBulbBackground();
-        this.createHintBackGround();
+        this.createNewBulbBackground();
         this.setBackground(bulbBackground);
+        this.bulbBackground.setColor(this.getOnColor());
+        this.createNewHintBackground();
+
     }
 
-    public void createHintBackGround() {
-        this.hintBackGround = new GradientDrawable();
-        this.hintBackGround.setShape(GradientDrawable.RECTANGLE);
-        this.hintBackGround.setOrientation(Orientation.TL_BR);
-
-        this.hintBackGround.setColors(new int[] {hintGradientStartColor, hintGradientEndColor});
-        this.hintBackGround.setCornerRadius(BULB_CORNER_RADIUS);
+    private void createNewHintBackground() {
+        this.hintBackground = new GradientDrawable();
+        this.hintBackground.setShape(GradientDrawable.RECTANGLE);
+        this.hintBackground.setColors(this.getHintHighlightColors());
+        this.hintBackground.setOrientation(Orientation.TL_BR);
+        this.hintBackground.setCornerRadius(BULB_CORNER_RADIUS);
     }
-
-    private void createBulbBackground() {
+    private void createNewBulbBackground() {
         this.bulbBackground = new GradientDrawable();
         this.bulbBackground.setShape(GradientDrawable.RECTANGLE);
         this.bulbBackground.setCornerRadius(BULB_CORNER_RADIUS);
-        this.bulbBackground.setColor(getResources().getColor(ON_COLOR));
     }
 
-    public void toggle() {
-        this.bulbBackground.setColor(this.isOn ? getResources().getColor(OFF_COLOR) : getResources().getColor(ON_COLOR));
-        if(this.getIsHintHighlighted()) {
-            this.setBackground(this.getHintBackGround());
+    public void toggle(boolean isClickedByUser) {
+
+        if (this.isOn()) {
+            this.bulbBackground.setColor(this.getOffColor());
         } else {
-            this.setBackground(this.getBulbBackground());
+            this.bulbBackground.setColor(this.getOnColor());
         }
+
+        if(isClickedByUser && this.getIsHintHighlighted()) {
+            this.highlightHint();
+        } else {
+            if(this.getIsHintHighlighted()) {
+                this.highlightHint();
+                if(this.getIsBorderHighlighted()) {
+                    this.highlightBorder();
+                }
+            } else {
+                this.setBackground(this.bulbBackground);
+            }
+        }
+
         this.isOn = !this.isOn;
     }
 
     public void setOn(boolean isOn) {
         this.isOn = isOn;
         if (isOn) {
-            this.bulbBackground.setColor(getResources().getColor((ON_COLOR)));
+            this.bulbBackground.setColor(this.getOnColor());
         } else {
-            this.bulbBackground.setColor(getResources().getColor(OFF_COLOR));
+            this.bulbBackground.setColor(this.getOffColor());
         }
-        this.setBackground(bulbBackground);
+        this.setBackground(this.getBulbBackground());
     }
 
     public void highlightBorder() {
+        this.setIsBorderHighlighted(true);
         this.setBulbStroke(BORDER_WIDTH, SOLUTION_BORDER_COLOR);
-        this.setBackground(this.getBackground());
-        this.isBorderHighlighted = true;
     }
 
     public void unHighlightBorder() {
         this.setIsBorderHighlighted(false);
-        if(this.getIsHint() && this.getIsHintUsed()) {
-            this.addHintEmoji();
-            this.setIsHintEmojiAdded(true);
-        } else {
-            this.setIsHintEmojiAdded(false);
-        }
         this.setBulbStroke(BORDER_WIDTH, TRANSPARENT_COLOR);
-        this.setBackground(this.getBackground());
     }
 
     public void highlightHint() {
-        this.setIsHint(true);
-        this.setBackground(this.getHintBackGround());
+        this.setBackground(this.getHintBackground());
         this.setIsHintHighlighted(true);
-        if (this.getIsBorderHighlighted()) {
-            this.highlightBorder();
-        }
-        this.startAnimation(this.bounce);
     }
 
     public void unhighlightHint() {
         this.setBackground(this.getBulbBackground());
-        this.setIsHintUsed(true);
-        this.addHintEmoji();
         this.setIsHintHighlighted(false);
-        if (this.getIsBorderHighlighted()) {
-            this.highlightBorder();
-        }
+    }
 
+    void startBounceAnimation() {
+        this.startAnimation(this.getBounceAnimation());
     }
 
     private int getPixels(int value) {
@@ -156,24 +134,25 @@ public class Bulb extends AppCompatButton{
         return (int) (value * scale + 0.5f);
     }
 
-    void addHintEmoji() {
-        if (this.getIsHintUsed()) {
-            this.setText(this.getHintEmoji());
-            this.setGravity(Gravity.TOP);
-            this.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
-        }
-    }
-
-    void removeHintEmoji() {
-        this.setText(GameDataUtil.EMPTY_STRING);
-    }
-
-    private String getHintEmoji() {
-        return "\uD83E\uDD2F";
-    }
-
     private void setBulbStroke(int size, int color) {
-        ((GradientDrawable) this.getBackground()).setStroke(this.getPixels(BORDER_WIDTH), getResources().getColor(color));
+        ((GradientDrawable) this.getBackground()).setStroke(this.getPixels(size), this.getResourcesColor(color));
+    }
+
+    private int[] getHintHighlightColors() {
+        return new int[] {this.hintGradientStartColor, this.hintGradientEndColor};
+    }
+
+
+    private int getResourcesColor(int color) {
+        return getResources().getColor(color);
+    }
+
+    private int getOnColor() {
+        return this.getResourcesColor(ON_COLOR);
+    }
+
+    private int getOffColor() {
+        return this.getResourcesColor(OFF_COLOR);
     }
 
     @Override
@@ -218,12 +197,12 @@ public class Bulb extends AppCompatButton{
         this.bulbBackground = bulbBackground;
     }
 
-    public GradientDrawable getHintBackGround() {
-        return this.hintBackGround;
+    public GradientDrawable getHintBackground() {
+        return this.hintBackground;
     }
 
-    public void setHintBackGround(GradientDrawable hintBackGround) {
-        this.hintBackGround = hintBackGround;
+    public void setHintBackground(GradientDrawable hintBackground) {
+        this.hintBackground = hintBackground;
     }
 
     public boolean getIsHintHighlighted() {
@@ -232,14 +211,6 @@ public class Bulb extends AppCompatButton{
 
     public void setIsHintHighlighted(boolean hintHighlighted) {
         this.isHintHighlighted = hintHighlighted;
-    }
-
-    public boolean getIsHintEmojiAdded() {
-        return this.isHintEmojiAdded;
-    }
-
-    public void setIsHintEmojiAdded(boolean isHintEmojieAdded) {
-        this.isHintEmojiAdded = isHintEmojieAdded;
     }
 
     public boolean getIsHint() {
@@ -256,6 +227,14 @@ public class Bulb extends AppCompatButton{
 
     public void setIsHintUsed(boolean hintUsed) {
         this.isHintUsed = hintUsed;
+    }
+
+    public Animation getBounceAnimation() {
+        return this.bounceAnimation;
+    }
+
+    public void setBounceAnimation(Animation bounceAnimation) {
+        this.bounceAnimation = bounceAnimation;
     }
 }
 

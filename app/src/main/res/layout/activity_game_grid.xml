@@ -27,43 +27,41 @@
             <ImageView
                 android:src="@drawable/line"
                 android:layout_width="3dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-
-                />
+                android:layout_height="120dp"
+                android:layout_gravity="center"/>
             <ImageView
                 android:src="@{gameinstance.isLastBulbToggleIsOn ? @drawable/ball : @drawable/hangingoffbulb}"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_gravity="center"
-                />
+                android:layout_gravity="center"/>
         </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/game_title_text_view_holder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="100dp"
-            android:gravity="center">
-            <TextView
-                android:id="@+id/game_grid_title_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/lights_out"
-                android:textAlignment="center"
-                android:textSize="50sp"
-                android:layout_gravity="center_horizontal">
-            </TextView>
-        </RelativeLayout>
-
 
         <RelativeLayout
             android:id="@+id/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="0dp">
+
+            <RelativeLayout
+                android:id="@+id/game_title_text_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_above="@+id/power_text_view_holder"
+                android:paddingTop="100dp"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/game_grid_title_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/lights_out"
+                    android:textAlignment="center"
+                    android:textSize="50sp"
+                    android:layout_gravity="center_horizontal">
+                </TextView>
+            </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/move_counter_text_view_holder"
                 android:layout_width="match_parent"
