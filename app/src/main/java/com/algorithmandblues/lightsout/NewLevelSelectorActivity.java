@@ -303,7 +303,12 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
     private boolean checkIfEnabled(Level level) {
         if (level.getGameMode() == GameMode.CLASSIC) {
             return true;
-        } else return level.getDimension() == DatabaseConstants.MIN_DIMENSION || level.getDimension() == nextLevelToUnlock || level.getNumberOfStars() > 0;
+        }
+
+        // TODO: Change back when app is ready for not testing
+        // return level.getDimension() == DatabaseConstants.MIN_DIMENSION || level.getDimension() == nextLevelToUnlock || level.getNumberOfStars() > 0;
+
+        return true;
     }
 
     public int convertIntValueToAppropriatePixelValueForScreenSize(int value) {
