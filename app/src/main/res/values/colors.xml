@@ -4,8 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#F44336</color>
     <color name="bulb_on_color">#82e9de</color>
-    <color name="bulb_off_color">#66000000</color>
-<!--    <color name="bulb_off_color">#004D40</color>-->
+    <color name="bulb_off_color">#004D40</color>
     <color name="hint_start_color">#81D4FA</color>
     <color name="hint_end_color">#F44336</color>
     <color name="black_overlay">#66000000</color>
