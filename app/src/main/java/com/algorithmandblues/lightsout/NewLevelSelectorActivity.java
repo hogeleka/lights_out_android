@@ -272,7 +272,8 @@ public class NewLevelSelectorActivity extends AppCompatActivity {
         for (int i = 1; i <= 3; i++) {
             ImageView starImage = new ImageView(this);
             starImage.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, ONE_THIRD));
-            starImage.setBackground( i <= level.getNumberOfStars() ? getResources().getDrawable(R.drawable.starfilled) : getResources().getDrawable(R.drawable.staroutline));
+            starImage.setBackground( i <= level.getNumberOfStars() ? getResources().getDrawable(R.drawable.gold_star_3d) : getResources().getDrawable(R.drawable.gold_star_3d));
+            starImage.setAlpha( i <= level.getNumberOfStars() ? ENABLED_LEVEL_ALPHA : DISABLED_LEVEL_ALPHA);
             int imageSize = convertIntValueToAppropriatePixelValueForScreenSize(STAR_IMAGE_SIZE_PX);
             starImage.setLayoutParams(new LinearLayout.LayoutParams(imageSize, imageSize));
             rowOfStars.addView(starImage);

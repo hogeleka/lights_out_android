@@ -50,4 +50,10 @@
     <string name="arcade_tab_name">Arcade</string>
     <string name="classic_tab_name">Classic</string>
     <string name="best_score_level_gameType">bestScore</string>
+    <string name="total_board_power_saved">totalBoardPower</string>
+    <string name="initial_board_config">initialBoardConfig</string>
+    <string name="user_toggles_after_game">userToggles</string>
+    <string name="game_summary_watts_saved_label">watts saved</string>
+    <string name="game_summary_moves_label">moves</string>
+    <string name="game_summary_hints_used_label">hints used</string>
 </resources>
