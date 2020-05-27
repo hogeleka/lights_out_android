@@ -6,8 +6,13 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressLint("ViewConstructor")
 public class Bulb extends AppCompatButton{
@@ -18,11 +23,11 @@ public class Bulb extends AppCompatButton{
     private static final int OFF_COLOR = R.color.bulb_off_color;
     private static final int HINT_START_COLOR = R.color.hint_start_color;
     private static final int HINT_END_COLOR = R.color.hint_end_color;
-    private static final int HINT_BORDER_COLOR = R.color.hint_border_color;
     private static final int SOLUTION_BORDER_COLOR = R.color.colorAccent;
     private static final int TRANSPARENT_COLOR = R.color.transparent;
     private static final int BULB_CORNER_RADIUS = 15;
     private static final int BORDER_WIDTH = 3;
+    private static final int NO_BORDER_WIDTH = 0;
 
     private int hintGradientStartColor;
     private int hintGradientEndColor;
@@ -34,7 +39,20 @@ public class Bulb extends AppCompatButton{
     private boolean isHint;
     private boolean isHintUsed;
     private boolean isHintHighlighted;
-    private boolean isHintBorderHighlighted;
+    private boolean isHintEmojiAdded;
+
+    private static final Map<Integer, Float> HINT_ICON_SCALE_FACTOR_MAP = new HashMap<Integer, Float>() {{
+        put(2, (float) 0.70);
+        put(3, (float) 0.70);
+        put(4, (float) 0.70);
+        put(5, (float) 0.70);
+        put(6, (float) 0.85);
+        put(7, (float) 0.85);
+        put(8, (float) 0.85);
+        put(9, (float) 0.85);
+        put(10,(float) 0.85);
+    }};
+
 
     public Bulb (Context context, int bulbId) {
         super(context, null, R.style.AppTheme);
@@ -95,7 +113,7 @@ public class Bulb extends AppCompatButton{
     }
 
     public void highlightBorder() {
-        this.setBulbStroke(SOLUTION_BORDER_COLOR);
+        this.setBulbStroke(BORDER_WIDTH, SOLUTION_BORDER_COLOR);
         this.setBackground(this.getBackground());
         this.isBorderHighlighted = true;
     }
@@ -103,12 +121,12 @@ public class Bulb extends AppCompatButton{
     public void unHighlightBorder() {
         this.setIsBorderHighlighted(false);
         if(this.getIsHint() && this.getIsHintUsed()) {
-            this.setBulbStroke(HINT_BORDER_COLOR);
-            this.setIsHintBorderHighlighted(true);
+            this.addHintEmoji();
+            this.setIsHintEmojiAdded(true);
         } else {
-            this.setBulbStroke(TRANSPARENT_COLOR);
-            this.setIsHintBorderHighlighted(false);
+            this.setIsHintEmojiAdded(false);
         }
+        this.setBulbStroke(BORDER_WIDTH, TRANSPARENT_COLOR);
         this.setBackground(this.getBackground());
     }
 
@@ -124,8 +142,8 @@ public class Bulb extends AppCompatButton{
 
     public void unhighlightHint() {
         this.setBackground(this.getBulbBackground());
-        this.setBulbStroke(HINT_BORDER_COLOR);
         this.setIsHintUsed(true);
+        this.addHintEmoji();
         this.setIsHintHighlighted(false);
         if (this.getIsBorderHighlighted()) {
             this.highlightBorder();
@@ -133,24 +151,28 @@ public class Bulb extends AppCompatButton{
 
     }
 
-    void highlightHintBorder() {
-        if(!this.getIsHintUsed()) {
-            this.setBulbStroke(HINT_BORDER_COLOR);
-            this.setIsHintBorderHighlighted(true);
-        }
-    }
-
-    public void unhighlightHintBorder() {
-        ((GradientDrawable) this.getBackground()).setStroke(0, getResources().getColor(TRANSPARENT_COLOR));
-        this.setIsHintBorderHighlighted(false);
-    }
-
     private int getPixels(int value) {
         final float scale = getContext().getResources().getDisplayMetrics().density;
         return (int) (value * scale + 0.5f);
     }
 
-    private void setBulbStroke(int color) {
+    void addHintEmoji() {
+        if (this.getIsHintUsed()) {
+            this.setText(this.getHintEmoji());
+            this.setGravity(Gravity.TOP);
+            this.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
+        }
+    }
+
+    void removeHintEmoji() {
+        this.setText(GameDataUtil.EMPTY_STRING);
+    }
+
+    private String getHintEmoji() {
+        return "\uD83E\uDD2F";
+    }
+
+    private void setBulbStroke(int size, int color) {
         ((GradientDrawable) this.getBackground()).setStroke(this.getPixels(BORDER_WIDTH), getResources().getColor(color));
     }
 
@@ -212,12 +234,12 @@ public class Bulb extends AppCompatButton{
         this.isHintHighlighted = hintHighlighted;
     }
 
-    public boolean getIsHintBorderHighlighted() {
-        return this.isHintBorderHighlighted;
+    public boolean getIsHintEmojiAdded() {
+        return this.isHintEmojiAdded;
     }
 
-    public void setIsHintBorderHighlighted(boolean hintBorderHighlighted) {
-        this.isHintBorderHighlighted = hintBorderHighlighted;
+    public void setIsHintEmojiAdded(boolean isHintEmojieAdded) {
+        this.isHintEmojiAdded = isHintEmojieAdded;
     }
 
     public boolean getIsHint() {

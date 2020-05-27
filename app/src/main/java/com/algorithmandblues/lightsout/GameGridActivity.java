@@ -1,16 +1,20 @@
 package com.algorithmandblues.lightsout;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 import java.beans.PropertyChangeListener;
@@ -255,7 +259,14 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void handleHintClick() {
-        gameInstance.showHint();
+        boolean hintSuccess  = gameInstance.showHint();
+        if(!hintSuccess) {
+            Context context;
+            Toast toast = new Toast(this);
+            toast.setGravity(Gravity.TOP|Gravity.LEFT, 0, 0);
+            toast.makeText(this, R.string.no_hint_needed,
+                    Toast.LENGTH_SHORT).show(); LayoutInflater myInflater = LayoutInflater.from(this);
+        }
     }
 
     private void createShowSolutionButton() {

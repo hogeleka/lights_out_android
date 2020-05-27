@@ -50,4 +50,5 @@
     <string name="arcade_tab_name">Arcade</string>
     <string name="classic_tab_name">Classic</string>
     <string name="best_score_level_gameType">bestScore</string>
+    <string name="no_hint_needed">You have all the hints you need!</string>
 </resources>

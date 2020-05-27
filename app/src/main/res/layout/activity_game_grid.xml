@@ -39,27 +39,6 @@
                 />
         </LinearLayout>
 
-
-        <RelativeLayout
-            android:id="@+id/help_button_holder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:gravity="end"
-            android:focusable="true"
-            android:paddingRight="@{gameinstance.boardPadding}"
-            android:paddingEnd="@{gameinstance.boardPadding}">
-
-            <ImageView
-                android:layout_width="@dimen/button_icon_size"
-                android:layout_height="@dimen/button_icon_size"
-                android:layout_alignParentRight="true"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:background="@drawable/help"
-                android:layout_gravity="center"/>
-        </RelativeLayout>
-
         <RelativeLayout
             android:id="@+id/game_title_text_view_holder"
             android:layout_width="match_parent"
