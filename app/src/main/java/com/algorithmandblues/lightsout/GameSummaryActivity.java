@@ -25,8 +25,8 @@ public class GameSummaryActivity extends AppCompatActivity {
     private static final int TEXT_SIZE_LABEL_GAME_STAT = 16;
     private static final float ONE_THIRD = (float) 0.33;
     private static final int BOTTOM_BUTTONS_SIDE_PADDINGS_PX = 16;
-    private static final int BOTTOM_ICONS_IMAGE_SIZE = 32;
-    private static final int BOTTOM_ICONS_LABEL_TEXT_SIZE = 12;
+    private static final int BOTTOM_ICONS_IMAGE_SIZE = 40;
+    private static final int BOTTOM_ICONS_LABEL_TEXT_SIZE = 16;
     private static final int SIDE_PADDING_STATS_ICONS = 16;
 
     DatabaseHelper databaseHelper;
@@ -82,9 +82,7 @@ public class GameSummaryActivity extends AppCompatActivity {
 
 
         //TODO: update code for move counter animationsanimations
-        TextView movesTextView = (TextView) ((LinearLayout) numbersAndLabels.getChildAt(0)).getChildAt(0);
-//        LinearLayout textViewHolder = (LinearLayout) ((LinearLayout) numbersAndLabels.getChildAt(0)).getChildAt(0);
-//        TextView movesTextView = (TextView) textViewHolder.getChildAt(0);
+        TextView movesTextView = (TextView) ((LinearLayout) numbersAndLabels.getChildAt(1)).getChildAt(0);
         ValueAnimator animator = new ValueAnimator();
         animator.setObjectValues(0, gameWinState.getNumberOfMoves());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -139,8 +137,6 @@ public class GameSummaryActivity extends AppCompatActivity {
     private LinearLayout createImageIconAndTextLayout(Drawable drawable, String text) {
         LinearLayout layout = new LinearLayout(this);
         layout.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, ONE_THIRD));
-//        int sideLength = layout.getWidth();
-//        layout.setLayoutParams(new LinearLayout.LayoutParams(sideLength, sideLength));
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setGravity(Gravity.CENTER);
         ImageView imageView = getImageView(drawable);
