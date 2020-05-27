@@ -11,15 +11,6 @@
     <color name="hint_border_color">#0d47a1</color>
     <color name="background_color">#f5f2d0</color>
     <color name="navigation_bar_color">#004D40</color>
-
-
-<!--    <color name="background_color">#009688</color>-->
-<!--    <color name="hint_start_color">#ffff52</color>-->
-<!--    <color name="hint_end_color">#c7a500</color>-->
-
-    <!--    Original Background Color-->
-<!--    <color name="background_color">#33b5e5</color>-->
-<!--    <color name="bulb_on_color">#ffff52</color>-->
-<!--    <color name="bulb_off_color">#c7a500</color>-->
+    <color name="progress_bar_fill">#004D40</color>
     <color name="transparent">#00000000</color>
 </resources>
