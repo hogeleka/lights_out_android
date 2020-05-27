@@ -50,6 +50,8 @@ public class GameInstance extends BaseObservable {
     private MediaPlayer offSound;
     private Context context;
 
+    private byte[] originalIndividualBulbStatus;
+
     PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
     private static final String GAME_OVER_PROPERTY_NAME = "isGameOver";
     private static final int BOARD_PADDING_RAW = 16;
@@ -106,6 +108,7 @@ public class GameInstance extends BaseObservable {
         this.drawGameBoard(context);
         this.setStartState();
         this.updateIndividualBulbStatus();
+        this.originalIndividualBulbStatus = Arrays.copyOf(this.individualBulbStatus, this.individualBulbStatus.length);
         // Always call when this.updateIndividualBulbStatus() is called and CurrentBoardPower is initialized.
         this.totalBoardPower = this.getCurrentPowerConsumption();
 
@@ -150,7 +153,7 @@ public class GameInstance extends BaseObservable {
                 id++;
             }
         }
-        Log.i(TAG, "GRID num buttons:" + Integer.toString(grid.getChildCount()));
+        Log.i(TAG, "GRID num bulbs:" + Integer.toString(grid.getChildCount()));
     }
 
     private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
@@ -321,6 +324,7 @@ public class GameInstance extends BaseObservable {
         this.unHighlightAllBulbs();
         if(isNewGame) {
             this.unhighlightAllHints();
+            this.originalIndividualBulbStatus = Arrays.copyOf(this.individualBulbStatus, this.individualBulbStatus.length);
         } else {
             this.addHintEmojiForKnownHints();
         }
@@ -703,11 +707,11 @@ public class GameInstance extends BaseObservable {
         notifyPropertyChanged(BR.currentPowerConsumption);
     }
 
-    private int getTotalBoardPower() {
+    public int getTotalBoardPower() {
         return totalBoardPower;
     }
 
-    private void setTotalBoardPower(int totalBoardPower) {
+    public void setTotalBoardPower(int totalBoardPower) {
         this.totalBoardPower = totalBoardPower;
     }
 
@@ -733,5 +737,13 @@ public class GameInstance extends BaseObservable {
 
     public Context getContext() {
         return this.context;
+    }
+
+    public byte[] getOriginalIndividualBulbStatus() {
+        return originalIndividualBulbStatus;
+    }
+
+    public void setOriginalIndividualBulbStatus(byte[] originalIndividualBulbStatus) {
+        this.originalIndividualBulbStatus = originalIndividualBulbStatus;
     }
 }
