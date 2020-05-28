@@ -6,9 +6,12 @@ import android.databinding.Bindable;
 import android.media.MediaPlayer;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -45,7 +48,7 @@ public class GameInstance extends BaseObservable {
     private byte[] individualBulbStatus;
     private Stack<Integer> undoStack;
     private Stack<Integer> redoStack;
-    private GridLayout grid;
+    private BoardLayout grid;
     private MediaPlayer onSound;
     private MediaPlayer offSound;
     private Context context;
@@ -81,6 +84,18 @@ public class GameInstance extends BaseObservable {
         put(10, 6);
     }};
 
+    private static final Map<Integer, Integer> HINT_ICON_Size_FACTOR_MAP = new HashMap<Integer, Integer>() {{
+        put(2, 30);
+        put(3, 28);
+        put(4, 26);
+        put(5, 24);
+        put(6, 22);
+        put(7, 20);
+        put(8, 18);
+        put(9, 16);
+        put(10,14);
+    }};
+
     GameInstance(Context context, final GameDataObject gameDataObject) {
         this.context = context;
         this.gameMode = gameDataObject.getGameMode();
@@ -101,7 +116,7 @@ public class GameInstance extends BaseObservable {
         this.onSound = MediaPlayer.create(context, R.raw.switchon);
         this.offSound = MediaPlayer.create(context, R.raw.switchoff);
 
-        grid = new GridLayout(context);
+        grid = new BoardLayout(context);
         grid.setRowCount(this.dimension);
         grid.setColumnCount(this.dimension);
 
@@ -135,28 +150,46 @@ public class GameInstance extends BaseObservable {
         Log.d(TAG, "Bulb gap: " + this.bulbGap);
         int size = Math.min(width, height);
         int marginCumulativeWidth = (dimension - 1) * this.bulbGap + 2*this.boardPadding;
-        int bulbWidth = (size - marginCumulativeWidth) / dimension;
+        int bulbSize = (size - marginCumulativeWidth) / dimension;
+
 
         int id = 0;
         for (int row = 0; row < dimension; row++) {
             for (int col = 0; col < dimension; col++) {
-                final Bulb bulb = new Bulb(context, id);
 
-                bulb.setLayoutParams(this.createBulbParameters(row, col, bulbWidth));
+                RelativeLayout bulbLayout = new RelativeLayout(context);
+                BoardLayout.LayoutParams params = this.createBulbLayoutParameters(row, col, bulbSize);
+                bulbLayout.setLayoutParams(params);
+
+                ImageView hintIcon = new ImageView(context);
+
+                int iconSize = this.getPixels(HINT_ICON_Size_FACTOR_MAP.get(this.dimension));
+                RelativeLayout.LayoutParams hintParams = new RelativeLayout.LayoutParams(iconSize, iconSize);
+                hintParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                hintIcon.setLayoutParams(hintParams);
+                hintIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.hint));
+                hintIcon.setVisibility(View.INVISIBLE);
+                hintIcon.setPadding(0, this.getPixels(3), this.getPixels(3), 0);
+
+                final Bulb bulb = new Bulb(context, id);
+                bulb.setLayoutParams(new LinearLayout.LayoutParams(bulbSize, bulbSize));
+                bulb.setVisibility(View.VISIBLE);
                 bulb.setOnClickListener(v -> {
                     recordBulbClick(bulb.getBulbId());
                     handleStackOnBulbClick(bulb);
                     playLightSwitchSound(bulb);
                     clickBulb(bulb);
                 });
-                grid.addView(bulb);
+                bulbLayout.addView(bulb);
+                bulbLayout.addView(hintIcon);
+                grid.addView(bulbLayout);
                 id++;
             }
         }
         Log.i(TAG, "GRID num bulbs:" + Integer.toString(grid.getChildCount()));
     }
 
-    private GridLayout.LayoutParams createBulbParameters(int r, int c, int length) {
+    private GridLayout.LayoutParams createBulbLayoutParameters(int r, int c, int length) {
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         if (c != this.dimension - 1) {
             params.rightMargin = this.bulbGap / 2;
@@ -179,7 +212,6 @@ public class GameInstance extends BaseObservable {
         params.height = length;
         params.width = length;
 
-        params.setGravity(Gravity.CENTER);
         params.columnSpec = GridLayout.spec(c);
         params.rowSpec = GridLayout.spec(r);
 
@@ -187,6 +219,8 @@ public class GameInstance extends BaseObservable {
     }
 
     private void clickBulb(Bulb b) {
+
+        // If the solution is showing and border is highlighted remove the border else add the border
         if (this.getIsShowingSolution()) {
             if (b.getIsBorderHighlighted()) {
                 b.unHighlightBorder();
@@ -195,78 +229,100 @@ public class GameInstance extends BaseObservable {
             }
         }
 
+        // Toggle the main bulb
         b.toggle();
 
+        // If the main bulb is a hint then unhighlight the hint and show the hint icon.
         if (b.getIsHintHighlighted()) {
             b.unhighlightHint();
-        }
-
-        if(b.getIsHint()) {
-            if(b.getIsHintUsed()) {
-                b.addHintEmoji();
-            }
+            b.setIsHintHighlighted(false);
+            this.showHintIconOnBulb(b.getBulbId());
         }
 
         this.incrementMoveCounter();
-
         if (!this.getHasMadeAtLeastOneMove()) {
             this.setHasMadeAtLeastOneMove(true);
         }
 
-        individualBulbStatus[b.getBulbId()] = b.isOnOrOff();
-
         Log.d(TAG, "Bulb: " + b.toString());
-        int bulbIndex = b.getBulbId();
-        int dimension = this.dimension;
-        int row = bulbIndex / dimension;
-        int col = bulbIndex % dimension;
-
-        //toggle left neighbour
-        if (col != 0) {
-            int left = (row * dimension) + (col - 1);
-            ((Bulb) grid.getChildAt(left)).toggle();
-        }
-
-        //toggle right neighbour
-        if (col != dimension - 1) {
-            int right = (row * dimension) + (col + 1);
-            ((Bulb) grid.getChildAt(right)).toggle();
-        }
-
-        //toggle top neighbour
-        if (row != 0) {
-            int top = (row - 1) * dimension + col;
-            ((Bulb) grid.getChildAt(top)).toggle();
-        }
-
-        //toggle bottom neighbour
-        if (row != dimension - 1) {
-            int bottom = (row + 1) * dimension + col;
-            ((Bulb) grid.getChildAt(bottom)).toggle();
-        }
-
+        this.individualBulbStatus[b.getBulbId()] = b.isOnOrOff();
+        this.toggleNeighbors(b.getBulbId());
         this.setLastBulbToggleIsOn(b.isOn());
-
         this.updateIndividualBulbStatus();
         boolean gameOver = this.checkIfAllLightsAreOff();
         this.setStarCount(gameOver ? this.calculateStars() : this.getStarCount());
         this.setIsGameOver(gameOver);
 
+        // When Game is over remove all solution and highlighting.
         if (this.getIsShowingSolution() && this.getIsGameOver()) {
-            this.unHighlightAllBulbs();
+            this.unHighlightAllBulbBorders();
+            this.unhighlightAllHints();
+            this.removeAllHintIcons();
         }
     }
 
-    private void unHighlightAllBulbs() {
+    private void toggleNeighbors(int id) {
+        int dimension = this.dimension;
+        int row = id / dimension;
+        int col = id % dimension;
+
+        this.toggleLeftNeighbor(row, col);
+        this.toggleRightNeighbor(row, col);
+        this.toggleTopNeighbor(row, col);
+        this.toggleBottomNeighbor(row, col);
+    }
+
+    private void toggleLeftNeighbor(int row, int col) {
+        if (col != 0) {
+            int left = (row * this.dimension) + (col - 1);
+            this.toggleNeightborBulbAtId(left);
+        }
+    }
+
+    private void toggleRightNeighbor(int row, int col) {
+        if (col != dimension - 1) {
+            int right = (row * this.dimension) + (col + 1);
+            this.toggleNeightborBulbAtId(right);
+        }
+    }
+
+    private void toggleTopNeighbor(int row, int col) {
+        if (row != 0) {
+            int top = (row - 1) * this.dimension + col;
+            this.toggleNeightborBulbAtId(top);
+        }
+    }
+
+    private void toggleBottomNeighbor(int row, int col) {
+        if (row != dimension - 1) {
+            int bottom = (row + 1) * this.dimension + col;
+            this.toggleNeightborBulbAtId(bottom);
+        }
+    }
+
+    private void toggleNeightborBulbAtId(int id) {
+        (grid.getBulbAt(id)).toggle();
+
+    }
+
+    private void showHintIconOnBulb(int id) {
+        grid.getHintIconAt(id).setVisibility(View.VISIBLE);
+    }
+
+    private void removeHintIconOnBulb(int id) {
+        grid.getHintIconAt(id).setVisibility(View.INVISIBLE);
+    }
+
+    private void unHighlightAllBulbBorders() {
         for (int i = 0; i < this.dimension * this.dimension; i++) {
-            ((Bulb) grid.getChildAt(i)).unHighlightBorder();
+            (grid.getBulbAt(i)).unHighlightBorder();
         }
     }
 
     private void updateIndividualBulbStatus() {
         this.currentPowerConsumption = 0;
         for (int i = 0; i < dimension * dimension; i++) {
-            individualBulbStatus[i] = ((Bulb) this.grid.getChildAt(i)).isOnOrOff();
+            individualBulbStatus[i] = (this.grid.getBulbAt(i)).isOnOrOff();
             this.setCurrentPowerConsumption(this.getCurrentPowerConsumption() + individualBulbStatus[i]);
         }
     }
@@ -321,23 +377,25 @@ public class GameInstance extends BaseObservable {
         this.setIsGameOver(false);
         this.setHasMadeAtLeastOneMove(false);
         this.setIsShowingSolution(false);
-        this.unHighlightAllBulbs();
-        if(isNewGame) {
-            this.unhighlightAllHints();
-            this.originalIndividualBulbStatus = Arrays.copyOf(this.individualBulbStatus, this.individualBulbStatus.length);
-        } else {
-            this.addHintEmojiForKnownHints();
-        }
+        this.unHighlightAllBulbBorders();
+        this.unhighlightAllHints();
+        this.removeAllHintIcons();
 
         Log.d(TAG, "Board Reset complete. \nNew Start State:" + Arrays.toString(state) +
                 "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack +
                 "\nTotalBoardPower=" + this.getTotalBoardPower());
     }
 
+    private void removeAllHintIcons() {
+        for (int i = 0; i < this.dimension * this.dimension; i++) {
+            this.removeHintIconOnBulb(i);
+        }
+    }
+
     void highlightSolution(byte[] solution) {
         for (int i = 0; i < solution.length; i++) {
             if (solution[i] == 1) {
-                ((Bulb) grid.getChildAt(i)).highlightBorder();
+                (grid.getBulbAt(i)).highlightBorder();
             }
         }
 
@@ -349,7 +407,7 @@ public class GameInstance extends BaseObservable {
     void unHighlightSolution(byte[] solution) {
         for (int i = 0; i < solution.length; i++) {
             if (solution[i] == 1) {
-                ((Bulb) grid.getChildAt(i)).unHighlightBorder();
+                (grid.getBulbAt(i)).unHighlightBorder();
             }
         }
 
@@ -359,12 +417,12 @@ public class GameInstance extends BaseObservable {
 
     private void setStartState() {
         for (int i = 0; i < this.dimension * this.dimension; i++) {
-            ((Bulb) grid.getChildAt(i)).setOn(true);
+            (grid.getBulbAt(i)).setOn(true);
         }
 
         for (int i = 0; i < this.currentToggledBulbs.length; i++) {
             if (this.currentToggledBulbs[i] == 0) {
-                clickBulb((Bulb) (grid.getChildAt(i)));
+                clickBulb(grid.getBulbAt(i));
             }
         }
 
@@ -385,14 +443,14 @@ public class GameInstance extends BaseObservable {
 
     void removeFromUndoStack() {
         int elementPopped = this.undoStack.pop();
-        int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
+        int id = (grid.getBulbAt(elementPopped)).getBulbId();
         if (this.getIsGameOver()) {
             this.setIsShowingSolution(false);
         }
         this.recordBulbClick(id);
         this.addToRedoStack(elementPopped);
-        this.playLightSwitchSound(((Bulb) grid.getChildAt(elementPopped)));
-        this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
+        this.playLightSwitchSound((grid.getBulbAt(elementPopped)));
+        this.clickBulb((grid.getBulbAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current undo stack: " + this.undoStack.toString());
 
@@ -403,11 +461,11 @@ public class GameInstance extends BaseObservable {
 
     void removeFromRedoStack() {
         int elementPopped = this.redoStack.pop();
-        int id = ((Bulb) grid.getChildAt(elementPopped)).getBulbId();
+        int id = (grid.getBulbAt(elementPopped)).getBulbId();
         this.recordBulbClick(id);
         this.addToUndoStack(id);
-        this.playLightSwitchSound(((Bulb) grid.getChildAt(elementPopped)));
-        this.clickBulb(((Bulb) grid.getChildAt(elementPopped)));
+        this.playLightSwitchSound((grid.getBulbAt(elementPopped)));
+        this.clickBulb((grid.getBulbAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current redo stack: " + this.redoStack.toString());
 
@@ -446,7 +504,7 @@ public class GameInstance extends BaseObservable {
         byte[] solutionVector = this.getCurrentSolution();
         List<Integer> solutionIds = new ArrayList<>();
         for (int i = 0; i < solutionVector.length; i++) {
-            if (solutionVector[i] == 1 && !((Bulb) grid.getChildAt(i)).getIsHintHighlighted()) {
+            if (solutionVector[i] == 1 && !(grid.getBulbAt(i)).getIsHintHighlighted()) {
                 solutionIds.add(i);
             }
         }
@@ -456,7 +514,9 @@ public class GameInstance extends BaseObservable {
             int hintId = solutionIds.get(rand.nextInt(solutionIds.size()));
             this.incrementHintsUsed();
             this.setHintsLeft(this.calculateHintsLeft(this.getHintsAllowed(), this.getHintsUsed()));
-            ((Bulb) grid.getChildAt(hintId)).highlightHint();
+            grid.getBulbAt(hintId).highlightHint();
+            grid.getHintIconAt(hintId).setVisibility(View.INVISIBLE);
+            grid.getBulbAt(hintId).startBounceAnimation();
             return true;
         } else {
             return false;
@@ -474,23 +534,8 @@ public class GameInstance extends BaseObservable {
 
     void unhighlightAllHints() {
         for (int i = 0; i < this.dimension * this.dimension; i++) {
-            if (((Bulb) grid.getChildAt(i)).getIsHintHighlighted()) {
-                ((Bulb) grid.getChildAt(i)).unhighlightHint();
-            }
-            ((Bulb) grid.getChildAt(i)).removeHintEmoji();
-            ((Bulb) grid.getChildAt(i)).setIsHint(false);
-        }
-    }
-
-    void addHintEmojiForKnownHints() {
-        for (int i = 0; i < this.dimension * this.dimension; i++) {
-            if (((Bulb) grid.getChildAt(i)).getIsHint()) {
-                if(((Bulb) grid.getChildAt(i)).getIsHintUsed()) {
-                    ((Bulb) grid.getChildAt(i)).addHintEmoji();
-                } else {
-                    ((Bulb) grid.getChildAt(i)).highlightHint();
-                }
-            }
+            (grid.getBulbAt(i)).unhighlightHint();
+            (grid.getBulbAt(i)).setIsHintHighlighted(false);
         }
     }
 
@@ -624,16 +669,6 @@ public class GameInstance extends BaseObservable {
         this.isGameOver = isGameOver;
         this.gameOverChange.firePropertyChange(GAME_OVER_PROPERTY_NAME, oldValue, isGameOver);
         notifyPropertyChanged(BR.isGameOver);
-    }
-
-    @Bindable
-    public String getGameOverText() {
-        return this.gameOverText;
-    }
-
-    private void setGameOverText(String gameOverText) {
-        this.gameOverText = gameOverText;
-        notifyPropertyChanged(BR.gameOverText);
     }
 
     @Bindable
