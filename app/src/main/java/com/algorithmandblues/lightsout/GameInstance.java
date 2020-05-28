@@ -25,6 +25,13 @@ import java.util.Stack;
 public class GameInstance extends BaseObservable {
 
     private static final String TAG = GameInstance.class.getSimpleName();
+    private boolean lastBulbToggleIsOn;
+    private boolean isShowingSolution;
+    private boolean isUndoStackEmpty;
+    private boolean isRedoStackEmpty;
+    private boolean isGameOver;
+    private boolean hasSeenSolution;
+    private boolean hasMadeAtLeastOneMove;
     private int bulbGap;
     public int boardPadding;
     private int gameMode;
@@ -36,13 +43,7 @@ public class GameInstance extends BaseObservable {
     private int currentPowerConsumption;
     private int totalBoardPower;
     private int starCount;
-    private boolean lastBulbToggleIsOn;
-    private boolean isShowingSolution;
-    private boolean isUndoStackEmpty;
-    private boolean isRedoStackEmpty;
-    private boolean isGameOver;
-    private boolean hasSeenSolution;
-    private boolean hasMadeAtLeastOneMove;
+    private int[] moveCounterPerBulb;
     private byte[] currentToggledBulbs;
     private byte[] originalStartState;
     private byte[] individualBulbStatus;
@@ -58,7 +59,6 @@ public class GameInstance extends BaseObservable {
     PropertyChangeSupport gameOverChange = new PropertyChangeSupport(this);
     private static final String GAME_OVER_PROPERTY_NAME = "isGameOver";
     private static final int BOARD_PADDING_RAW = 16;
-    private String gameOverText;
 
     private static final Map<Integer, Integer> HINTS_ALLOWED_MAP = new HashMap<Integer, Integer>() {{
         put(2, 5);
@@ -103,6 +103,7 @@ public class GameInstance extends BaseObservable {
         this.originalStartState = GameDataUtil.stringToByteArray(gameDataObject.getOriginalStartState());
         this.currentToggledBulbs = GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState());
         this.individualBulbStatus = new byte[this.dimension * this.dimension];
+        this.moveCounterPerBulb = new int[this.dimension * this.dimension];
         this.undoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString());
         this.redoStack = GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString());
         this.hintsAllowed = HINTS_ALLOWED_MAP.get(this.dimension);
@@ -123,12 +124,15 @@ public class GameInstance extends BaseObservable {
         this.drawGameBoard(context);
         this.setStartState();
         this.updateIndividualBulbStatus();
+
         this.originalIndividualBulbStatus = Arrays.copyOf(this.individualBulbStatus, this.individualBulbStatus.length);
         // Always call when this.updateIndividualBulbStatus() is called and CurrentBoardPower is initialized.
         this.totalBoardPower = this.getCurrentPowerConsumption();
 
         // Always initialize after game board is drawn
         this.setMoveCounter(gameDataObject.getMoveCounter());
+        this.moveCounterPerBulb = GameDataUtil.stringToIntegerArray(gameDataObject.getMoveCounterPerBulbString());
+
         this.hasMadeAtLeastOneMove = false;
         this.starCount = 0;
         this.lastBulbToggleIsOn = false;
@@ -178,6 +182,7 @@ public class GameInstance extends BaseObservable {
                     recordBulbClick(bulb.getBulbId());
                     handleStackOnBulbClick(bulb);
                     playLightSwitchSound(bulb);
+                    this.incrementMoveCounterPerBulb(bulb.getBulbId());
                     clickBulb(bulb);
                 });
                 bulbLayout.addView(bulb);
@@ -364,7 +369,7 @@ public class GameInstance extends BaseObservable {
         this.clearRedoStack();
     }
 
-    void resetBoardToState(byte[] state, Stack<Integer> undo, Stack<Integer> redo, int moveCounter, int hintsUsed, boolean isNewGame) {
+    void resetBoardToState(byte[] state, Stack<Integer> undo, Stack<Integer> redo, int[] moveCounterPerBulb, int moveCounter, int hintsUsed) {
         this.currentToggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
         this.setStartState();
         this.updateIndividualBulbStatus();
@@ -450,6 +455,7 @@ public class GameInstance extends BaseObservable {
         this.recordBulbClick(id);
         this.addToRedoStack(elementPopped);
         this.playLightSwitchSound((grid.getBulbAt(elementPopped)));
+        this.incrementMoveCounterPerBulb(elementPopped);
         this.clickBulb((grid.getBulbAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current undo stack: " + this.undoStack.toString());
@@ -465,6 +471,7 @@ public class GameInstance extends BaseObservable {
         this.recordBulbClick(id);
         this.addToUndoStack(id);
         this.playLightSwitchSound((grid.getBulbAt(elementPopped)));
+        this.incrementMoveCounterPerBulb(elementPopped);
         this.clickBulb((grid.getBulbAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current redo stack: " + this.redoStack.toString());
@@ -490,6 +497,10 @@ public class GameInstance extends BaseObservable {
 
     private void incrementMoveCounter(int incrementValue) {
         this.setMoveCounter(this.moveCounter + incrementValue);
+    }
+
+    private void incrementMoveCounterPerBulb(int id) {
+        this.moveCounterPerBulb[id]++;
     }
 
     private void incrementHintsUsed() {
@@ -679,6 +690,14 @@ public class GameInstance extends BaseObservable {
     private void setMoveCounter(int moveCounter) {
         this.moveCounter = moveCounter;
         notifyPropertyChanged(BR.moveCounter);
+    }
+
+    public int[] getMoveCounterPerBulb() {
+        return this.moveCounterPerBulb;
+    }
+
+    public void setMoveCounterPerBulb(int[] moveCounterPerBulb) {
+        this.moveCounterPerBulb = moveCounterPerBulb;
     }
 
     int getGameMode() {

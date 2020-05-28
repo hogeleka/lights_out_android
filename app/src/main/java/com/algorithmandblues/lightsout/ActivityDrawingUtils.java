@@ -115,7 +115,7 @@ public class ActivityDrawingUtils {
     }
 
 
-    public static LinearLayout drawGameBoard(Context context, GameWinState gameWinState, byte[] originalbulbStatuses, byte[] userToggles) {
+    public static LinearLayout drawGameBoard(Context context, GameWinState gameWinState, byte[] originalbulbStatuses, int[] movesPerBulb) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -145,7 +145,6 @@ public class ActivityDrawingUtils {
         for (int row = 0; row < dimension; row++) {
             for (int col = 0; col < dimension; col++) {
 
-                //TODO: fix this to actully include the number of times a bulb was toggled
                 //will take data from last activity which consists of toggle counts per bulb
                 // as well as solution
                 final Bulb bulb = new Bulb(context, id);
@@ -153,12 +152,12 @@ public class ActivityDrawingUtils {
                 if (originalbulbStatuses[id] == (byte) 0) {
                     bulb.setOn(false);
                 }
-                if (userToggles[id] == (byte) 0) {
+                if (movesPerBulb[id] % 2 == 1) {
                     bulb.highlightBorder();
                 }
-                bulb.setText("103");
-                bulb.setGravity(Gravity.CENTER);
-                bulb.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//                bulb.setText(Integer.toString(movesPerBulb[id]));
+//                bulb.setGravity(Gravity.CENTER);
+//                bulb.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 grid.addView(bulb);
                 id++;
             }

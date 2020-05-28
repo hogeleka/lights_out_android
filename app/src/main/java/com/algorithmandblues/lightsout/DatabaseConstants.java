@@ -36,10 +36,12 @@ class DatabaseConstants {
         static final String HAS_SEEN_SOLUTION = "hasSeenSolution";
         static final String MOVE_COUNTER = "moveCounter";
         static final String NUMBER_OF_HINTS_USED = "numberOfHintsUsed";
+        static final String MOVE_COUNTER_PER_BULB_STRING = "movesPerBulbString";
 
         static final String[] TABLE_COLUMNS = {
                 ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
-                REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+                REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER,
+                NUMBER_OF_HINTS_USED, MOVE_COUNTER_PER_BULB_STRING
         };
 
         static String getStringToCreateTable() {
@@ -53,7 +55,8 @@ class DatabaseConstants {
                     GAME_MODE + " INTEGER, " +
                     HAS_SEEN_SOLUTION + " INTEGER, " +
                     MOVE_COUNTER + " INTEGER, " +
-                    NUMBER_OF_HINTS_USED + " INTEGER )";
+                    NUMBER_OF_HINTS_USED + " INTEGER, " +
+                    MOVE_COUNTER_PER_BULB_STRING + " TEXT )";
 
             return sqlStringToCreateTable;
         }
@@ -71,10 +74,11 @@ class DatabaseConstants {
         static final String NUMBER_OF_STARS = "score";
         static final String GAME_MODE = "gameMode";
         static final String TIME_STAMP_MS = "timeStampMs";
+        static final String MOVE_COUNTER_PER_BULB_STRING = "movesPerBulbString";
 
         static final String[] TABLE_COLUMNS = {
                 ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, ORIGINAL_BULB_CONFIGURATION, NUMBER_OF_MOVES,
-                NUMBER_OF_HINTS_USED, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS
+                NUMBER_OF_HINTS_USED, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS, MOVE_COUNTER_PER_BULB_STRING
         };
 
         static String getStringToCreateTable() {
@@ -88,7 +92,8 @@ class DatabaseConstants {
                     NUMBER_OF_HINTS_USED + " INTEGER, " +
                     NUMBER_OF_STARS + " INTEGER, " +
                     GAME_MODE + " INTEGER, " +
-                    TIME_STAMP_MS + " INTEGER )";
+                    TIME_STAMP_MS + " INTEGER, " +
+                    MOVE_COUNTER_PER_BULB_STRING + " TEXT )";
             return sqlString;
         }
 

@@ -21,7 +21,7 @@ public class HomePageActivity extends AppCompatActivity {
         button.setOnClickListener(v -> goToLevelSelector());
 
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-//        databaseHelper.resetDatabase();
+        databaseHelper.resetDatabase();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class HomePageActivity extends AppCompatActivity {
 
 
     public void goToLevelSelector() {
-        Intent intent = new Intent(HomePageActivity.this, NewLevelSelectorActivity.class);
+        Intent intent = new Intent(HomePageActivity.this, LevelSelectorActivity.class);
         startActivity(intent);
         finish();
     }

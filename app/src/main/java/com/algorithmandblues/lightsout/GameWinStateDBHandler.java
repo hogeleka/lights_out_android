@@ -62,6 +62,7 @@ public class GameWinStateDBHandler {
                     setNumberOfStars(cursor.getInt(7));
                     setGameMode(cursor.getInt(8));
                     setTimeStampMs(cursor.getLong(9));
+                    setMoveCounterPerBulbString(cursor.getString(10));
                 }};
                 gameWinStates.add(gameWinState);
             } while (cursor.moveToNext());
@@ -98,6 +99,7 @@ public class GameWinStateDBHandler {
         contentValues.put(DatabaseConstants.GameWinStateTable.NUMBER_OF_STARS, gameWinState.getNumberOfStars());
         contentValues.put(DatabaseConstants.GameWinStateTable.GAME_MODE, gameWinState.getGameMode());
         contentValues.put(DatabaseConstants.GameWinStateTable.TIME_STAMP_MS, gameWinState.getTimeStampMs());
+        contentValues.put(DatabaseConstants.GameWinStateTable.MOVE_COUNTER_PER_BULB_STRING, gameWinState.getMoveCounterPerBulbString());
         return contentValues;
     }
 

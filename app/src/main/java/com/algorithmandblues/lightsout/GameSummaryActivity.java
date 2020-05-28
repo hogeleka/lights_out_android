@@ -53,12 +53,10 @@ public class GameSummaryActivity extends AppCompatActivity {
 
         int powerSaved = getIntent().getIntExtra(getString(R.string.total_board_power_saved), 0);
         byte[] originalbulbStatuses = getIntent().getByteArrayExtra(getString(R.string.initial_board_config));
+        int[] movesPerBulb = getIntent().getIntArrayExtra(getString(R.string.moves_per_bulb));
 
-        //TODO: update gameInstance and get real variable for user toggles
-        byte[] userToggles = GameDataUtil.stringToByteArray(gameWinState.getToggledBulbs());
-        Log.d(TAG, "user toggles: " + Arrays.toString(userToggles));
+        Log.d(TAG, "moves per bulb: " + Arrays.toString(movesPerBulb));
 
-        //TODO: fix with string resources and use the actual power saved!
         String[] labels = {
                 getString(R.string.game_summary_watts_saved_label),
                 getString(R.string.game_summary_moves_label),
@@ -67,21 +65,19 @@ public class GameSummaryActivity extends AppCompatActivity {
         String[] numbersStrings = {
                 String.valueOf(powerSaved) ,
                 "0",
-//                String.valueOf(gameWinState.getNumberOfMoves()),
                 String.valueOf(gameWinState.getNumberOfHintsUsed())
         };
 
         LinearLayout numbersAndLabels = ActivityDrawingUtils.makeGameSummaryTextsAndCaptions(this, numbersStrings, labels, TEXT_SIZE_NUMBER_GAME_STAT,
                 TEXT_SIZE_LABEL_GAME_STAT, SIDE_PADDING_STATS_ICONS);
         pageContent.addView(numbersAndLabels);
-        LinearLayout gameGrid = ActivityDrawingUtils.drawGameBoard(this, gameWinState, originalbulbStatuses, userToggles);
+        LinearLayout gameGrid = ActivityDrawingUtils.drawGameBoard(this, gameWinState, originalbulbStatuses, movesPerBulb);
         pageContent.addView(gameGrid);
 
         LinearLayout bottomButtons = createButtonsToOtherActivities();
         pageContent.addView(bottomButtons);
 
-
-        //TODO: update code for move counter animationsanimations
+        //TODO: update code for move counter animations
         TextView movesTextView = (TextView) ((LinearLayout) numbersAndLabels.getChildAt(1)).getChildAt(0);
         ValueAnimator animator = new ValueAnimator();
         animator.setObjectValues(0, gameWinState.getNumberOfMoves());
@@ -163,7 +159,7 @@ public class GameSummaryActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(GameSummaryActivity.this, NewLevelSelectorActivity.class);
+        Intent intent = new Intent(GameSummaryActivity.this, LevelSelectorActivity.class);
         startActivity(intent);
         finish();
     }
