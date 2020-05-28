@@ -57,4 +57,5 @@
     <string name="game_summary_moves_label">moves</string>
     <string name="game_summary_hints_used_label">hints used</string>
     <string name="no_hint_needed">You have all the hints you need!</string>
+    <string name="moves_per_bulb">movesPerBulb</string>
 </resources>

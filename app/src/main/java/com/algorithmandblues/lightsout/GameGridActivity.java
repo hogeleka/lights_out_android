@@ -124,12 +124,12 @@ public class GameGridActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: ensure that we use the correct "user toggles" and not just the toggles for all on to all off
     private void sendGameWinStateToNewActivity(GameWinState gameWinState, GameInstance gameInstance) {
         Intent intent = new Intent(GameGridActivity.this, GameSummaryActivity.class);
         intent.putExtra(getString(R.string.game_win_state_label), gameWinState);
         intent.putExtra(getString(R.string.initial_board_config), gameInstance.getOriginalIndividualBulbStatus());
         intent.putExtra(getString(R.string.total_board_power_saved), gameInstance.getTotalBoardPower());
+        intent.putExtra(getString(R.string.moves_per_bulb), gameInstance.getMoveCounterPerBulb());
         startActivity(intent);
         finish();
     }
@@ -150,6 +150,7 @@ public class GameGridActivity extends AppCompatActivity {
             setOriginalStartState(GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState()));
             setToggledBulbs(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
             setOriginalBulbConfiguration(GameDataUtil.byteArrayToString(gameInstance.getOriginalIndividualBulbStatus()));
+            setMoveCounterPerBulbString(GameDataUtil.integerArrayToString(gameInstance.getMoveCounterPerBulb()));
             setNumberOfMoves(gameInstance.getMoveCounter());
             setNumberOfHintsUsed(gameInstance.getHintsUsed());
             setNumberOfStars(gameInstance.getStarCount());
@@ -169,6 +170,7 @@ public class GameGridActivity extends AppCompatActivity {
             setToggledBulbsState(getOriginalStartState());
             setUndoStackString(GameDataUtil.EMPTY_STRING);
             setRedoStackString(GameDataUtil.EMPTY_STRING);
+            setMoveCounterPerBulbString(getDefaultMoveCounterPerBulbArrayString(dimension));
             setGameMode(gameMode);
             setHasSeenSolution(false);
             setMoveCounter(0);
@@ -176,6 +178,16 @@ public class GameGridActivity extends AppCompatActivity {
         }};
 
         return gameDataObject;
+    }
+
+    private String getDefaultMoveCounterPerBulbArrayString(int dimension) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < dimension*dimension; i++) {
+            builder.append("0,");
+        }
+        builder.deleteCharAt(builder.lastIndexOf(","));
+
+        return builder.toString();
     }
 
     @Override
@@ -320,10 +332,10 @@ public class GameGridActivity extends AppCompatActivity {
                 GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState()),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
+                GameDataUtil.stringToIntegerArray(gameDataObject.getMoveCounterPerBulbString()),
                 gameDataObject.getMoveCounter(),
                 // to prevent user from not resetting hints used
-                gameInstance.getHintsUsed(),
-                false
+                gameInstance.getHintsUsed()
         );
         Log.d(TAG, "Resetting board to Last Saved Instance or Default state if there was no saved instance");
     }
@@ -343,9 +355,9 @@ public class GameGridActivity extends AppCompatActivity {
                 gameInstance.getOriginalStartState(),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
+                GameDataUtil.stringToIntegerArray(gameDataObject.getMoveCounterPerBulbString()),
                 gameDataObject.getMoveCounter(),
-                gameDataObject.getNumberOfHintsUsed(),
-                true
+                gameDataObject.getNumberOfHintsUsed()
         );
 
         Log.d(TAG, "Resetting Board to new Randomized State");
@@ -358,7 +370,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void returnToLevelSelector() {
-        Intent i = new Intent(GameGridActivity.this, NewLevelSelectorActivity.class);
+        Intent i = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
         startActivity(i);
         finish();
     }
@@ -377,6 +389,7 @@ public class GameGridActivity extends AppCompatActivity {
             setToggledBulbsState(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
             setUndoStackString(GameDataUtil.integerStackToString(gameInstance.getUndoStack()));
             setRedoStackString(GameDataUtil.integerStackToString(gameInstance.getRedoStack()));
+            setMoveCounterPerBulbString(GameDataUtil.integerArrayToString(gameInstance.getMoveCounterPerBulb()));
             setGameMode(gameInstance.getGameMode());
             setHasSeenSolution(gameInstance.getHasSeenSolution());
             setMoveCounter(gameInstance.getMoveCounter());
