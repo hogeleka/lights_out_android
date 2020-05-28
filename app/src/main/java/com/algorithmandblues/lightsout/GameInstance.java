@@ -175,7 +175,7 @@ public class GameInstance extends BaseObservable {
                     recordBulbClick(bulb.getBulbId());
                     handleStackOnBulbClick(bulb);
                     playLightSwitchSound(bulb);
-                    clickBulb(bulb, true);
+                    clickBulb(bulb);
                 });
                 bulbLayout.addView(bulb);
                 bulbLayout.addView(hintIcon);
@@ -215,7 +215,9 @@ public class GameInstance extends BaseObservable {
         return params;
     }
 
-    private void clickBulb(Bulb b, boolean isClickedByUser) {
+    private void clickBulb(Bulb b) {
+
+        // If the solution is showing and border is highlighted remove the border else add the border
         if (this.getIsShowingSolution()) {
             if (b.getIsBorderHighlighted()) {
                 b.unHighlightBorder();
@@ -224,39 +226,31 @@ public class GameInstance extends BaseObservable {
             }
         }
 
-        b.toggle(isClickedByUser);
+        // Toggle the main bulb
+        b.toggle();
 
-        if (b.getIsHintHighlighted() && isClickedByUser) {
+        // If the main bulb is a hint then unhighlight the hint and show the hint icon.
+        if (b.getIsHintHighlighted()) {
             b.unhighlightHint();
-            b.setIsHintUsed(true);
             b.setIsHintHighlighted(false);
-            if(b.getIsHintUsed()) {
-                this.showHintIconOnBulb(b.getBulbId());
-            }
-        }
-
-        if(b.getIsHint() && b.getIsHintUsed()) {
             this.showHintIconOnBulb(b.getBulbId());
         }
 
         this.incrementMoveCounter();
-
         if (!this.getHasMadeAtLeastOneMove()) {
             this.setHasMadeAtLeastOneMove(true);
         }
 
-        this.individualBulbStatus[b.getBulbId()] = b.isOnOrOff();
-
         Log.d(TAG, "Bulb: " + b.toString());
+        this.individualBulbStatus[b.getBulbId()] = b.isOnOrOff();
         this.toggleNeighbors(b.getBulbId());
-
         this.setLastBulbToggleIsOn(b.isOn());
-
         this.updateIndividualBulbStatus();
         boolean gameOver = this.checkIfAllLightsAreOff();
         this.setStarCount(gameOver ? this.calculateStars() : this.getStarCount());
         this.setIsGameOver(gameOver);
 
+        // When Game is over remove all solution and highlighting.
         if (this.getIsShowingSolution() && this.getIsGameOver()) {
             this.unHighlightAllBulbBorders();
             this.unhighlightAllHints();
@@ -304,7 +298,7 @@ public class GameInstance extends BaseObservable {
     }
 
     private void toggleNeightborBulbAtId(int id) {
-        (grid.getBulbAt(id)).toggle(false);
+        (grid.getBulbAt(id)).toggle();
 
     }
 
@@ -425,7 +419,7 @@ public class GameInstance extends BaseObservable {
 
         for (int i = 0; i < this.currentToggledBulbs.length; i++) {
             if (this.currentToggledBulbs[i] == 0) {
-                clickBulb(grid.getBulbAt(i), false);
+                clickBulb(grid.getBulbAt(i));
             }
         }
 
@@ -453,7 +447,7 @@ public class GameInstance extends BaseObservable {
         this.recordBulbClick(id);
         this.addToRedoStack(elementPopped);
         this.playLightSwitchSound((grid.getBulbAt(elementPopped)));
-        this.clickBulb((grid.getBulbAt(elementPopped)), true);
+        this.clickBulb((grid.getBulbAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current undo stack: " + this.undoStack.toString());
 
@@ -468,7 +462,7 @@ public class GameInstance extends BaseObservable {
         this.recordBulbClick(id);
         this.addToUndoStack(id);
         this.playLightSwitchSound((grid.getBulbAt(elementPopped)));
-        this.clickBulb((grid.getBulbAt(elementPopped)), true);
+        this.clickBulb((grid.getBulbAt(elementPopped)));
 
         Log.d(TAG, "Removed " + id + " from current redo stack: " + this.redoStack.toString());
 
@@ -517,7 +511,6 @@ public class GameInstance extends BaseObservable {
             int hintId = solutionIds.get(rand.nextInt(solutionIds.size()));
             this.incrementHintsUsed();
             this.setHintsLeft(this.calculateHintsLeft(this.getHintsAllowed(), this.getHintsUsed()));
-            grid.getBulbAt(hintId).setIsHint(true);
             grid.getBulbAt(hintId).highlightHint();
             grid.getHintIconAt(hintId).setVisibility(View.INVISIBLE);
             grid.getBulbAt(hintId).startBounceAnimation();
@@ -540,8 +533,6 @@ public class GameInstance extends BaseObservable {
         for (int i = 0; i < this.dimension * this.dimension; i++) {
             (grid.getBulbAt(i)).unhighlightHint();
             (grid.getBulbAt(i)).setIsHintHighlighted(false);
-            (grid.getBulbAt(i)).setIsHint(false);
-            (grid.getBulbAt(i)).setIsHintUsed(false);
         }
     }
 

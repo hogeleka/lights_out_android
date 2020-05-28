@@ -30,26 +30,24 @@ public class Bulb extends AppCompatButton{
     private GradientDrawable hintBackground;
     private Animation bounceAnimation;
     private boolean isBorderHighlighted;
-    private boolean isHint;
-    private boolean isHintUsed;
     private boolean isHintHighlighted;
 
+    // Use bounce interpolator with amplitude 0.05 and frequency 15
+    private static final BounceInterpolator BOUNCE_INTERPOLATOR = new BounceInterpolator(0.05, 15);
 
     public Bulb (Context context, int bulbId) {
         super(context, null, R.style.AppTheme);
         this.bulbId = bulbId;
         this.isOn = true;
-        this.isHint = false;
         this.isBorderHighlighted = false;
         this.isHintHighlighted = false;
 
+        // GradientDrawable takes in colors in 0xffffff format.
         this.hintGradientStartColor = ContextCompat.getColor(context, HINT_START_COLOR);
         this.hintGradientEndColor = ContextCompat.getColor(context, HINT_END_COLOR);
 
         bounceAnimation = AnimationUtils.loadAnimation(context, R.anim.bounce);
-        // Use bounce interpolator with amplitude 0.2 and frequency 20
-        BounceInterpolator interpolator = new BounceInterpolator(0.05, 15);
-        bounceAnimation.setInterpolator(interpolator);
+        bounceAnimation.setInterpolator(BOUNCE_INTERPOLATOR);
 
         this.createNewBulbBackground();
         this.setBackground(bulbBackground);
@@ -71,26 +69,30 @@ public class Bulb extends AppCompatButton{
         this.bulbBackground.setCornerRadius(BULB_CORNER_RADIUS);
     }
 
-    public void toggle(boolean isClickedByUser) {
+    public void toggle() {
 
+        // Set update the default background object with the correct on or off color.
         if (this.isOn()) {
             this.bulbBackground.setColor(this.getOffColor());
         } else {
             this.bulbBackground.setColor(this.getOnColor());
         }
 
-        if(isClickedByUser && this.getIsHintHighlighted()) {
+        // Keep the hint highlighted if it is already highlighted.
+        // The logic for un-highlighting the bulb if needed is handled in click bulb.
+        if(this.getIsHintHighlighted()) {
             this.highlightHint();
-        } else {
-            if(this.getIsHintHighlighted()) {
-                this.highlightHint();
-                if(this.getIsBorderHighlighted()) {
-                    this.highlightBorder();
-                }
-            } else {
-                this.setBackground(this.bulbBackground);
+
+            // Keep the Border highlighted if the solution is showing.
+            // The logic for removing the border is also handled in click bulb.
+            if(this.getIsBorderHighlighted()) {
+                this.highlightBorder();
             }
+        } else {
+            // If it is not highlighted then set the background to be the default bulb background.
+            this.setBackground(this.getBulbBackground());
         }
+
 
         this.isOn = !this.isOn;
     }
@@ -211,22 +213,6 @@ public class Bulb extends AppCompatButton{
 
     public void setIsHintHighlighted(boolean hintHighlighted) {
         this.isHintHighlighted = hintHighlighted;
-    }
-
-    public boolean getIsHint() {
-        return this.isHint;
-    }
-
-    public void setIsHint(boolean hint) {
-        this.isHint = hint;
-    }
-
-    public boolean getIsHintUsed() {
-        return this.isHintUsed;
-    }
-
-    public void setIsHintUsed(boolean hintUsed) {
-        this.isHintUsed = hintUsed;
     }
 
     public Animation getBounceAnimation() {
