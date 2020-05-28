@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import java.util.List;
-
 class GameDataObjectDBHandler {
 
     private static final String TAG = GameDataObjectDBHandler.class.getSimpleName();
@@ -36,15 +34,14 @@ class GameDataObjectDBHandler {
         String limit = String.valueOf(1);
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-
-
         Cursor cursor = db.query(distinct, tableName, columns, whereClause, selectionArgs, null, null, null, limit);
+
         if (cursor.getCount() == 0) {
             Log.d(TAG, "Nothing found in database for dimension " + dimension + " of game type: " + gameMode);
             return null;
         } else {
             // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
-            // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+            // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED, MOVE_COUNTER_PER_BULB_STRING
             cursor.moveToFirst();
             GameDataObject gameDataObject = new GameDataObject();
             gameDataObject.setId(cursor.getInt(0));
@@ -57,6 +54,7 @@ class GameDataObjectDBHandler {
             gameDataObject.setHasSeenSolution(cursor.getInt(7) == 1);
             gameDataObject.setMoveCounter(cursor.getInt(8));
             gameDataObject.setNumberOfHintsUsed(cursor.getInt(9));
+            gameDataObject.setMoveCounterPerBulbString(cursor.getString(10));
             Log.d(TAG, "Found data in database for dimension " + dimension + "of game type " + gameMode + "--" + gameDataObject.toString());
             db.close();
             return gameDataObject;
@@ -76,7 +74,7 @@ class GameDataObjectDBHandler {
 
     private ContentValues getContentValuesFromGameDataObject(GameDataObject gameDataObject) {
         // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
-        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED, MOVE_COUNTER_PER_BULB_STRING
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseConstants.MostRecentGameTable.DIMENSION, gameDataObject.getDimension());
         contentValues.put(DatabaseConstants.MostRecentGameTable.ORIGINAL_START_STATE, gameDataObject.getOriginalStartState());
@@ -87,6 +85,7 @@ class GameDataObjectDBHandler {
         contentValues.put(DatabaseConstants.MostRecentGameTable.HAS_SEEN_SOLUTION, gameDataObject.getHasSeenSolution() ? 1 : 0);
         contentValues.put(DatabaseConstants.MostRecentGameTable.MOVE_COUNTER, gameDataObject.getMoveCounter());
         contentValues.put(DatabaseConstants.MostRecentGameTable.NUMBER_OF_HINTS_USED, gameDataObject.getNumberOfHintsUsed());
+        contentValues.put(DatabaseConstants.MostRecentGameTable.MOVE_COUNTER_PER_BULB_STRING, gameDataObject.getMoveCounterPerBulbString());
         return contentValues;
     }
 

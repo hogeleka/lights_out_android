@@ -375,8 +375,8 @@ public class GameGridActivity extends AppCompatActivity {
             setDimension(gameInstance.getDimension());
             setOriginalStartState(GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState()));
             setToggledBulbsState(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
-            setUndoStackString(GameDataUtil.IntegerStackToString(gameInstance.getUndoStack()));
-            setRedoStackString(GameDataUtil.IntegerStackToString(gameInstance.getRedoStack()));
+            setUndoStackString(GameDataUtil.integerStackToString(gameInstance.getUndoStack()));
+            setRedoStackString(GameDataUtil.integerStackToString(gameInstance.getRedoStack()));
             setGameMode(gameInstance.getGameMode());
             setHasSeenSolution(gameInstance.getHasSeenSolution());
             setMoveCounter(gameInstance.getMoveCounter());

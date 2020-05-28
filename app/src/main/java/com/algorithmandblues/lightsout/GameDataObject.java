@@ -12,6 +12,7 @@ public class GameDataObject {
     private boolean hasSeenSolution;
     private int moveCounter;
     private int numberOfHintsUsed;
+    private String moveCounterPerBulbString;
 
     GameDataObject() {
     }
@@ -96,6 +97,14 @@ public class GameDataObject {
         this.numberOfHintsUsed = numberOfHintsUsed;
     }
 
+    public String getMoveCounterPerBulbString() {
+        return this.moveCounterPerBulbString;
+    }
+
+    public void setMoveCounterPerBulbString(String moveCounterPerBulbString) {
+        this.moveCounterPerBulbString = moveCounterPerBulbString;
+    }
+
     @Override
     public String toString() {
         return "GameDataObject{" +
@@ -109,6 +118,7 @@ public class GameDataObject {
                 ", hasSeenSolution=" + hasSeenSolution +
                 ", moveCounter=" + moveCounter +
                 ", numberOfHintsUsed=" + numberOfHintsUsed +
+                ", moveCounterPerBulbString=" + moveCounterPerBulbString +
                 '}';
     }
 }

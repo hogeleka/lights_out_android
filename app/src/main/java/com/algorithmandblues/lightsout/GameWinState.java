@@ -15,6 +15,7 @@ public class GameWinState implements Parcelable{
     private int numberOfStars;
     private int gameMode;
     private long timeStampMs;
+    private String moveCounterPerBulbString;
 
     GameWinState() {
     }
@@ -31,6 +32,7 @@ public class GameWinState implements Parcelable{
         numberOfStars = in.readInt();
         gameMode = in.readInt();
         timeStampMs = in.readLong();
+        moveCounterPerBulbString = in.readString();
     }
 
     @Override
@@ -45,6 +47,7 @@ public class GameWinState implements Parcelable{
         dest.writeInt(numberOfStars);
         dest.writeInt(gameMode);
         dest.writeLong(timeStampMs);
+        dest.writeString(moveCounterPerBulbString);
     }
 
     @Override
@@ -145,6 +148,14 @@ public class GameWinState implements Parcelable{
         this.timeStampMs = timeStampMs;
     }
 
+    public String getMoveCounterPerBulbString() {
+        return this.moveCounterPerBulbString;
+    }
+
+    public void setMoveCounterPerBulbString(String moveCounterPerBulbString) {
+        this.moveCounterPerBulbString = moveCounterPerBulbString;
+    }
+
     @Override
     public String toString() {
         return "GameWinState{" +
@@ -158,6 +169,7 @@ public class GameWinState implements Parcelable{
                 ", numberOfStars=" + this.numberOfStars +
                 ", gameMode=" + this.gameMode +
                 ", timeStampMs=" + this.timeStampMs +
+                ", moveCounterPerBulbString=" + this.moveCounterPerBulbString +
                 '}';
     }
 }
