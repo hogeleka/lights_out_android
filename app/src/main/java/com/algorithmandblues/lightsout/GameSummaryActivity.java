@@ -51,7 +51,7 @@ public class GameSummaryActivity extends AppCompatActivity {
         LinearLayout rowOfStars = ActivityDrawingUtils.makeRowOfStars(this, gameWinState.getNumberOfStars(), STAR_IMAGE_SIZE_PX, ROW_OF_STARS_LEFT_RIGHT_PADDING, ROW_OF_STARS_TOP_BOTTOM_PADING);
         pageContent.addView(rowOfStars);
 
-        int powerSaved = getIntent().getIntExtra(getString(R.string.total_board_power_saved), 0);
+        int powerSaved = gameWinState.getOriginalBoardPower();
         byte[] originalbulbStatuses = getIntent().getByteArrayExtra(getString(R.string.initial_board_config));
         int[] movesPerBulb = getIntent().getIntArrayExtra(getString(R.string.moves_per_bulb));
 
@@ -168,7 +168,7 @@ public class GameSummaryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         GameWinState gameWinState = intent.getParcelableExtra(getString(R.string.game_win_state_label));
         Log.d(TAG, "Recieved game win state from previous activity: " + gameWinState.toString());
-        gameWinStateDBHandler.fetchAllGameWinStatesInReverseChronological(gameWinState.getGameMode());
+//        gameWinStateDBHandler.fetchAllGameWinStatesInReverseChronological(gameWinState.getGameMode());
         return gameWinState;
     }
 

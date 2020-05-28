@@ -41,7 +41,8 @@ class GameDataObjectDBHandler {
             return null;
         } else {
             // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
-            // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED, MOVE_COUNTER_PER_BULB_STRING
+            // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED,
+            // MOVE_COUNTER_PER_BULB_STRING, ORIGINAL_INDIVIDUAL_BULB_STATUS
             cursor.moveToFirst();
             GameDataObject gameDataObject = new GameDataObject();
             gameDataObject.setId(cursor.getInt(0));
@@ -55,6 +56,7 @@ class GameDataObjectDBHandler {
             gameDataObject.setMoveCounter(cursor.getInt(8));
             gameDataObject.setNumberOfHintsUsed(cursor.getInt(9));
             gameDataObject.setMoveCounterPerBulbString(cursor.getString(10));
+            gameDataObject.setOriginalIndividualBulbStatus(cursor.getString(11));
             Log.d(TAG, "Found data in database for dimension " + dimension + "of game type " + gameMode + "--" + gameDataObject.toString());
             db.close();
             return gameDataObject;
@@ -86,6 +88,7 @@ class GameDataObjectDBHandler {
         contentValues.put(DatabaseConstants.MostRecentGameTable.MOVE_COUNTER, gameDataObject.getMoveCounter());
         contentValues.put(DatabaseConstants.MostRecentGameTable.NUMBER_OF_HINTS_USED, gameDataObject.getNumberOfHintsUsed());
         contentValues.put(DatabaseConstants.MostRecentGameTable.MOVE_COUNTER_PER_BULB_STRING, gameDataObject.getMoveCounterPerBulbString());
+        contentValues.put(DatabaseConstants.MostRecentGameTable.ORIGINAL_INDIVIDUAL_BULB_STATUS, gameDataObject.getOriginalIndividualBulbStatus());
         return contentValues;
     }
 
@@ -122,8 +125,4 @@ class GameDataObjectDBHandler {
         db.close();
         Log.d(TAG, "Cleared data for " + dimension + " by " + dimension + " and game mode " + gameMode + " from database");
     }
-
-//    List<GameDataObject> getAllGameDataObjectsForGameType(int gameMode) {
-//
-//    };
 }

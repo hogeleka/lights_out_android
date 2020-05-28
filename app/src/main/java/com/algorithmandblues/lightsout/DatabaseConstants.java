@@ -37,11 +37,12 @@ class DatabaseConstants {
         static final String MOVE_COUNTER = "moveCounter";
         static final String NUMBER_OF_HINTS_USED = "numberOfHintsUsed";
         static final String MOVE_COUNTER_PER_BULB_STRING = "movesPerBulbString";
+        static final String ORIGINAL_INDIVIDUAL_BULB_STATUS = "originalIndividualBulbStatus";
 
         static final String[] TABLE_COLUMNS = {
                 ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
                 REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER,
-                NUMBER_OF_HINTS_USED, MOVE_COUNTER_PER_BULB_STRING
+                NUMBER_OF_HINTS_USED, MOVE_COUNTER_PER_BULB_STRING, ORIGINAL_INDIVIDUAL_BULB_STATUS
         };
 
         static String getStringToCreateTable() {
@@ -56,7 +57,8 @@ class DatabaseConstants {
                     HAS_SEEN_SOLUTION + " INTEGER, " +
                     MOVE_COUNTER + " INTEGER, " +
                     NUMBER_OF_HINTS_USED + " INTEGER, " +
-                    MOVE_COUNTER_PER_BULB_STRING + " TEXT )";
+                    MOVE_COUNTER_PER_BULB_STRING + " TEXT, " +
+                    ORIGINAL_INDIVIDUAL_BULB_STATUS  + " TEXT )";
 
             return sqlStringToCreateTable;
         }
@@ -75,10 +77,12 @@ class DatabaseConstants {
         static final String GAME_MODE = "gameMode";
         static final String TIME_STAMP_MS = "timeStampMs";
         static final String MOVE_COUNTER_PER_BULB_STRING = "movesPerBulbString";
+        static final String ORIGINAL_BOARD_POWER = "originalBoardPower";
 
         static final String[] TABLE_COLUMNS = {
                 ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, ORIGINAL_BULB_CONFIGURATION, NUMBER_OF_MOVES,
-                NUMBER_OF_HINTS_USED, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS, MOVE_COUNTER_PER_BULB_STRING
+                NUMBER_OF_HINTS_USED, NUMBER_OF_STARS, GAME_MODE, TIME_STAMP_MS, MOVE_COUNTER_PER_BULB_STRING,
+                ORIGINAL_BOARD_POWER
         };
 
         static String getStringToCreateTable() {
@@ -93,7 +97,8 @@ class DatabaseConstants {
                     NUMBER_OF_STARS + " INTEGER, " +
                     GAME_MODE + " INTEGER, " +
                     TIME_STAMP_MS + " INTEGER, " +
-                    MOVE_COUNTER_PER_BULB_STRING + " TEXT )";
+                    MOVE_COUNTER_PER_BULB_STRING + " TEXT, " +
+                    ORIGINAL_BOARD_POWER + " INTEGER )";
             return sqlString;
         }
 

@@ -13,6 +13,7 @@ public class GameDataObject {
     private int moveCounter;
     private int numberOfHintsUsed;
     private String moveCounterPerBulbString;
+    private String originalIndividualBulbStatus;
 
     GameDataObject() {
     }
@@ -105,6 +106,14 @@ public class GameDataObject {
         this.moveCounterPerBulbString = moveCounterPerBulbString;
     }
 
+    public String getOriginalIndividualBulbStatus() {
+        return this.originalIndividualBulbStatus;
+    }
+
+    public void setOriginalIndividualBulbStatus(String originalIndividualBulbStatus) {
+        this.originalIndividualBulbStatus = originalIndividualBulbStatus;
+    }
+
     @Override
     public String toString() {
         return "GameDataObject{" +
@@ -118,7 +127,8 @@ public class GameDataObject {
                 ", hasSeenSolution=" + hasSeenSolution +
                 ", moveCounter=" + moveCounter +
                 ", numberOfHintsUsed=" + numberOfHintsUsed +
-                ", moveCounterPerBulbString=" + moveCounterPerBulbString +
+                ", moveCounterPerBulbString='" + moveCounterPerBulbString + '\'' +
+                ", originalIndividualBulbStatus='" + originalIndividualBulbStatus + '\'' +
                 '}';
     }
 }

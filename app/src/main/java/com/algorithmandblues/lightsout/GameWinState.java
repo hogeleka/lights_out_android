@@ -16,6 +16,7 @@ public class GameWinState implements Parcelable{
     private int gameMode;
     private long timeStampMs;
     private String moveCounterPerBulbString;
+    private int originalBoardPower;
 
     GameWinState() {
     }
@@ -33,6 +34,7 @@ public class GameWinState implements Parcelable{
         gameMode = in.readInt();
         timeStampMs = in.readLong();
         moveCounterPerBulbString = in.readString();
+        originalBoardPower = in.readInt();
     }
 
     @Override
@@ -48,6 +50,7 @@ public class GameWinState implements Parcelable{
         dest.writeInt(gameMode);
         dest.writeLong(timeStampMs);
         dest.writeString(moveCounterPerBulbString);
+        dest.writeInt(originalBoardPower);
     }
 
     @Override
@@ -156,20 +159,29 @@ public class GameWinState implements Parcelable{
         this.moveCounterPerBulbString = moveCounterPerBulbString;
     }
 
+    public int getOriginalBoardPower() {
+        return this.originalBoardPower;
+    }
+
+    public void setOriginalBoardPower(int originalBoardPower) {
+        this.originalBoardPower = originalBoardPower;
+    }
+
     @Override
     public String toString() {
         return "GameWinState{" +
-                "id=" + this.id +
-                ", dimension=" + this.dimension +
-                ", originalStartState='" + this.originalStartState + '\'' +
-                ", toggledBulbs='" + this.toggledBulbs + '\'' +
-                ", originalBulbConfiguration='" + this.originalBulbConfiguration + '\'' +
-                ", numberOfMoves=" + this.numberOfMoves +
-                ", numberOfHintsUsed=" + this.numberOfHintsUsed +
-                ", numberOfStars=" + this.numberOfStars +
-                ", gameMode=" + this.gameMode +
-                ", timeStampMs=" + this.timeStampMs +
-                ", moveCounterPerBulbString=" + this.moveCounterPerBulbString +
+                "id=" + id +
+                ", dimension=" + dimension +
+                ", originalStartState='" + originalStartState + '\'' +
+                ", toggledBulbs='" + toggledBulbs + '\'' +
+                ", originalBulbConfiguration='" + originalBulbConfiguration + '\'' +
+                ", numberOfMoves=" + numberOfMoves +
+                ", numberOfHintsUsed=" + numberOfHintsUsed +
+                ", numberOfStars=" + numberOfStars +
+                ", gameMode=" + gameMode +
+                ", timeStampMs=" + timeStampMs +
+                ", moveCounterPerBulbString='" + moveCounterPerBulbString + '\'' +
+                ", originalBoardPower=" + originalBoardPower +
                 '}';
     }
 }

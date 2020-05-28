@@ -7,6 +7,10 @@ public class GameDataUtil {
     static final String EMPTY_STRING = "";
 
     public static byte[] stringToByteArray(String str) {
+        if (str.isEmpty()) {
+            return new byte[0];
+        }
+
         String[] split = str.split(",");
         byte[] numbers = new byte[split.length];
         int i=0;

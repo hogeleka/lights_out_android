@@ -128,7 +128,6 @@ public class GameGridActivity extends AppCompatActivity {
         Intent intent = new Intent(GameGridActivity.this, GameSummaryActivity.class);
         intent.putExtra(getString(R.string.game_win_state_label), gameWinState);
         intent.putExtra(getString(R.string.initial_board_config), gameInstance.getOriginalIndividualBulbStatus());
-        intent.putExtra(getString(R.string.total_board_power_saved), gameInstance.getTotalBoardPower());
         intent.putExtra(getString(R.string.moves_per_bulb), gameInstance.getMoveCounterPerBulb());
         startActivity(intent);
         finish();
@@ -151,6 +150,7 @@ public class GameGridActivity extends AppCompatActivity {
             setToggledBulbs(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
             setOriginalBulbConfiguration(GameDataUtil.byteArrayToString(gameInstance.getOriginalIndividualBulbStatus()));
             setMoveCounterPerBulbString(GameDataUtil.integerArrayToString(gameInstance.getMoveCounterPerBulb()));
+            setOriginalBoardPower(gameInstance.getOriginalBoardPower());
             setNumberOfMoves(gameInstance.getMoveCounter());
             setNumberOfHintsUsed(gameInstance.getHintsUsed());
             setNumberOfStars(gameInstance.getStarCount());
@@ -161,8 +161,9 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private GameDataObject getDefaultGameDataObject(int dimension, int gameMode) {
-        // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, LAST_SAVED_INSTANCE_STATE, UNDO_STACK_STRING,
-        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+        // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
+        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED,
+        // MOVE_COUNTER_PER_BULB_STRING, ORIGINAL_INDIVIDUAL_BULB_STATUS
 
         GameDataObject gameDataObject = new GameDataObject() {{
             setDimension(dimension);
@@ -171,6 +172,7 @@ public class GameGridActivity extends AppCompatActivity {
             setUndoStackString(GameDataUtil.EMPTY_STRING);
             setRedoStackString(GameDataUtil.EMPTY_STRING);
             setMoveCounterPerBulbString(getDefaultMoveCounterPerBulbArrayString(dimension));
+            setOriginalIndividualBulbStatus(GameDataUtil.EMPTY_STRING);
             setGameMode(gameMode);
             setHasSeenSolution(false);
             setMoveCounter(0);
@@ -330,6 +332,7 @@ public class GameGridActivity extends AppCompatActivity {
         // currently move counter is 0 but this will need to be changed to moveCounter in gameData
         gameInstance.resetBoardToState(
                 GameDataUtil.stringToByteArray(gameDataObject.getToggledBulbsState()),
+                GameDataUtil.stringToByteArray(gameDataObject.getOriginalIndividualBulbStatus()),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
                 GameDataUtil.stringToIntegerArray(gameDataObject.getMoveCounterPerBulbString()),
@@ -353,6 +356,7 @@ public class GameGridActivity extends AppCompatActivity {
         gameInstance.setHasSeenSolution(gameDataObject.getHasSeenSolution());
         gameInstance.resetBoardToState(
                 gameInstance.getOriginalStartState(),
+                GameDataUtil.stringToByteArray(GameDataUtil.EMPTY_STRING),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getUndoStackString()),
                 GameDataUtil.stringToIntegerStack(gameDataObject.getRedoStackString()),
                 GameDataUtil.stringToIntegerArray(gameDataObject.getMoveCounterPerBulbString()),
@@ -381,11 +385,13 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private GameDataObject getGameDataObjectFromCurrentGameInstance(GameInstance gameInstance) {
-        // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, LAST_SAVED_INSTANCE_STATE, UNDO_STACK_STRING,
-        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED
+        // ID, DIMENSION, ORIGINAL_START_STATE, TOGGLED_BULBS, UNDO_STACK_STRING,
+        // REDO_STACK_STRING, GAME_MODE, HAS_SEEN_SOLUTION, MOVE_COUNTER, NUMBER_OF_HINTS_USED,
+        // MOVE_COUNTER_PER_BULB_STRING, ORIGINAL_INDIVIDUAL_BULB_STATUS
         GameDataObject gameDataObject = new GameDataObject(){{
             setDimension(gameInstance.getDimension());
             setOriginalStartState(GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState()));
+            setOriginalIndividualBulbStatus(GameDataUtil.byteArrayToString(gameInstance.getOriginalIndividualBulbStatus()));
             setToggledBulbsState(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
             setUndoStackString(GameDataUtil.integerStackToString(gameInstance.getUndoStack()));
             setRedoStackString(GameDataUtil.integerStackToString(gameInstance.getRedoStack()));

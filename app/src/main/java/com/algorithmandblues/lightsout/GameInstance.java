@@ -41,7 +41,7 @@ public class GameInstance extends BaseObservable {
     private int hintsUsed;
     private int hintsLeft;
     private int currentPowerConsumption;
-    private int totalBoardPower;
+    private int originalBoardPower;
     private int starCount;
     private int[] moveCounterPerBulb;
     private byte[] currentToggledBulbs;
@@ -125,9 +125,10 @@ public class GameInstance extends BaseObservable {
         this.setStartState();
         this.updateIndividualBulbStatus();
 
-        this.originalIndividualBulbStatus = Arrays.copyOf(this.individualBulbStatus, this.individualBulbStatus.length);
-        // Always call when this.updateIndividualBulbStatus() is called and CurrentBoardPower is initialized.
-        this.totalBoardPower = this.getCurrentPowerConsumption();
+        // Always call when this.updateIndividualBulbStatus() is called.
+        byte[] originalIndividualBulbStatusFromDB = GameDataUtil.stringToByteArray(gameDataObject.getOriginalIndividualBulbStatus());
+        this.originalIndividualBulbStatus = this.calculateOriginalIndividualBulbStatus(originalIndividualBulbStatusFromDB);
+        this.originalBoardPower = this.calculateOriginalBoardPower(this.getOriginalIndividualBulbStatus());
 
         // Always initialize after game board is drawn
         this.setMoveCounter(gameDataObject.getMoveCounter());
@@ -139,6 +140,17 @@ public class GameInstance extends BaseObservable {
 
     }
 
+    private byte[] calculateOriginalIndividualBulbStatus(byte[] originalIndividualBulbStatusFromDB) {
+        return  originalIndividualBulbStatusFromDB.length > 0 ? originalIndividualBulbStatusFromDB : Arrays.copyOf(this.getIndividualBulbStatus(), this.getIndividualBulbStatus().length);
+    }
+
+    private int calculateOriginalBoardPower(byte[] bulbStatus) {
+        int boardPower = 0;
+        for(int i = 0; i < bulbStatus.length; i++) {
+            boardPower += bulbStatus[i] == (byte) 1 ? 1 : 0;
+        }
+        return boardPower;
+    }
     private void drawGameBoard(Context context) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -369,17 +381,20 @@ public class GameInstance extends BaseObservable {
         this.clearRedoStack();
     }
 
-    void resetBoardToState(byte[] state, Stack<Integer> undo, Stack<Integer> redo, int[] moveCounterPerBulb, int moveCounter, int hintsUsed) {
+    void resetBoardToState(byte[] state, byte[] originalIndividualBulbStatus, Stack<Integer> undo,
+                           Stack<Integer> redo, int[] moveCounterPerBulb, int moveCounter, int hintsUsed) {
         this.currentToggledBulbs = Arrays.copyOf(state, this.dimension * this.dimension);
         this.setStartState();
         this.updateIndividualBulbStatus();
-        this.setTotalBoardPower(this.getCurrentPowerConsumption());
+        this.setOriginalIndividualBulbStatus(this.calculateOriginalIndividualBulbStatus(originalIndividualBulbStatus));
+        this.setOriginalBoardPower(this.calculateOriginalBoardPower(this.getOriginalIndividualBulbStatus()));
         this.setUndoStack(undo);
         this.setRedoStack(redo);
         this.setMoveCounter(moveCounter);
         this.setHintsUsed(hintsUsed);
         this.setHintsLeft(this.calculateHintsLeft(this.hintsAllowed, this.hintsUsed));
         this.setIsGameOver(false);
+        this.setMoveCounterPerBulb(moveCounterPerBulb);
         this.setHasMadeAtLeastOneMove(false);
         this.setIsShowingSolution(false);
         this.unHighlightAllBulbBorders();
@@ -388,7 +403,7 @@ public class GameInstance extends BaseObservable {
 
         Log.d(TAG, "Board Reset complete. \nNew Start State:" + Arrays.toString(state) +
                 "\nmoveCounter=" + moveCounter + "\nundoStack=" + undoStack + "\nredoStack=" + redoStack +
-                "\nTotalBoardPower=" + this.getTotalBoardPower());
+                "\nOriginalBoardPower=" + this.getOriginalBoardPower());
     }
 
     private void removeAllHintIcons() {
@@ -761,12 +776,12 @@ public class GameInstance extends BaseObservable {
         notifyPropertyChanged(BR.currentPowerConsumption);
     }
 
-    public int getTotalBoardPower() {
-        return totalBoardPower;
+    public int getOriginalBoardPower() {
+        return originalBoardPower;
     }
 
-    public void setTotalBoardPower(int totalBoardPower) {
-        this.totalBoardPower = totalBoardPower;
+    public void setOriginalBoardPower(int originalBoardPower) {
+        this.originalBoardPower = originalBoardPower;
     }
 
     @Bindable
@@ -791,6 +806,14 @@ public class GameInstance extends BaseObservable {
 
     public Context getContext() {
         return this.context;
+    }
+
+    public byte[] getIndividualBulbStatus() {
+        return this.individualBulbStatus;
+    }
+
+    public void setIndividualBulbStatus(byte[] individualBulbStatus) {
+        this.individualBulbStatus = individualBulbStatus;
     }
 
     public byte[] getOriginalIndividualBulbStatus() {
