@@ -17,6 +17,7 @@
         android:keepScreenOn="true"
         android:background="@color/background_color"
         android:gravity="center"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical">
     </LinearLayout>
 

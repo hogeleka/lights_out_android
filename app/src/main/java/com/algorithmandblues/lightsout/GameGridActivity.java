@@ -74,7 +74,7 @@ public class GameGridActivity extends AppCompatActivity {
                 int insertedGameWinStateId = insertGameWinStateObjectIntoGameWinStateTable(gameWinState);
                 gameWinState.setId(insertedGameWinStateId);
                 updateDBForBestScorePerLevel(gameWinState);
-                sendGameWinStateToNewActivity(gameWinState);
+                sendGameWinStateToNewActivity(gameWinState, gameInstance);
 
             }
         };
@@ -124,9 +124,12 @@ public class GameGridActivity extends AppCompatActivity {
         }
     }
 
-    private void sendGameWinStateToNewActivity(GameWinState gameWinState) {
+    //TODO: ensure that we use the correct "user toggles" and not just the toggles for all on to all off
+    private void sendGameWinStateToNewActivity(GameWinState gameWinState, GameInstance gameInstance) {
         Intent intent = new Intent(GameGridActivity.this, GameSummaryActivity.class);
         intent.putExtra(getString(R.string.game_win_state_label), gameWinState);
+        intent.putExtra(getString(R.string.initial_board_config), gameInstance.getOriginalIndividualBulbStatus());
+        intent.putExtra(getString(R.string.total_board_power_saved), gameInstance.getTotalBoardPower());
         startActivity(intent);
         finish();
     }
@@ -146,7 +149,7 @@ public class GameGridActivity extends AppCompatActivity {
             setDimension(gameInstance.getDimension());
             setOriginalStartState(GameDataUtil.byteArrayToString(gameInstance.getOriginalStartState()));
             setToggledBulbs(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs()));
-            setOriginalBulbConfiguration(GameDataUtil.byteArrayToString(gameInstance.getCurrentToggledBulbs())); //TODO: change this to use actual variable from GameInstance
+            setOriginalBulbConfiguration(GameDataUtil.byteArrayToString(gameInstance.getOriginalIndividualBulbStatus()));
             setNumberOfMoves(gameInstance.getMoveCounter());
             setNumberOfHintsUsed(gameInstance.getHintsUsed());
             setNumberOfStars(gameInstance.getStarCount());

@@ -13,4 +13,5 @@
     <color name="navigation_bar_color">#004D40</color>
     <color name="progress_bar_fill">#004D40</color>
     <color name="transparent">#00000000</color>
+    <color name="custom_black">#000000</color>
 </resources>
