@@ -171,7 +171,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
         t1.addView(tableRow);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private LinearLayout getLastRowShowingStatusAndProgressBar(LinearLayout.LayoutParams layoutParams, int nextLevelToUnlock) {
         LinearLayout tr = new LinearLayout(this);
         tr.setOrientation(LinearLayout.VERTICAL);

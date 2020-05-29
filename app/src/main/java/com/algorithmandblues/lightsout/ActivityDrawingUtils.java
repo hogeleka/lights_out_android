@@ -1,6 +1,7 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -8,6 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,9 +22,6 @@ import java.util.Map;
 public class ActivityDrawingUtils {
 
     private static final String TAG = ActivityDrawingUtils.class.getSimpleName();
-
-    private static final double SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP = 1.5;
-
     private static final int MARGIN_PX_BOARD_TO_TEXT = 10;
 
     private static final float ONE_THIRD = (float) 0.33;
@@ -134,7 +133,7 @@ public class ActivityDrawingUtils {
         int width = (int) (PERCENTAGE_OF_SCREEN_WIDTH_FOR_GRID * displayMetrics.widthPixels);
         Log.d(TAG, "Screen width: " + width);
 //        int bulbGap = (int) ((SCREEN_WIDTH_PERCENTAGE_FOR_BULB_GAP / 100) * width);
-        int bulbGap = BULB_GAP_MAP.get(dimension);
+        int bulbGap = (int) (BULB_GAP_MAP.get(dimension) * PERCENTAGE_OF_SCREEN_WIDTH_FOR_GRID);
         bulbGap = convertIntValueToAppropriatePixelValueForScreenSize(context, bulbGap);
         Log.d(TAG, "Bulb gap: " + bulbGap);
         int size = Math.min(width, height);

@@ -1,5 +1,7 @@
 package com.algorithmandblues.lightsout;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -10,11 +12,18 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class GameSummaryActivity extends AppCompatActivity {
 
@@ -26,7 +35,13 @@ public class GameSummaryActivity extends AppCompatActivity {
     private static final float ONE_THIRD = (float) 0.33;
     private static final int BOTTOM_ICONS_IMAGE_SIZE = 40;
     private static final int BOTTOM_ICONS_LABEL_TEXT_SIZE = 16;
-    private static final int SIDE_PADDING_STATS_ICONS = 16;
+    private static final int SIDE_PADDING_STATS_ICONS = 0;
+    private static final int BUTTON_PADDING_TOP = 16;
+    private static final int SKILL_TEXt_VIEW_PADDING_TOP = 50;
+    private static final int PROGRESS_BAR_ANIMATION_DURATION = 500;
+    private static final int PROGRESS_BAR_PADDING = 20;
+    private static final String SKILL_PREFIX = "Skill: ";
+//    private static final BounceInterpolator BOUNCE_INTERPOLATOR = new BounceInterpolator(0.05, 10);
 
     private boolean newLevelIsUnlocked;
     int bestScoreForLevelAndGameType;
@@ -37,7 +52,7 @@ public class GameSummaryActivity extends AppCompatActivity {
     LinearLayout pageContent;
     Level nextLevel;
     LevelDBHandler levelDBHandler;
-
+    ProgressBarAnimation progressBarAnimation;
 
     private static final String TAG = GameSummaryActivity.class.getSimpleName();
     
@@ -52,18 +67,16 @@ public class GameSummaryActivity extends AppCompatActivity {
 
         levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
 
-        if(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION) {
-            nextLevel = levelDBHandler.getLevelFromDb(gameWinState.getGameMode(), gameWinState.getDimension() + 1);
-            newLevelIsUnlocked = checkIfNewLevelUnlocked(nextLevel);
-            if(newLevelIsUnlocked) {
-                updateNewLevelInDb();
-            }
-        }
-
         bestScoreForLevelAndGameType = getIntent().getIntExtra(getString(R.string.best_score_level_gameType), 0);
         pageContent = findViewById(R.id.fullscreen_content);
         LinearLayout rowOfStars = ActivityDrawingUtils.makeRowOfStars(this, gameWinState.getNumberOfStars(), STAR_IMAGE_SIZE_PX, ROW_OF_STARS_LEFT_RIGHT_PADDING, ROW_OF_STARS_TOP_BOTTOM_PADING);
+
         pageContent.addView(rowOfStars);
+        Animation animation  = AnimationUtils.loadAnimation(this, R.anim.staranimation);
+        LayoutAnimationController rowOfStarsAnimationController = new LayoutAnimationController(animation);
+        rowOfStarsAnimationController.setOrder(LayoutAnimationController.ORDER_NORMAL);
+        rowOfStars.setLayoutAnimation(rowOfStarsAnimationController);
+        rowOfStarsAnimationController.start();
 
         int powerSaved = gameWinState.getOriginalBoardPower();
         byte[] originalbulbStatuses = getIntent().getByteArrayExtra(getString(R.string.initial_board_config));
@@ -91,19 +104,83 @@ public class GameSummaryActivity extends AppCompatActivity {
         LinearLayout bottomButtons = createButtonsToOtherActivities();
         pageContent.addView(bottomButtons);
 
+        newLevelIsUnlocked = false;
+        int currentBestLevel = getCurrentBestLevelDimensionFromDb();
+
+        if(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION) {
+            nextLevel = levelDBHandler.getLevelFromDb(gameWinState.getGameMode(), gameWinState.getDimension() + 1);
+            newLevelIsUnlocked = checkIfNewLevelUnlocked(nextLevel);
+            if(newLevelIsUnlocked) {
+                updateNewLevelInDb();
+            }
+        }
+
+        TextView skillLevelTextView = createSkillLevelTextView(getSkillText(currentBestLevel));
+        pageContent.addView(skillLevelTextView);
+        ProgressBar progressBar = this.getUserProgressBar(currentBestLevel);
+        pageContent.addView(progressBar);
+
         //TODO: update code for move counter animations
         TextView movesTextView = (TextView) ((LinearLayout) numbersAndLabels.getChildAt(1)).getChildAt(0);
-        ValueAnimator animator = new ValueAnimator();
-        animator.setObjectValues(0, gameWinState.getNumberOfMoves());
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                movesTextView.setText(String.valueOf(animation.getAnimatedValue()));
+        ValueAnimator moveTextAnimator = new ValueAnimator();
+        moveTextAnimator.setObjectValues(0, gameWinState.getNumberOfMoves());
+        moveTextAnimator.addUpdateListener(animation1 -> movesTextView.setText(String.valueOf(animation1.getAnimatedValue())));
+
+        moveTextAnimator.setDuration(this.calculateMoveTextAnimatorDuration(gameWinState.getNumberOfMoves()));
+        moveTextAnimator.setStartDelay((long) getResources().getDimension(R.dimen.star_animation_duration) * 3);
+        moveTextAnimator.start();
+        moveTextAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (newLevelIsUnlocked) {
+                    int nextLevelProgress = (int) (((double) nextLevel.getDimension() / DatabaseConstants.MAX_DIMENSION) * 100);
+                    progressBarAnimation = new ProgressBarAnimation(progressBar, progressBar.getProgress(), nextLevelProgress);
+                    progressBarAnimation.setDuration(PROGRESS_BAR_ANIMATION_DURATION);
+                    progressBar.setAnimation(progressBarAnimation);
+                    progressBar.startAnimation(progressBarAnimation);
+                    skillLevelTextView.setText(getSkillText(nextLevel.getDimension()));
+                }
             }
         });
-        animator.setDuration(2000);
-        animator.start();
+    }
 
+    /**
+     * Gets the current highest unlocked level dimension from db before new level is unlocked
+     * @return
+     */
+    private int getCurrentBestLevelDimensionFromDb() {
+        List<Level> levels = levelDBHandler.fetchLevelsForGameMode(GameMode.ARCADE);
+        int result = 2;
+        for (Level level : levels) {
+            if (level.getDimension() > result && level.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL) {
+                result = level.getDimension();
+            }
+        }
+        return result;
+    }
 
+    private long calculateMoveTextAnimatorDuration(int numberOfMoves) {
+        NavigableMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
+        map.put(0, 500);    // 0..9     => 0
+        map.put(10, 1000);    // 10..100    => 1
+        map.put(100, 2000);   // 100..200  => 2
+
+        // To do a lookup for some value in 'key'
+        if (numberOfMoves < 0 || numberOfMoves > 200) {
+            return 3000;
+        } else {
+            return map.floorEntry(numberOfMoves).getValue();
+        }
+    }
+
+    private String getSkillText(int dimension) {
+        return SKILL_PREFIX + SkillLevelConstants.getSkillLevelForLevel(dimension);
+    }
+
+    private TextView createSkillLevelTextView(String currentSkillText) {
+        TextView skillTextView = ActivityDrawingUtils.getTextView(this, currentSkillText, BOTTOM_ICONS_LABEL_TEXT_SIZE, false);
+        skillTextView.setPadding(0, getPixels(SKILL_TEXt_VIEW_PADDING_TOP), 0, 0);
+        return skillTextView;
     }
 
     private void updateNewLevelInDb() {
@@ -112,16 +189,23 @@ public class GameSummaryActivity extends AppCompatActivity {
     }
 
     private boolean checkIfNewLevelUnlocked(Level nextLevel) {
+
+        // If it is classic return false as all levels are already unlocked.
         if (nextLevel.getGameMode() == GameMode.CLASSIC) {
-            return true;
+            return false;
         } else {
+            // If next level is already unlocked then return false
             if (nextLevel.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL) {
-                return true;
+                return false;
             } else {
-                if (gameWinState.getNumberOfStars() > 0) {
-                    return true;
-                } else {
+
+                // if next level is locked but the user cheated then return false
+                if (gameWinState.getNumberOfStars() == 0) {
                     return false;
+                } else {
+
+                    // Next level is locked and user did not cheat so return true to unlock this level.
+                    return true;
                 }
             }
         }
@@ -132,7 +216,7 @@ public class GameSummaryActivity extends AppCompatActivity {
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.setGravity(Gravity.CENTER);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayout.setPadding(SIDE_PADDING_STATS_ICONS, 0, SIDE_PADDING_STATS_ICONS, 0);
+        linearLayout.setPadding(SIDE_PADDING_STATS_ICONS, BUTTON_PADDING_TOP, SIDE_PADDING_STATS_ICONS, 0);
         LinearLayout allStatsLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.icons8_chart), "stats");
         LinearLayout nextLevelLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.right_arrow), "next level");
         LinearLayout restartLevelLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.restart_game), "play again");
@@ -222,7 +306,7 @@ public class GameSummaryActivity extends AppCompatActivity {
     private ImageView getImageView(Drawable drawable) {
         ImageView imageView = new ImageView(this);
         imageView.setBackground(drawable);
-        int imageSize = ActivityDrawingUtils.convertIntValueToAppropriatePixelValueForScreenSize(this, BOTTOM_ICONS_IMAGE_SIZE);
+        int imageSize = getPixels(BOTTOM_ICONS_IMAGE_SIZE);
         imageView.setLayoutParams(new LinearLayout.LayoutParams(imageSize, imageSize));
         return imageView;
     }
@@ -244,4 +328,21 @@ public class GameSummaryActivity extends AppCompatActivity {
     }
 
 
+    private ProgressBar getUserProgressBar(int level) {
+        ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.customprogressbarstyle));
+        int horizontalPadding = getPixels(PROGRESS_BAR_PADDING);
+        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+        int progress = (int) (((double) level / DatabaseConstants.MAX_DIMENSION) * 100);
+        progressBar.setProgress(progress);
+
+        Log.d(TAG, "progress: " + progressBar.getProgress());
+        return progressBar;
+    }
+
+    public int getPixels(int value) {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int) (value * scale + 0.5f);
+    }
 }
