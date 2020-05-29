@@ -211,8 +211,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
     }
 
     private String getTextToDisplayForUserProgress(int nextLevelToUnlock) {
-        //TODO: fix this to be the strings we decide
-        return "Skill: Beginner";
+        return SkillLevelConstants.getSkillLevelForLevel(nextLevelToUnlock);
     }
 
     private ProgressBar getUserProgressBar() {
