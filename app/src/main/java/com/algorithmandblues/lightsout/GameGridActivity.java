@@ -120,7 +120,14 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void updateDBForBestScorePerLevel(GameWinState gameWinState) {
         if (gameWinState.getNumberOfStars() > currentBestScoreForDimensionAndGameType){
-            levelDBHandler.updateLevelWithNewNumberOfStars(gameWinState.getDimension(), gameWinState.getGameMode(), gameWinState.getNumberOfStars());
+            Level level = new Level() {{
+                setDimension(gameWinState.getDimension());
+                setGameMode(gameWinState.getGameMode());
+                setNumberOfStars(gameWinState.getNumberOfStars());
+                setIsLocked(0);
+            }};
+            levelDBHandler.updateLevelWithNewNumberOfStars(level);
+            currentBestScoreForDimensionAndGameType = gameWinState.getNumberOfStars();
         }
     }
 
@@ -129,6 +136,7 @@ public class GameGridActivity extends AppCompatActivity {
         intent.putExtra(getString(R.string.game_win_state_label), gameWinState);
         intent.putExtra(getString(R.string.initial_board_config), gameInstance.getOriginalIndividualBulbStatus());
         intent.putExtra(getString(R.string.moves_per_bulb), gameInstance.getMoveCounterPerBulb());
+        intent.putExtra(getResources().getString(R.string.best_score_level_gameType), currentBestScoreForDimensionAndGameType);
         startActivity(intent);
         finish();
     }
@@ -374,8 +382,9 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void returnToLevelSelector() {
-        Intent i = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
-        startActivity(i);
+        Intent intent = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
+        intent.putExtra(getString(R.string.selected_game_mode), gameDataObject.getGameMode());
+        startActivity(intent);
         finish();
     }
 

@@ -50,6 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 values.put(DatabaseConstants.LevelTable.DIMENSION, level.getDimension());
                 values.put(DatabaseConstants.LevelTable.NUMBER_OF_STARS, level.getNumberOfStars());
                 values.put(DatabaseConstants.LevelTable.GAME_MODE, level.getGameMode());
+                values.put(DatabaseConstants.LevelTable.IS_LOCKED, level.getIsLocked());
                 db.insert(DatabaseConstants.LevelTable.TABLE_NAME, null, values);
             }
             db.setTransactionSuccessful();

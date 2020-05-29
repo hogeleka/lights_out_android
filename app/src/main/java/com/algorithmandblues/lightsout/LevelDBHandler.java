@@ -35,7 +35,7 @@ public class LevelDBHandler {
 
         List<Level> levels = new ArrayList<>();
         Cursor cursor = db.query(tableName, columns, selection, selectionArgs, null, null, null);
-        //ID, DIMENSION, NUMBER_OF_STARS, GAME_MODE
+        //ID, DIMENSION, NUMBER_OF_STARS, GAME_MODE, IS_LOCKED
         if (cursor.moveToFirst()) {
             do {
                 Level level = new Level(){{
@@ -43,6 +43,7 @@ public class LevelDBHandler {
                     setDimension(cursor.getInt(1));
                     setNumberOfStars(cursor.getInt(2));
                     setGameMode(cursor.getInt(3));
+                    setIsLocked(cursor.getInt(4));
                 }};
                 levels.add(level);
             } while (cursor.moveToNext());
@@ -53,19 +54,50 @@ public class LevelDBHandler {
         return levels;
     }
 
-    public void updateLevelWithNewNumberOfStars(int dimension, int gameMode, int newNumberOfStars) {
+    public void updateLevelWithNewNumberOfStars(Level level) {
         SQLiteDatabase db = this.databaseHelper.getWritableDatabase();
         String tableName = DatabaseConstants.LevelTable.TABLE_NAME;
         String whereClause = DatabaseConstants.LevelTable.DIMENSION + " = ? AND "
                 + DatabaseConstants.LevelTable.GAME_MODE + " = ?";
-        String[] whereArgs = {String.valueOf(dimension), String.valueOf(gameMode)};
+        String[] whereArgs = {String.valueOf(level.getDimension()), String.valueOf(level.getGameMode())};
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseConstants.LevelTable.DIMENSION, dimension);
-        contentValues.put(DatabaseConstants.LevelTable.NUMBER_OF_STARS, newNumberOfStars);
-        contentValues.put(DatabaseConstants.LevelTable.GAME_MODE, gameMode);
+        contentValues.put(DatabaseConstants.LevelTable.DIMENSION, level.getDimension());
+        contentValues.put(DatabaseConstants.LevelTable.NUMBER_OF_STARS, level.getNumberOfStars());
+        contentValues.put(DatabaseConstants.LevelTable.GAME_MODE, level.getGameMode());
+        contentValues.put(DatabaseConstants.LevelTable.IS_LOCKED, level.getIsLocked());
         db.update(tableName, contentValues, whereClause, whereArgs);
-        Log.d(TAG, "Updated level data for dimension " + dimension +
-                        " with new number of stars " + newNumberOfStars);
+        Log.d(TAG, "Updated level data for dimension " + level.getDimension() +
+                " with new number of stars " + level.getNumberOfStars() + ". Level isLocked=" + level.getIsLocked());
         db.close();
+    }
+
+
+    public Level getLevelFromDb(int gameMode, int dimension) {
+        Log.d(TAG, "Fetching level data for dimension size: " + dimension + " by " + dimension + " of game type " + gameMode);
+        boolean distinct = true;
+        String tableName = DatabaseConstants.LevelTable.TABLE_NAME;
+        String[] columns = DatabaseConstants.LevelTable.TABLE_COLUMNS;
+        String whereClause = DatabaseConstants.LevelTable.DIMENSION + " = ? AND "
+                + DatabaseConstants.LevelTable.GAME_MODE + " = ? ";
+        String[] selectionArgs = {String.valueOf(dimension), String.valueOf(gameMode)};
+        String limit = String.valueOf(1);
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor cursor = db.query(distinct, tableName, columns, whereClause, selectionArgs, null, null, null, limit);
+
+        // ID, DIMENSION, NUMBER_OF_STARS, GAME_MODE, IS_LOCKED
+        cursor.moveToFirst();
+        Level level = new Level() {{
+            setId(cursor.getInt(0));
+            setDimension(cursor.getInt(1));
+            setNumberOfStars(cursor.getInt(2));
+            setGameMode(cursor.getInt(3));
+            setIsLocked(cursor.getInt(4));
+        }};
+
+        Log.d(TAG, "Found level in database for dimension " + dimension + "of game type " + gameMode + "--" + level.toString());
+        db.close();
+
+        return level;
     }
 }

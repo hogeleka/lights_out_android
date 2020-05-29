@@ -1,6 +1,7 @@
 package com.algorithmandblues.lightsout;
 
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,16 +24,20 @@ public class GameSummaryActivity extends AppCompatActivity {
     private static final int TEXT_SIZE_NUMBER_GAME_STAT = 50;
     private static final int TEXT_SIZE_LABEL_GAME_STAT = 16;
     private static final float ONE_THIRD = (float) 0.33;
-    private static final int BOTTOM_BUTTONS_SIDE_PADDINGS_PX = 16;
     private static final int BOTTOM_ICONS_IMAGE_SIZE = 40;
     private static final int BOTTOM_ICONS_LABEL_TEXT_SIZE = 16;
     private static final int SIDE_PADDING_STATS_ICONS = 16;
 
+    private boolean newLevelIsUnlocked;
+    int bestScoreForLevelAndGameType;
     DatabaseHelper databaseHelper;
     GameDataObjectDBHandler gameDataObjectDBHandler;
     GameWinStateDBHandler gameWinStateDBHandler;
     GameWinState gameWinState;
     LinearLayout pageContent;
+    Level nextLevel;
+    LevelDBHandler levelDBHandler;
+
 
     private static final String TAG = GameSummaryActivity.class.getSimpleName();
     
@@ -41,12 +45,22 @@ public class GameSummaryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_summary);
-
-        overridePendingTransition(0, 0);
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
         gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
         gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);
         gameWinState = fetchGameWinStateFromLastCompletedGameGridActivity();
+
+        levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
+
+        if(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION) {
+            nextLevel = levelDBHandler.getLevelFromDb(gameWinState.getGameMode(), gameWinState.getDimension() + 1);
+            newLevelIsUnlocked = checkIfNewLevelUnlocked(nextLevel);
+            if(newLevelIsUnlocked) {
+                updateNewLevelInDb();
+            }
+        }
+
+        bestScoreForLevelAndGameType = getIntent().getIntExtra(getString(R.string.best_score_level_gameType), 0);
         pageContent = findViewById(R.id.fullscreen_content);
         LinearLayout rowOfStars = ActivityDrawingUtils.makeRowOfStars(this, gameWinState.getNumberOfStars(), STAR_IMAGE_SIZE_PX, ROW_OF_STARS_LEFT_RIGHT_PADDING, ROW_OF_STARS_TOP_BOTTOM_PADING);
         pageContent.addView(rowOfStars);
@@ -92,6 +106,27 @@ public class GameSummaryActivity extends AppCompatActivity {
 
     }
 
+    private void updateNewLevelInDb() {
+        nextLevel.setIsLocked(DatabaseConstants.UNLOCKED_LEVEL);
+        levelDBHandler.updateLevelWithNewNumberOfStars(nextLevel);
+    }
+
+    private boolean checkIfNewLevelUnlocked(Level nextLevel) {
+        if (nextLevel.getGameMode() == GameMode.CLASSIC) {
+            return true;
+        } else {
+            if (nextLevel.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL) {
+                return true;
+            } else {
+                if (gameWinState.getNumberOfStars() > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+
     private LinearLayout createButtonsToOtherActivities() {
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -103,31 +138,67 @@ public class GameSummaryActivity extends AppCompatActivity {
         LinearLayout restartLevelLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.restart_game), "play again");
 
         //TODO: fix the on click listeners to implement the right methods (eg database calls, dialog boxes, etc)
-        allStatsLinkLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Clicked on stats link");
-            }
-        });
+        allStatsLinkLayout.setOnClickListener(v -> Log.d(TAG, "Clicked on stats link"));
         linearLayout.addView(allStatsLinkLayout);
 
-        nextLevelLinkLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "clicked on next level link");
-            }
+        nextLevelLinkLayout.setEnabled(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION
+                && nextLevel.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL);
+
+        nextLevelLinkLayout.setAlpha(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION
+                && nextLevel.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL ?
+                ActivityDrawingUtils.ENABLED_LEVEL_ALPHA : ActivityDrawingUtils.DISABLED_LEVEL_ALPHA);
+
+        nextLevelLinkLayout.setOnClickListener(v -> {
+            Log.d(TAG, "clicked on next level link");
+            goToNextLevel();
         });
 
         linearLayout.addView(nextLevelLinkLayout);
 
-        restartLevelLinkLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Clicked on reset link");
-            }
+        restartLevelLinkLayout.setOnClickListener(v -> {
+            Log.d(TAG, "Clicked on restart link");
+            restartLevel();
         });
         linearLayout.addView(restartLevelLinkLayout);
         return linearLayout;
+    }
+
+    private void goToNextLevel() {
+        boolean hasDataForNextLevel = gameDataObjectDBHandler.getMostRecentGameDataForGameType(nextLevel.getDimension(), nextLevel.getGameMode()) != null;
+        if(hasDataForNextLevel) {
+               buildDialogToRequestUserResponse(nextLevel.getDimension(), gameWinState.getGameMode() == GameMode.ARCADE);
+        } else {
+            goToLevel(nextLevel.getDimension(), false, nextLevel.getGameMode() == GameMode.ARCADE, nextLevel.getNumberOfStars());
+        }
+    }
+
+    private void restartLevel() {
+        goToLevel(gameWinState.getDimension(), false, gameWinState.getGameMode() == GameMode.ARCADE, bestScoreForLevelAndGameType);
+    }
+
+    public void buildDialogToRequestUserResponse(int dimension, boolean setRandomStateFlag) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameSummaryActivity.this);
+        builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
+                .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), dimension, dimension))
+                .setCancelable(true)
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> {
+                    goToLevel(dimension, true, setRandomStateFlag, bestScoreForLevelAndGameType);
+                })
+                .setNegativeButton(getString(R.string.restart_new_game), (dialog, which) -> {
+                    goToLevel(dimension, false, setRandomStateFlag, bestScoreForLevelAndGameType);
+                });
+        AlertDialog dialog  = builder.create();
+        dialog.show();
+    }
+
+    private void goToLevel(int dimension, boolean resumeFromDb, boolean shouldSetRandomStateFlag, int bestScoreForLevelAndGameType) {
+        Intent intent = new Intent(GameSummaryActivity.this, GameGridActivity.class);
+        intent.putExtra(getString(R.string.dimension), dimension);
+        intent.putExtra(getString(R.string.resume_from_db_flag), resumeFromDb);
+        intent.putExtra(getString(R.string.set_random_state_flag), shouldSetRandomStateFlag);
+        intent.putExtra(getString(R.string.best_score_level_gameType), bestScoreForLevelAndGameType);
+        startActivity(intent);
+        finish();
     }
 
     private LinearLayout createImageIconAndTextLayout(Drawable drawable, String text) {
@@ -160,6 +231,7 @@ public class GameSummaryActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(GameSummaryActivity.this, LevelSelectorActivity.class);
+        intent.putExtra(getString(R.string.selected_game_mode), gameWinState.getGameMode());
         startActivity(intent);
         finish();
     }
@@ -168,7 +240,6 @@ public class GameSummaryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         GameWinState gameWinState = intent.getParcelableExtra(getString(R.string.game_win_state_label));
         Log.d(TAG, "Recieved game win state from previous activity: " + gameWinState.toString());
-//        gameWinStateDBHandler.fetchAllGameWinStatesInReverseChronological(gameWinState.getGameMode());
         return gameWinState;
     }
 

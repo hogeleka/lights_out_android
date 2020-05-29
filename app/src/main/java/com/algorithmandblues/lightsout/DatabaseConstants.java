@@ -9,6 +9,8 @@ class DatabaseConstants {
 
     static final int MAX_DIMENSION = 10;
     static final int MIN_DIMENSION = 2;
+    static final int UNLOCKED_LEVEL = 0;
+    static final int LOCKED_LEVEL = 1;
 
     static Map<String, String> databaseTableNamesAndCreationStrings = new HashMap<String, String>() {{
         put(MostRecentGameTable.TABLE_NAME, MostRecentGameTable.getStringToCreateTable());
@@ -110,9 +112,10 @@ class DatabaseConstants {
         static final String DIMENSION = "dimension";
         static final String NUMBER_OF_STARS = "numberOfStars";
         static final String GAME_MODE = "gameMode";
+        static final String IS_LOCKED = "isLocked";
 
         static final String [] TABLE_COLUMNS = {
-                ID, DIMENSION, NUMBER_OF_STARS, GAME_MODE
+                ID, DIMENSION, NUMBER_OF_STARS, GAME_MODE, IS_LOCKED
         };
 
         static String getStringToCreateTable() {
@@ -120,7 +123,8 @@ class DatabaseConstants {
                     ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     DIMENSION + " INTEGER, " +
                     NUMBER_OF_STARS + " INTEGER, " +
-                    GAME_MODE + " INTEGER )";
+                    GAME_MODE + " INTEGER, " +
+                    IS_LOCKED + " INTEGER )";
             return sqlString;
         }
 
@@ -135,6 +139,7 @@ class DatabaseConstants {
                         setDimension(currentDimension);
                         setNumberOfStars(0);
                         setGameMode(currentGameMode);
+                        setIsLocked((currentGameMode == GameMode.CLASSIC || currentDimension == 2) ? UNLOCKED_LEVEL : LOCKED_LEVEL);
                     }};
                     levels.add(level);
                 }

@@ -25,6 +25,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class LevelSelectorActivity extends AppCompatActivity {
 
@@ -37,7 +38,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
     Map<Integer, Level> arcadeLevelMap;
     Map<Integer, Level> classicLevelMap;
     TabHost tabHost;
-
     int nextLevelToUnlock;
 
     private static final int STAR_IMAGE_SIZE_PX = 26;
@@ -79,8 +79,8 @@ public class LevelSelectorActivity extends AppCompatActivity {
         arcadeModeGrid = findViewById(R.id.arcadeTab);
         classicModeGrid = findViewById(R.id.classicTab);
         tabHost = findViewById(R.id.tabhost);
+        selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.ARCADE);
         setUpTabHost();
-        selectedGameMode = GameMode.ARCADE;
 
     }
 
@@ -99,6 +99,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
         prepareTableForGameMode(classicModeGrid, GameMode.CLASSIC);
 
         //set for the initial loading of the activity
+        tabHost.setCurrentTab(selectedGameMode);
         tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).getBackground().setColorFilter(
                 tabUnderlinedColor, PorterDuff.Mode.MULTIPLY
         );
@@ -118,7 +119,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
 
     private int calculateNextLevelToUnlock(Map<Integer, Level> levelMap) {
         for (int i = DatabaseConstants.MIN_DIMENSION; i < DatabaseConstants.MAX_DIMENSION; i++) {
-            if (levelMap.get(i).getNumberOfStars() == 0) {
+            if (Objects.requireNonNull(levelMap.get(i)).getNumberOfStars() == 0) {
                 return i;
             }
         }
@@ -156,9 +157,6 @@ public class LevelSelectorActivity extends AppCompatActivity {
             tr.setOrientation(LinearLayout.HORIZONTAL);
             tr.setLayoutParams(layoutParams);
             tr.setGravity(Gravity.CENTER);
-            //add separator
-//            RelativeLayout separator = new RelativeLayout(new ContextThemeWrapper(this,R.style.Divider));
-//            t1.addView(separator);
             //add each column of table
             for (int j = 0; j < tableDimensions; j++) {
                 LinearLayout linearLayout = prepareLinearLayoutForGameModeAndLevel(mapToUse.get(dimension));
@@ -167,9 +165,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
             }
             t1.addView(tr);
         }
-        //add separator
-//        RelativeLayout separator = new RelativeLayout(new ContextThemeWrapper(this,R.style.Divider));
-//        t1.addView(separator);
+
         //progress bar at the end as last row
         LinearLayout tableRow = getLastRowShowingStatusAndProgressBar(layoutParams, nextLevelToUnlock);
         t1.addView(tableRow);
@@ -199,7 +195,7 @@ public class LevelSelectorActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        //we are dividinng screenwidth by 4 for the level chooser;
+        //we are dividing screen width by 4 for the level chooser;
         return displayMetrics.widthPixels / 4;
     }
 
@@ -300,14 +296,9 @@ public class LevelSelectorActivity extends AppCompatActivity {
     }
 
     private boolean checkIfEnabled(Level level) {
-        if (level.getGameMode() == GameMode.CLASSIC) {
-            return true;
-        }
-
-        // TODO: Change back when app is ready for not testing
-        // return level.getDimension() == DatabaseConstants.MIN_DIMENSION || level.getDimension() == nextLevelToUnlock || level.getNumberOfStars() > 0;
-
-        return true;
+        // TODO: Changeback when app is ready for not testing
+         return level.getIsLocked() != DatabaseConstants.LOCKED_LEVEL;
+//        return true;
     }
 
     public int convertIntValueToAppropriatePixelValueForScreenSize(int value) {

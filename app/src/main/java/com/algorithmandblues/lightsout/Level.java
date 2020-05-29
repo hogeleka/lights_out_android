@@ -6,6 +6,7 @@ public class Level {
     private int dimension;
     private int numberOfStars;
     private int gameMode;
+    private int isLocked;
 
     Level() {
     }
@@ -42,6 +43,14 @@ public class Level {
         this.gameMode = gameMode;
     }
 
+    public int getIsLocked() {
+        return this.isLocked;
+    }
+
+    public void setIsLocked(int isLocked) {
+        this.isLocked = isLocked;
+    }
+
     @Override
     public String toString() {
         return "Level{" +
@@ -49,6 +58,7 @@ public class Level {
                 ", dimension=" + dimension +
                 ", numberOfStars=" + numberOfStars +
                 ", gameMode=" + gameMode +
+                ", isLocked=" + isLocked +
                 '}';
     }
 }

@@ -60,6 +60,7 @@ public class GameInstance extends BaseObservable {
     private static final String GAME_OVER_PROPERTY_NAME = "isGameOver";
     private static final int BOARD_PADDING_RAW = 16;
 
+    // TODO: Make them more realistic.
     private static final Map<Integer, Integer> HINTS_ALLOWED_MAP = new HashMap<Integer, Integer>() {{
         put(2, 5);
         put(3, 1);
@@ -572,7 +573,7 @@ public class GameInstance extends BaseObservable {
     private int calculateStars() {
 
         try {
-            if (this.getHasSeenSolution() && this.gameMode == GameMode.ARCADE) {
+            if (this.getHasSeenSolution()) {
                 Log.d(TAG, "Score is 0 because user has seen solution");
                 return 0;
             } else {
