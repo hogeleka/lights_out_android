@@ -31,7 +31,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder ab = new AlertDialog.Builder(HomePageActivity.this);
+        AlertDialog.Builder ab = new AlertDialog.Builder(HomePageActivity.this, R.style.AlertDialogStyle);
         ab.setTitle(getResources().getString(R.string.exit_game_title));
         ab.setMessage(getResources().getString(R.string.exit_game_question));
         ab.setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> {

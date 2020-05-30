@@ -1,9 +1,12 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -30,18 +33,20 @@ import java.util.Map;
  */
 public class LevelSelectorFragment extends Fragment {
 
-    private static final String TAG = LevelSelectorFragment.class.getSimpleName();
-    // TODO: Rename parameter arguments, choose names that match
-    private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final int TEXT_SIZE = 24;
+    // the fragment initialization parameter
     private static final String ARG_PARAM1 = "gameMode";
+
+
+    private static final String TAG = LevelSelectorFragment.class.getSimpleName();
+    private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
+    private static final int TEXT_SIZE = 24;
     private static final int STAR_IMAGE_SIZE_PX = 22;
+
     DatabaseHelper databaseHelper;
     LevelDBHandler levelDBHandler;
     Map<Integer, Level> dimensionAndLevel;
+    GameDataObjectDBHandler gameDataObjectDBHandler;
     int gameMode;
-//    String gameModeDescription;
     String selectLevelPrompt;
     int userProgressLevel;
 
@@ -51,10 +56,6 @@ public class LevelSelectorFragment extends Fragment {
     private static final int TABLE_ROW_MARGIN_HORIZONTAL = 8;
     private static final int PROGRESS_BAR_HORIZONTAL_PADDING = 48;
 
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public LevelSelectorFragment() {
         // Required empty public constructor
@@ -84,6 +85,7 @@ public class LevelSelectorFragment extends Fragment {
         databaseHelper = DatabaseHelper.getInstance(getContext());
         levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
         List<Level> levels = levelDBHandler.fetchLevelsForGameMode(gameMode);
+        gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
         Log.d(TAG, "fetched game mode type: " + gameMode + " found data:--" + levels.toString());
         dimensionAndLevel = new HashMap<>();
         for (Level level : levels) {
@@ -109,10 +111,6 @@ public class LevelSelectorFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         LinearLayout holder = (LinearLayout) view.findViewById(R.id.arcadeTabFragment);
 
-//        TextView gameModeDescriptionTextview = (TextView) holder.getChildAt(0);
-//        gameModeDescriptionTextview.setText(gameModeDescription);
-//        gameModeDescriptionTextview.setTextColor(getResources().getColor(R.color.custom_black));
-
         TextView selectLevelPromptTextview = (TextView) holder.getChildAt(0);
         selectLevelPromptTextview.setText(selectLevelPrompt);
         selectLevelPromptTextview.setTextColor(getResources().getColor(R.color.custom_black));
@@ -120,7 +118,7 @@ public class LevelSelectorFragment extends Fragment {
         int rowHeight = useDisplayMetricsToCalculateRowHeight();
         LinearLayout.LayoutParams layoutParams = getLayoutParams(rowHeight);
         int dim = DatabaseConstants.MIN_DIMENSION;
-        //start from row 1: first row is the select level prompt
+        //start from row 1: first row is the select level prompt. 4th row is the row which might have progress bar
         for (int row = 1; row < 4; row++) {
             ((LinearLayout) holder.getChildAt(row)).setGravity(Gravity.CENTER);
             holder.getChildAt(row).setLayoutParams(layoutParams);
@@ -170,17 +168,11 @@ public class LevelSelectorFragment extends Fragment {
     }
 
     private void selectLevel(Level level) {
-        int dimension = level.getDimension();
-        boolean shouldSetRandomStateFlag = level.getGameMode() == GameMode.ARCADE;
-        boolean resumeFromDB = false;
-        int bestScoreForGameModeAndType = level.getNumberOfStars();
-        Intent intent = new Intent(getActivity(), GameGridActivity.class);
-        intent.putExtra(getString(R.string.dimension), dimension);
-        intent.putExtra(getString(R.string.set_random_state_flag), shouldSetRandomStateFlag);
-        intent.putExtra(getString(R.string.best_score_level_gameType), bestScoreForGameModeAndType);
-        intent.putExtra(getString(R.string.resume_from_db_flag), resumeFromDB);
-        startActivity(intent);
-        getActivity().finish();
+        if (userHasExistingGame(level.getDimension(), level.getGameMode())) {
+            buildDialogToRequestUserResponse(level);
+        } else {
+            goToNewGameActivity(level, false);
+        }
     }
 
     private int getPixels(int value) {
@@ -227,18 +219,6 @@ public class LevelSelectorFragment extends Fragment {
         return result;
     }
 
-//    private ProgressBar getUserProgressBar(int level) {
-//        ProgressBar progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal);
-//        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_level_selector));
-//        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
-//        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-////        int level = nextLevel-1;
-//        int progress = (int) (((double) (level-1) / DatabaseConstants.MAX_DIMENSION) * 100);
-//        progressBar.setProgress(progress);
-//        Log.d(TAG, "progress: " + progressBar.getProgress());
-//        return progressBar;
-//    }
 
     private ProgressBar getUserProgressBar(int level) {
         return new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal) {{
@@ -247,5 +227,31 @@ public class LevelSelectorFragment extends Fragment {
             setPadding(getPixels(PROGRESS_BAR_HORIZONTAL_PADDING), 0, getPixels(PROGRESS_BAR_HORIZONTAL_PADDING), 0);
             setProgress((int) (((double) (level-1) / (DatabaseConstants.MAX_DIMENSION-1)) * 100));
         }};
+    }
+
+    public void buildDialogToRequestUserResponse(Level level) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle);
+        builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
+                .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), level.getDimension(), level.getDimension()))
+                .setCancelable(true)
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> goToNewGameActivity(level, true))
+                .setNegativeButton(getString(R.string.restart_new_game), (dialog, which) -> goToNewGameActivity(level, false));
+        //Creating dialog box
+        AlertDialog dialog  = builder.create();
+        dialog.show();
+    }
+
+    public void goToNewGameActivity(Level level, boolean resumeGameFromDBFlag) {
+        Intent intent = new Intent(getContext(), GameGridActivity.class);
+        intent.putExtra(getString(R.string.dimension), level.getDimension());
+        intent.putExtra(getString(R.string.resume_from_db_flag), resumeGameFromDBFlag);
+        intent.putExtra(getString(R.string.set_random_state_flag), level.getGameMode() == GameMode.ARCADE);
+        intent.putExtra(getString(R.string.best_score_level_gameType), level.getNumberOfStars());
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    public boolean userHasExistingGame(int dimension, int gameMode) {
+        return gameDataObjectDBHandler.getMostRecentGameDataForGameType(dimension, gameMode) != null;
     }
 }

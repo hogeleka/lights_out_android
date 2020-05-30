@@ -21,9 +21,6 @@ import java.util.List;
 
 public class SelectLevelActivity extends FragmentActivity {
 
-    DatabaseHelper databaseHelper;
-    LevelDBHandler levelDBHandler;
-//    int userProgressLevel;
     int selectedGameMode;
 
     private static final int BOTTOM_ICONS_IMAGE_SIZE = 40;
@@ -40,7 +37,6 @@ public class SelectLevelActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_level);
         selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.ARCADE);
-
         ViewPager2 viewPager = (ViewPager2) findViewById(R.id.pager);
         CustomPagerAdapter myPagerAdapter = new CustomPagerAdapter(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
@@ -50,11 +46,9 @@ public class SelectLevelActivity extends FragmentActivity {
         ).attach();
         TabLayout.Tab tab = tabLayout.getTabAt(selectedGameMode);
         tab.select();
-
         LinearLayout bottomIcons = findViewById(R.id.bottom_icons_container);
         LinearLayout bottomButtonsAndActivitySwitches = getBottomButtonsAndIcons();
         bottomIcons.addView(bottomButtonsAndActivitySwitches);
-
     }
 
     @Override
@@ -111,19 +105,6 @@ public class SelectLevelActivity extends FragmentActivity {
         layout.setBackgroundResource(outValue.resourceId);
         return layout;
 
-    }
-
-    /**
-     * Gets the current highest unlocked level dimension from db before new level is unlocked
-     */
-    private int getUserProgressLevel(List<Level> levels) {
-        int result = DatabaseConstants.MIN_DIMENSION;
-        for (Level level : levels) {
-            if (level.getDimension() > result && level.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL) {
-                result = level.getDimension();
-            }
-        }
-        return result;
     }
 
     private int getPixels(int value) {
