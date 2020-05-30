@@ -7,7 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -382,7 +382,7 @@ public class GameSummaryActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(GameSummaryActivity.this, SwipeLevelSelectorActivity.class);
+        Intent intent = new Intent(GameSummaryActivity.this, SelectLevelActivity.class);
         intent.putExtra(getString(R.string.selected_game_mode), gameWinState.getGameMode());
         startActivity(intent);
         finish();

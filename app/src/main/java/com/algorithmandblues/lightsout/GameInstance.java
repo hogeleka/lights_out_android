@@ -1,8 +1,8 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 import android.media.MediaPlayer;
 import android.util.DisplayMetrics;
 import android.util.Log;

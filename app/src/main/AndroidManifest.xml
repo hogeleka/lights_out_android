@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.algorithmandblues.lightsout">
-
+    <supports-screens
+        android:smallScreens="false"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,20 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SwipeLevelSelectorActivity"
+            android:name=".SelectLevelActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_level_selector"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
             tools:ignore="LockedOrientationActivity" >
         </activity>
-        <activity
-            android:name=".LevelSelectorActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_level_selector"
-            android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme"
-            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".GameSummaryActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -24,15 +25,16 @@ import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link TabFragment#newInstance} factory method to
+ * Use the {@link LevelSelectorFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TabFragment extends Fragment {
+public class LevelSelectorFragment extends Fragment {
 
-    private static final String TAG = TabFragment.class.getSimpleName();
+    private static final String TAG = LevelSelectorFragment.class.getSimpleName();
     // TODO: Rename parameter arguments, choose names that match
     private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final int TEXT_SIZE = 24;
     private static final String ARG_PARAM1 = "gameMode";
     private static final int STAR_IMAGE_SIZE_PX = 22;
     DatabaseHelper databaseHelper;
@@ -41,18 +43,20 @@ public class TabFragment extends Fragment {
     int gameMode;
 //    String gameModeDescription;
     String selectLevelPrompt;
+    int userProgressLevel;
 
     private static final float ALPHA_ENABLED = (float) 1.0;
     private static final float ALPHA_DISABLED = (float) 0.4;
 
     private static final int TABLE_ROW_MARGIN_HORIZONTAL = 8;
+    private static final int PROGRESS_BAR_HORIZONTAL_PADDING = 48;
 
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public TabFragment() {
+    public LevelSelectorFragment() {
         // Required empty public constructor
     }
 
@@ -60,11 +64,11 @@ public class TabFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment TabFragment.
+     * @return A new instance of fragment LevelSelectorFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TabFragment newInstance(int gameMode) {
-        TabFragment fragment = new TabFragment();
+    public static LevelSelectorFragment newInstance(int gameMode) {
+        LevelSelectorFragment fragment = new LevelSelectorFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, gameMode);
         fragment.setArguments(args);
@@ -88,6 +92,7 @@ public class TabFragment extends Fragment {
 
         if (gameMode == GameMode.ARCADE) {
             selectLevelPrompt = getString(R.string.arcade_select_level_prompt);
+            userProgressLevel = getUserProgressLevel(levels);
         } else {
             selectLevelPrompt = getString(R.string.classic_select_level_prompt);
         }
@@ -153,6 +158,15 @@ public class TabFragment extends Fragment {
                 dim++;
             }
         }
+        LinearLayout progressBarHolder = (LinearLayout) holder.getChildAt(4);
+
+        if (gameMode == GameMode.ARCADE) {
+            TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
+            ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
+            progressBarHolder.addView(userProgressTextView);
+            progressBarHolder.addView(userProgressBar);
+        }
+
     }
 
     private void selectLevel(Level level) {
@@ -187,5 +201,42 @@ public class TabFragment extends Fragment {
         layoutParams.leftMargin = getPixels(TABLE_ROW_MARGIN_HORIZONTAL);
         layoutParams.rightMargin = getPixels(TABLE_ROW_MARGIN_HORIZONTAL);
         return layoutParams;
+    }
+
+    private TextView getTextViewDisplayForLevel(int level) {
+        TextView textView = new TextView(getContext());
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        String levelTitle = getTextToDisplayForUserProgress(level);
+        textView.setText(levelTitle);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+        textView.setTextColor(getResources().getColor(R.color.custom_black));
+        return textView;
+    }
+
+    private String getTextToDisplayForUserProgress(int nextLevelToUnlock) {
+        return SkillLevelConstants.getSkillLevelForLevel(nextLevelToUnlock);
+    }
+
+    private int getUserProgressLevel(List<Level> levels) {
+        int result = DatabaseConstants.MIN_DIMENSION;
+        for (Level level : levels) {
+            if (level.getDimension() > result && level.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL) {
+                result = level.getDimension();
+            }
+        }
+        return result;
+    }
+
+    private ProgressBar getUserProgressBar(int level) {
+        ProgressBar progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal);
+        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_level_selector));
+        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
+        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+//        int level = nextLevel-1;
+        int progress = (int) (((double) (level-1) / DatabaseConstants.MAX_DIMENSION) * 100);
+        progressBar.setProgress(progress);
+        Log.d(TAG, "progress: " + progressBar.getProgress());
+        return progressBar;
     }
 }

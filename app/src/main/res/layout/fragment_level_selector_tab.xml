@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TabFragment">
+    tools:context=".LevelSelectorFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:id="@+id/arcadeTabFragment"
         android:layout_width="match_parent"
@@ -17,7 +16,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textSize="20sp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="32dp"
             android:layout_marginHorizontal="12dp">
         </TextView>
         <LinearLayout
@@ -356,6 +355,12 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/progress_bar_bolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="top">
+        </LinearLayout>
     </LinearLayout>
-
 </FrameLayout>

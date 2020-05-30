@@ -64,8 +64,6 @@
     <string name="arcade_description">Complete each level\nto unlock the next one!</string>
     <string name="classic_description">All lights are on:\ntry to turn them all off!</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="stats_label">stats</string>
     <string name="rules_label">rules</string>
     <string name="home_label">home</string>

@@ -2,62 +2,64 @@ package com.algorithmandblues.lightsout;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class SwipeLevelSelectorActivity extends AppCompatActivity {
+public class SelectLevelActivity extends FragmentActivity {
 
     DatabaseHelper databaseHelper;
     LevelDBHandler levelDBHandler;
-    int userProgressLevel;
+//    int userProgressLevel;
     int selectedGameMode;
 
-    private static final int PROGRESS_BAR_HORIZONTAL_PADDING = 15;
-    private static final int TEXT_SIZE = 24;
     private static final int BOTTOM_ICONS_IMAGE_SIZE = 40;
     private static final int BOTTOM_ICONS_LABEL_TEXT_SIZE = 16;
     private static final int SIDE_PADDING_STATS_ICONS = 0;
     private static final int BUTTON_PADDING_TOP = 16;
     private static final float ONE_THIRD = (float) 0.33;
 
-    private static final String TAG = SwipeLevelSelectorActivity.class.getSimpleName();
+    private static final String[] TAB_NAMES = {"Arcade", "Practice"};
+    private static final String TAG = SelectLevelActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_swipe_level_selector);
+        setContentView(R.layout.activity_select_level);
         selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.ARCADE);
-        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-        levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
-        List<Level> userLevelsForProgress = levelDBHandler.fetchLevelsForGameMode(GameMode.ARCADE);
-        userProgressLevel = getUserProgressLevel(userLevelsForProgress);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        CustomPagerAdapter myPagerAdapter = new CustomPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(myPagerAdapter);
+//        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+//        levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
+//        List<Level> userLevelsForProgress = levelDBHandler.fetchLevelsForGameMode(GameMode.ARCADE);
+//        userProgressLevel = getUserProgressLevel(userLevelsForProgress);
+        ViewPager2 viewPager = (ViewPager2) findViewById(R.id.pager);
+        CustomPagerAdapter myPagerAdapter = new CustomPagerAdapter(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(viewPager);
+        viewPager.setAdapter(myPagerAdapter);
+//        tabLayout.setupWithViewPager(viewPager);
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(TAB_NAMES[position])
+        ).attach();
         TabLayout.Tab tab = tabLayout.getTabAt(selectedGameMode);
         tab.select();
 //        RelativeLayout footer = findViewById(R.id.progress_bar_and_other_buttons_holder);
         LinearLayout progressBarHolder = findViewById(R.id.progress_bar_bolder);
-        TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
-        ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
-        progressBarHolder.addView(userProgressTextView);
-        progressBarHolder.addView(userProgressBar);
+//        TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
+//        ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
+//        progressBarHolder.addView(userProgressTextView);
+//        progressBarHolder.addView(userProgressBar);
 
         LinearLayout bottomIcons = findViewById(R.id.bottom_icons_container);
         LinearLayout bottomButtonsAndActivitySwitches = getBottomButtonsAndIcons();
@@ -98,7 +100,7 @@ public class SwipeLevelSelectorActivity extends AppCompatActivity {
     }
 
     private void goToHome() {
-        Intent intent = new Intent(SwipeLevelSelectorActivity.this, HomePageActivity.class);
+        Intent intent = new Intent(SelectLevelActivity.this, HomePageActivity.class);
         startActivity(intent);
         finish();
     }
@@ -121,31 +123,31 @@ public class SwipeLevelSelectorActivity extends AppCompatActivity {
 
     }
 
-    private TextView getTextViewDisplayForLevel(int level) {
-        TextView textView = new TextView(this);
-        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        String levelTitle = getTextToDisplayForUserProgress(level);
-        textView.setText(levelTitle);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
-        textView.setTextColor(getResources().getColor(R.color.custom_black));
-        return textView;
-    }
+//    private TextView getTextViewDisplayForLevel(int level) {
+//        TextView textView = new TextView(this);
+//        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//        String levelTitle = getTextToDisplayForUserProgress(level);
+//        textView.setText(levelTitle);
+//        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+//        textView.setTextColor(getResources().getColor(R.color.custom_black));
+//        return textView;
+//    }
+//
+//    private String getTextToDisplayForUserProgress(int nextLevelToUnlock) {
+//        return SkillLevelConstants.getSkillLevelForLevel(nextLevelToUnlock);
+//    }
 
-    private String getTextToDisplayForUserProgress(int nextLevelToUnlock) {
-        return SkillLevelConstants.getSkillLevelForLevel(nextLevelToUnlock);
-    }
-
-    private ProgressBar getUserProgressBar(int level) {
-        ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.customprogressbarstyle));
-        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
-        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-        int progress = (int) (((double) level / DatabaseConstants.MAX_DIMENSION) * 100);
-        progressBar.setProgress(progress);
-        Log.d(TAG, "progress: " + progressBar.getProgress());
-        return progressBar;
-    }
+//    private ProgressBar getUserProgressBar(int level) {
+//        ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+//        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.customprogressbarstyle));
+//        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
+//        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+//        int progress = (int) (((double) level / DatabaseConstants.MAX_DIMENSION) * 100);
+//        progressBar.setProgress(progress);
+//        Log.d(TAG, "progress: " + progressBar.getProgress());
+//        return progressBar;
+//    }
 
     /**
      * Gets the current highest unlocked level dimension from db before new level is unlocked
