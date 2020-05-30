@@ -43,7 +43,7 @@ public class HomePageActivity extends AppCompatActivity {
 
 
     public void goToLevelSelector() {
-        Intent intent = new Intent(HomePageActivity.this, LevelSelectorActivity.class);
+        Intent intent = new Intent(HomePageActivity.this, SelectLevelActivity.class);
         startActivity(intent);
         finish();
     }

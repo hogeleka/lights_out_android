@@ -2,4 +2,5 @@
 <resources>
     <dimen name="button_icon_size">40dp</dimen>
     <dimen name="scale_factor" format="float">0.75</dimen>
+    <dimen name="one_third" format="float">0.33</dimen>
 </resources>

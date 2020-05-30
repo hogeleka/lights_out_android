@@ -11,7 +11,7 @@
     <string name="originalStartState">originalStartState</string>
     <string name="resume_from_db_flag">resumeGameFromDB</string>
     <string name="set_random_state_flag">setRandomStateFlag</string>
-    <string name="title_activity_level_selector">LevelSelectorActivity</string>
+    <string name="title_activity_level_selector">SelectLevelActivity</string>
 
 
     <string name="level_chooser_button_label">%1$dx%2$d</string>
@@ -59,4 +59,12 @@
     <string name="no_hint_needed">You have all the hints you need!</string>
     <string name="moves_per_bulb">movesPerBulb</string>
     <string name="selected_game_mode">selectedGameMode</string>
+    <string name="arcade_select_level_prompt">select a board size</string>
+    <string name="classic_select_level_prompt">choose any board size</string>
+    <string name="arcade_description">Complete each level\nto unlock the next one!</string>
+    <string name="classic_description">All lights are on:\ntry to turn them all off!</string>
+
+    <string name="stats_label">stats</string>
+    <string name="rules_label">rules</string>
+    <string name="home_label">home</string>
 </resources>

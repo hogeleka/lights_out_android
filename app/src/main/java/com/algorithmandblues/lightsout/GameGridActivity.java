@@ -118,6 +118,38 @@ public class GameGridActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (gameInstance.getHasMadeAtLeastOneMove()) {
+            saveCurrentGameInstance(gameInstance);
+        } else {
+            if (gameInstance.getGameMode() == GameMode.ARCADE) {
+                saveCurrentGameInstance(gameInstance);
+            }
+        }
+        returnToLevelSelector();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     private void updateDBForBestScorePerLevel(GameWinState gameWinState) {
         if (gameWinState.getNumberOfStars() > currentBestScoreForDimensionAndGameType){
             Level level = new Level() {{
@@ -200,37 +232,6 @@ public class GameGridActivity extends AppCompatActivity {
         return builder.toString();
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (gameInstance.getHasMadeAtLeastOneMove()) {
-            saveCurrentGameInstance(gameInstance);
-        } else {
-            if (gameInstance.getGameMode() == GameMode.ARCADE) {
-                saveCurrentGameInstance(gameInstance);
-            }
-        }
-        returnToLevelSelector();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     private String getOriginalStartStateString(int dimension) {
         StringBuilder originalStartState = new StringBuilder();
@@ -382,7 +383,7 @@ public class GameGridActivity extends AppCompatActivity {
     }
 
     private void returnToLevelSelector() {
-        Intent intent = new Intent(GameGridActivity.this, LevelSelectorActivity.class);
+        Intent intent = new Intent(GameGridActivity.this, SelectLevelActivity.class);
         intent.putExtra(getString(R.string.selected_game_mode), gameDataObject.getGameMode());
         startActivity(intent);
         finish();

@@ -1,7 +1,6 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -9,22 +8,20 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.net.DatagramSocketImpl;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ActivityDrawingUtils {
 
+    public static final float ONE_THIRD = (float) 0.33 ;
     private static final String TAG = ActivityDrawingUtils.class.getSimpleName();
     private static final int MARGIN_PX_BOARD_TO_TEXT = 10;
 
-    private static final float ONE_THIRD = (float) 0.33;
     public static final float ENABLED_LEVEL_ALPHA = (float) 1.0;
     public static final float DISABLED_LEVEL_ALPHA = (float) 0.25;
 
@@ -55,8 +52,8 @@ public class ActivityDrawingUtils {
             ImageView starImage = new ImageView(context);
             starImage.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, ONE_THIRD));
             starImage.setBackground( i <= numberOfStars ?
-                    context.getResources().getDrawable(R.drawable.gold_star_3d)
-                    : context.getResources().getDrawable(R.drawable.gold_star_3d)
+                    context.getResources().getDrawable(R.drawable.star)
+                    : context.getResources().getDrawable(R.drawable.star)
             );
             starImage.setAlpha(i <= numberOfStars ? ENABLED_LEVEL_ALPHA : DISABLED_LEVEL_ALPHA);
             int imageSize = convertIntValueToAppropriatePixelValueForScreenSize(context, starSize);

@@ -312,7 +312,7 @@ public class GameSummaryActivity extends AppCompatActivity {
         linearLayout.setGravity(Gravity.CENTER);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         linearLayout.setPadding(SIDE_PADDING_STATS_ICONS, BUTTON_PADDING_TOP, SIDE_PADDING_STATS_ICONS, 0);
-        LinearLayout allStatsLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.icons8_chart), "stats");
+        LinearLayout allStatsLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.stats), "stats");
         LinearLayout nextLevelLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.right_arrow), "next level");
         LinearLayout restartLevelLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.restart_game), "play again");
 
@@ -412,7 +412,7 @@ public class GameSummaryActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(GameSummaryActivity.this, LevelSelectorActivity.class);
+        Intent intent = new Intent(GameSummaryActivity.this, SelectLevelActivity.class);
         intent.putExtra(getString(R.string.selected_game_mode), gameWinState.getGameMode());
         startActivity(intent);
         finish();
