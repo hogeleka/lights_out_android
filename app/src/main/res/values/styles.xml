@@ -23,17 +23,10 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
-<<<<<<< HEAD
-
     <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:color">@color/background_color</item>
         <item name="android:textColor">@color/bulb_off_color</item>
         <item name="android:textColorPrimary">@color/bulb_off_color</item>
     </style>
 
-<!--    <style name="customprogressbar"-->
-<!--        <item name="android:attr/">-->
-<!--    </style>-->
-=======
->>>>>>> db18285e94b388e856bfbbefd14d12ffa66e185c
 </resources>
