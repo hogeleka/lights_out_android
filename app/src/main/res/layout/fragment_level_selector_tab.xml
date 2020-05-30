@@ -44,54 +44,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@dimen/one_third"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="24sp">
-                </TextView>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                 </LinearLayout>
             </LinearLayout>
@@ -114,61 +79,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@dimen/one_third"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="24sp">
-                </TextView>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                 </LinearLayout>
             </LinearLayout>
@@ -191,54 +114,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@dimen/one_third"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="24sp">
-                </TextView>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                 </LinearLayout>
             </LinearLayout>
@@ -268,54 +156,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="@dimen/one_third"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="24sp">
-                </TextView>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                 </LinearLayout>
             </LinearLayout>
@@ -338,19 +191,166 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
                     </ImageView>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="@dimen/one_third"
-                        android:background="@drawable/gold_star_3d">
+                        android:background="@drawable/star">
+                    </ImageView>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@dimen/one_third"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="24sp">
+                </TextView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@dimen/one_third"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="24sp">
+                </TextView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@dimen/one_third"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="24sp">
+                </TextView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@dimen/one_third"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="24sp">
+                </TextView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="@dimen/one_third"
+                        android:background="@drawable/star">
                     </ImageView>
                 </LinearLayout>
             </LinearLayout>

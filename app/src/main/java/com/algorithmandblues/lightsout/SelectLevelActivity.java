@@ -40,26 +40,16 @@ public class SelectLevelActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_level);
         selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.ARCADE);
-//        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-//        levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
-//        List<Level> userLevelsForProgress = levelDBHandler.fetchLevelsForGameMode(GameMode.ARCADE);
-//        userProgressLevel = getUserProgressLevel(userLevelsForProgress);
+
         ViewPager2 viewPager = (ViewPager2) findViewById(R.id.pager);
         CustomPagerAdapter myPagerAdapter = new CustomPagerAdapter(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         viewPager.setAdapter(myPagerAdapter);
-//        tabLayout.setupWithViewPager(viewPager);
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText(TAB_NAMES[position])
         ).attach();
         TabLayout.Tab tab = tabLayout.getTabAt(selectedGameMode);
         tab.select();
-//        RelativeLayout footer = findViewById(R.id.progress_bar_and_other_buttons_holder);
-        LinearLayout progressBarHolder = findViewById(R.id.progress_bar_bolder);
-//        TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
-//        ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
-//        progressBarHolder.addView(userProgressTextView);
-//        progressBarHolder.addView(userProgressBar);
 
         LinearLayout bottomIcons = findViewById(R.id.bottom_icons_container);
         LinearLayout bottomButtonsAndActivitySwitches = getBottomButtonsAndIcons();
@@ -78,7 +68,7 @@ public class SelectLevelActivity extends FragmentActivity {
         linearLayout.setGravity(Gravity.CENTER);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         linearLayout.setPadding(SIDE_PADDING_STATS_ICONS, BUTTON_PADDING_TOP, SIDE_PADDING_STATS_ICONS, 0);
-        LinearLayout statsLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.icons8_chart), getString(R.string.stats_label));
+        LinearLayout statsLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.stats), getString(R.string.stats_label));
         LinearLayout rulesLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.rules), getString(R.string.rules_label));
         LinearLayout homeLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.home), getString(R.string.home_label));
         //TODO: fix to go to stats page
@@ -122,32 +112,6 @@ public class SelectLevelActivity extends FragmentActivity {
         return layout;
 
     }
-
-//    private TextView getTextViewDisplayForLevel(int level) {
-//        TextView textView = new TextView(this);
-//        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//        String levelTitle = getTextToDisplayForUserProgress(level);
-//        textView.setText(levelTitle);
-//        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
-//        textView.setTextColor(getResources().getColor(R.color.custom_black));
-//        return textView;
-//    }
-//
-//    private String getTextToDisplayForUserProgress(int nextLevelToUnlock) {
-//        return SkillLevelConstants.getSkillLevelForLevel(nextLevelToUnlock);
-//    }
-
-//    private ProgressBar getUserProgressBar(int level) {
-//        ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-//        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.customprogressbarstyle));
-//        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
-//        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-//        int progress = (int) (((double) level / DatabaseConstants.MAX_DIMENSION) * 100);
-//        progressBar.setProgress(progress);
-//        Log.d(TAG, "progress: " + progressBar.getProgress());
-//        return progressBar;
-//    }
 
     /**
      * Gets the current highest unlocked level dimension from db before new level is unlocked

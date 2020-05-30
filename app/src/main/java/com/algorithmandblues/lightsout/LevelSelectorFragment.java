@@ -227,16 +227,25 @@ public class LevelSelectorFragment extends Fragment {
         return result;
     }
 
+//    private ProgressBar getUserProgressBar(int level) {
+//        ProgressBar progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal);
+//        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_level_selector));
+//        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
+//        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+////        int level = nextLevel-1;
+//        int progress = (int) (((double) (level-1) / DatabaseConstants.MAX_DIMENSION) * 100);
+//        progressBar.setProgress(progress);
+//        Log.d(TAG, "progress: " + progressBar.getProgress());
+//        return progressBar;
+//    }
+
     private ProgressBar getUserProgressBar(int level) {
-        ProgressBar progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal);
-        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_level_selector));
-        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
-        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-//        int level = nextLevel-1;
-        int progress = (int) (((double) (level-1) / DatabaseConstants.MAX_DIMENSION) * 100);
-        progressBar.setProgress(progress);
-        Log.d(TAG, "progress: " + progressBar.getProgress());
-        return progressBar;
+        return new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal) {{
+            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_level_selector));
+            setPadding(getPixels(PROGRESS_BAR_HORIZONTAL_PADDING), 0, getPixels(PROGRESS_BAR_HORIZONTAL_PADDING), 0);
+            setProgress((int) (((double) (level-1) / (DatabaseConstants.MAX_DIMENSION-1)) * 100));
+        }};
     }
 }

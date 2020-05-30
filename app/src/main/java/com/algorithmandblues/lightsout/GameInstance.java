@@ -61,16 +61,28 @@ public class GameInstance extends BaseObservable {
     private static final int BOARD_PADDING_RAW = 16;
 
     // TODO: Make them more realistic.
+//    private static final Map<Integer, Integer> HINTS_ALLOWED_MAP = new HashMap<Integer, Integer>() {{
+//        put(2, 5);
+//        put(3, 1);
+//        put(4, 1);
+//        put(5, 10);
+//        put(6, 12);
+//        put(7, 15);
+//        put(8, 25);
+//        put(9, 35);
+//        put(10, 40);
+//    }};
+
     private static final Map<Integer, Integer> HINTS_ALLOWED_MAP = new HashMap<Integer, Integer>() {{
-        put(2, 5);
-        put(3, 1);
-        put(4, 1);
-        put(5, 10);
-        put(6, 12);
-        put(7, 15);
-        put(8, 25);
-        put(9, 35);
-        put(10, 40);
+        put(2, 1);
+        put(3, 3);
+        put(4, 4);
+        put(5, 25);
+        put(6, 36);
+        put(7, 49);
+        put(8, 64);
+        put(9, 81);
+        put(10, 100);
     }};
 
     private static final Map<Integer, Integer> BULB_GAP_MAP = new HashMap<Integer, Integer>() {{

@@ -13,7 +13,7 @@
     <RelativeLayout
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:keepScreenOn="true"
         android:background="@color/background_color">
 
@@ -25,12 +25,12 @@
             android:gravity="center"
             android:orientation="vertical">
             <ImageView
-                android:src="@drawable/line"
+                android:src="@drawable/hangingbulbwire"
                 android:layout_width="3dp"
                 android:layout_height="120dp"
                 android:layout_gravity="center"/>
             <ImageView
-                android:src="@{gameinstance.isLastBulbToggleIsOn ? @drawable/ball : @drawable/hangingoffbulb}"
+                android:src="@{gameinstance.isLastBulbToggleIsOn ? @drawable/hangingonbulb : @drawable/hangingoffbulb}"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"/>
@@ -48,7 +48,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_above="@+id/power_text_view_holder"
-                android:paddingTop="100dp"
                 android:gravity="center">
                 <TextView
                     android:id="@+id/game_grid_title_text_view"
@@ -79,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="@{`moves: ` + gameinstance.moveCounter}"
-                    android:layout_gravity="left">
+                    android:layout_gravity="start">
                 </TextView>
             </RelativeLayout>
 
@@ -119,7 +118,6 @@
                     android:id="@+id/hints_left_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
                     android:textAlignment="viewEnd"
                     android:maxLines="1"
                     android:text="@{`hints: ` + gameinstance.hintsLeft }"

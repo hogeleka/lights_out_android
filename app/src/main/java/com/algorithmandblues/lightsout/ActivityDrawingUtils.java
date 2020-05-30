@@ -1,7 +1,6 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -9,13 +8,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.net.DatagramSocketImpl;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,8 +52,8 @@ public class ActivityDrawingUtils {
             ImageView starImage = new ImageView(context);
             starImage.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, ONE_THIRD));
             starImage.setBackground( i <= numberOfStars ?
-                    context.getResources().getDrawable(R.drawable.gold_star_3d)
-                    : context.getResources().getDrawable(R.drawable.gold_star_3d)
+                    context.getResources().getDrawable(R.drawable.star)
+                    : context.getResources().getDrawable(R.drawable.star)
             );
             starImage.setAlpha(i <= numberOfStars ? ENABLED_LEVEL_ALPHA : DISABLED_LEVEL_ALPHA);
             int imageSize = convertIntValueToAppropriatePixelValueForScreenSize(context, starSize);
