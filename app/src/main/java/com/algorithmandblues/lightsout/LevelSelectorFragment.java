@@ -1,9 +1,12 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -40,6 +43,7 @@ public class LevelSelectorFragment extends Fragment {
     DatabaseHelper databaseHelper;
     LevelDBHandler levelDBHandler;
     Map<Integer, Level> dimensionAndLevel;
+    GameDataObjectDBHandler gameDataObjectDBHandler;
     int gameMode;
 //    String gameModeDescription;
     String selectLevelPrompt;
@@ -84,6 +88,7 @@ public class LevelSelectorFragment extends Fragment {
         databaseHelper = DatabaseHelper.getInstance(getContext());
         levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
         List<Level> levels = levelDBHandler.fetchLevelsForGameMode(gameMode);
+        gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
         Log.d(TAG, "fetched game mode type: " + gameMode + " found data:--" + levels.toString());
         dimensionAndLevel = new HashMap<>();
         for (Level level : levels) {
@@ -108,10 +113,6 @@ public class LevelSelectorFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         LinearLayout holder = (LinearLayout) view.findViewById(R.id.arcadeTabFragment);
-
-//        TextView gameModeDescriptionTextview = (TextView) holder.getChildAt(0);
-//        gameModeDescriptionTextview.setText(gameModeDescription);
-//        gameModeDescriptionTextview.setTextColor(getResources().getColor(R.color.custom_black));
 
         TextView selectLevelPromptTextview = (TextView) holder.getChildAt(0);
         selectLevelPromptTextview.setText(selectLevelPrompt);
@@ -170,17 +171,11 @@ public class LevelSelectorFragment extends Fragment {
     }
 
     private void selectLevel(Level level) {
-        int dimension = level.getDimension();
-        boolean shouldSetRandomStateFlag = level.getGameMode() == GameMode.ARCADE;
-        boolean resumeFromDB = false;
-        int bestScoreForGameModeAndType = level.getNumberOfStars();
-        Intent intent = new Intent(getActivity(), GameGridActivity.class);
-        intent.putExtra(getString(R.string.dimension), dimension);
-        intent.putExtra(getString(R.string.set_random_state_flag), shouldSetRandomStateFlag);
-        intent.putExtra(getString(R.string.best_score_level_gameType), bestScoreForGameModeAndType);
-        intent.putExtra(getString(R.string.resume_from_db_flag), resumeFromDB);
-        startActivity(intent);
-        getActivity().finish();
+        if (userHasExistingGame(level.getDimension(), level.getGameMode())) {
+            buildDialogToRequestUserResponse(level);
+        } else {
+            goToNewGameActivity(level, false);
+        }
     }
 
     private int getPixels(int value) {
@@ -227,18 +222,6 @@ public class LevelSelectorFragment extends Fragment {
         return result;
     }
 
-//    private ProgressBar getUserProgressBar(int level) {
-//        ProgressBar progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal);
-//        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_level_selector));
-//        int horizontalPadding = getPixels(PROGRESS_BAR_HORIZONTAL_PADDING);
-//        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-////        int level = nextLevel-1;
-//        int progress = (int) (((double) (level-1) / DatabaseConstants.MAX_DIMENSION) * 100);
-//        progressBar.setProgress(progress);
-//        Log.d(TAG, "progress: " + progressBar.getProgress());
-//        return progressBar;
-//    }
 
     private ProgressBar getUserProgressBar(int level) {
         return new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal) {{
@@ -247,5 +230,41 @@ public class LevelSelectorFragment extends Fragment {
             setPadding(getPixels(PROGRESS_BAR_HORIZONTAL_PADDING), 0, getPixels(PROGRESS_BAR_HORIZONTAL_PADDING), 0);
             setProgress((int) (((double) (level-1) / (DatabaseConstants.MAX_DIMENSION-1)) * 100));
         }};
+    }
+
+    public void buildDialogToRequestUserResponse(Level level) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle);
+        builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
+                .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), level.getDimension(), level.getDimension()))
+                .setCancelable(true)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToNewGameActivity(level, true);
+                    }
+                })
+                .setNegativeButton(getString(R.string.restart_new_game), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        goToNewGameActivity(level, false);
+                    }
+                });
+        //Creating dialog box
+        AlertDialog dialog  = builder.create();
+        dialog.show();
+    }
+
+    public void goToNewGameActivity(Level level, boolean resumeGameFromDBFlag) {
+        Intent intent = new Intent(getContext(), GameGridActivity.class);
+        intent.putExtra(getString(R.string.dimension), level.getDimension());
+        intent.putExtra(getString(R.string.resume_from_db_flag), resumeGameFromDBFlag);
+        intent.putExtra(getString(R.string.set_random_state_flag), level.getGameMode() == GameMode.ARCADE);
+        intent.putExtra(getString(R.string.best_score_level_gameType), level.getNumberOfStars());
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    public boolean userHasExistingGame(int dimension, int gameMode) {
+        return gameDataObjectDBHandler.getMostRecentGameDataForGameType(dimension, gameMode) != null;
     }
 }

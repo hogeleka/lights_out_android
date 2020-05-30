@@ -13,10 +13,6 @@
     <color name="bulb_off_color">#004d40</color>
     <color name="navigation_bar_color">#004d40</color>
     <color name="progress_bar_fill">#004d40</color>
-
-<!--    #02aab0 → #00cdac-->
-<!--    #141e30 → #243b55-->
-<!--    #eacda3 → #d6ae7b-->
     #F2A65A#772F1A
 
 </resources>

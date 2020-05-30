@@ -24,6 +24,12 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:color">@color/background_color</item>
+        <item name="android:textColor">@color/bulb_off_color</item>
+        <item name="android:textColorPrimary">@color/bulb_off_color</item>
+    </style>
+
 <!--    <style name="customprogressbar"-->
 <!--        <item name="android:attr/">-->
 <!--    </style>-->
