@@ -33,19 +33,20 @@ import java.util.Map;
  */
 public class LevelSelectorFragment extends Fragment {
 
-    private static final String TAG = LevelSelectorFragment.class.getSimpleName();
-    // TODO: Rename parameter arguments, choose names that match
-    private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final int TEXT_SIZE = 24;
+    // the fragment initialization parameter
     private static final String ARG_PARAM1 = "gameMode";
+
+
+    private static final String TAG = LevelSelectorFragment.class.getSimpleName();
+    private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
+    private static final int TEXT_SIZE = 24;
     private static final int STAR_IMAGE_SIZE_PX = 22;
+
     DatabaseHelper databaseHelper;
     LevelDBHandler levelDBHandler;
     Map<Integer, Level> dimensionAndLevel;
     GameDataObjectDBHandler gameDataObjectDBHandler;
     int gameMode;
-//    String gameModeDescription;
     String selectLevelPrompt;
     int userProgressLevel;
 
@@ -55,10 +56,6 @@ public class LevelSelectorFragment extends Fragment {
     private static final int TABLE_ROW_MARGIN_HORIZONTAL = 8;
     private static final int PROGRESS_BAR_HORIZONTAL_PADDING = 48;
 
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public LevelSelectorFragment() {
         // Required empty public constructor
@@ -121,7 +118,7 @@ public class LevelSelectorFragment extends Fragment {
         int rowHeight = useDisplayMetricsToCalculateRowHeight();
         LinearLayout.LayoutParams layoutParams = getLayoutParams(rowHeight);
         int dim = DatabaseConstants.MIN_DIMENSION;
-        //start from row 1: first row is the select level prompt
+        //start from row 1: first row is the select level prompt. 4th row is the row which might have progress bar
         for (int row = 1; row < 4; row++) {
             ((LinearLayout) holder.getChildAt(row)).setGravity(Gravity.CENTER);
             holder.getChildAt(row).setLayoutParams(layoutParams);
@@ -237,18 +234,8 @@ public class LevelSelectorFragment extends Fragment {
         builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
                 .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), level.getDimension(), level.getDimension()))
                 .setCancelable(true)
-                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        goToNewGameActivity(level, true);
-                    }
-                })
-                .setNegativeButton(getString(R.string.restart_new_game), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        goToNewGameActivity(level, false);
-                    }
-                });
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> goToNewGameActivity(level, true))
+                .setNegativeButton(getString(R.string.restart_new_game), (dialog, which) -> goToNewGameActivity(level, false));
         //Creating dialog box
         AlertDialog dialog  = builder.create();
         dialog.show();
