@@ -2,7 +2,4 @@
 <resources>
     <dimen name="button_icon_size">40dp</dimen>
     <dimen name="scale_factor" format="float">0.75</dimen>
-    <dimen name="button_disabled_alpha" format="float">0.2</dimen>
-    <dimen name="button_enabled_alpha" format="float">1.0</dimen>
-    <dimen name="star_animation_duration" format="float">750</dimen>
 </resources>

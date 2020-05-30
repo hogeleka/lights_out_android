@@ -118,7 +118,7 @@ public class ActivityDrawingUtils {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.topMargin = convertIntValueToAppropriatePixelValueForScreenSize(context, MARGIN_PX_BOARD_TO_TEXT);
+//        layoutParams.topMargin = convertIntValueToAppropriatePixelValueForScreenSize(context, MARGIN_PX_BOARD_TO_TEXT);
         layoutParams.bottomMargin = convertIntValueToAppropriatePixelValueForScreenSize(context, MARGIN_PX_BOARD_TO_TEXT);
         linearLayout.setLayoutParams(layoutParams);
         int dimension = gameWinState.getDimension();
@@ -184,10 +184,15 @@ public class ActivityDrawingUtils {
             params.bottomMargin = bulbGap;
         }
 
+        if(r == 0) {
+            params.topMargin = 0;
+        } else {
+            params.topMargin = bulbGap;
+        }
+
         params.height = bulbSideLength;
         params.width = bulbSideLength;
 
-        params.topMargin = bulbGap;
         params.setGravity(Gravity.CENTER);
         params.columnSpec = GridLayout.spec(c);
         params.rowSpec = GridLayout.spec(r);

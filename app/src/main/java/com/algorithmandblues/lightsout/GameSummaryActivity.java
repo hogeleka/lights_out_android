@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -27,24 +29,29 @@ import java.util.TreeMap;
 
 public class GameSummaryActivity extends AppCompatActivity {
 
-    private static final int STAR_IMAGE_SIZE_PX = 50;
+    private static final int STAR_IMAGE_SIZE_PX = 55;
     private static final int ROW_OF_STARS_LEFT_RIGHT_PADDING = 10;
-    private static final int ROW_OF_STARS_TOP_BOTTOM_PADING = 10;
+    private static final int ROW_OF_STARS_TOP_BOTTOM_PADDING = 10;
     private static final int TEXT_SIZE_NUMBER_GAME_STAT = 50;
     private static final int TEXT_SIZE_LABEL_GAME_STAT = 16;
-    private static final float ONE_THIRD = (float) 0.33;
     private static final int BOTTOM_ICONS_IMAGE_SIZE = 40;
     private static final int BOTTOM_ICONS_LABEL_TEXT_SIZE = 16;
     private static final int SIDE_PADDING_STATS_ICONS = 0;
     private static final int BUTTON_PADDING_TOP = 16;
-    private static final int SKILL_TEXt_VIEW_PADDING_TOP = 50;
     private static final int PROGRESS_BAR_ANIMATION_DURATION = 500;
     private static final int PROGRESS_BAR_PADDING = 20;
-    private static final String SKILL_PREFIX = "Skill: ";
-//    private static final BounceInterpolator BOUNCE_INTERPOLATOR = new BounceInterpolator(0.05, 10);
+    private static final int SOLUTION_DESCRIPTOR_PADDING_TOP = 24;
+    private static final int SOLUTION_DESCRIPTOR_PADDING_BOTTOM = 10;
+    private static final int TEXT_SIZE_SKILL = 30;
+    private static final float ONE_THIRD = (float) 0.33;
+
+
+    // 750 is duration of each star animation. Defined in staranimation.xml
+    private static final BounceInterpolator BOUNCE_INTERPOLATOR = new BounceInterpolator(0.2, 20);
+    private static final String SOLUTION_DESCRIPTOR = "your solution:";
 
     private boolean newLevelIsUnlocked;
-    int bestScoreForLevelAndGameType;
+    private int bestScoreForLevelAndGameType;
     DatabaseHelper databaseHelper;
     GameDataObjectDBHandler gameDataObjectDBHandler;
     GameWinStateDBHandler gameWinStateDBHandler;
@@ -53,6 +60,8 @@ public class GameSummaryActivity extends AppCompatActivity {
     Level nextLevel;
     LevelDBHandler levelDBHandler;
     ProgressBarAnimation progressBarAnimation;
+    ValueAnimator moveTextAnimator;
+    TextSwitcher skillLevelTextSwitcher;
 
     private static final String TAG = GameSummaryActivity.class.getSimpleName();
     
@@ -69,17 +78,26 @@ public class GameSummaryActivity extends AppCompatActivity {
 
         bestScoreForLevelAndGameType = getIntent().getIntExtra(getString(R.string.best_score_level_gameType), 0);
         pageContent = findViewById(R.id.fullscreen_content);
-        LinearLayout rowOfStars = ActivityDrawingUtils.makeRowOfStars(this, gameWinState.getNumberOfStars(), STAR_IMAGE_SIZE_PX, ROW_OF_STARS_LEFT_RIGHT_PADDING, ROW_OF_STARS_TOP_BOTTOM_PADING);
-
+        LinearLayout rowOfStars = ActivityDrawingUtils.makeRowOfStars(this, gameWinState.getNumberOfStars(), STAR_IMAGE_SIZE_PX, ROW_OF_STARS_LEFT_RIGHT_PADDING, ROW_OF_STARS_TOP_BOTTOM_PADDING);
         pageContent.addView(rowOfStars);
-        Animation animation  = AnimationUtils.loadAnimation(this, R.anim.staranimation);
-        LayoutAnimationController rowOfStarsAnimationController = new LayoutAnimationController(animation);
+        Animation starAnimation  = AnimationUtils.loadAnimation(this, R.anim.staranimation);
+        starAnimation.setInterpolator(BOUNCE_INTERPOLATOR);
+        LayoutAnimationController rowOfStarsAnimationController = new LayoutAnimationController(starAnimation);
         rowOfStarsAnimationController.setOrder(LayoutAnimationController.ORDER_NORMAL);
         rowOfStars.setLayoutAnimation(rowOfStarsAnimationController);
-        rowOfStarsAnimationController.start();
+
+        int currentBestLevel = getCurrentBestLevelDimensionFromDb();
+        newLevelIsUnlocked = false;
+        if(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION) {
+            nextLevel = levelDBHandler.getLevelFromDb(gameWinState.getGameMode(), gameWinState.getDimension() + 1);
+            newLevelIsUnlocked = checkIfNewLevelUnlocked(nextLevel);
+            if(newLevelIsUnlocked) {
+                updateNewLevelInDb();
+            }
+        }
 
         int powerSaved = gameWinState.getOriginalBoardPower();
-        byte[] originalbulbStatuses = getIntent().getByteArrayExtra(getString(R.string.initial_board_config));
+        byte[] originalBulbStatuses = getIntent().getByteArrayExtra(getString(R.string.initial_board_config));
         int[] movesPerBulb = getIntent().getIntArrayExtra(getString(R.string.moves_per_bulb));
 
         Log.d(TAG, "moves per bulb: " + Arrays.toString(movesPerBulb));
@@ -98,55 +116,104 @@ public class GameSummaryActivity extends AppCompatActivity {
         LinearLayout numbersAndLabels = ActivityDrawingUtils.makeGameSummaryTextsAndCaptions(this, numbersStrings, labels, TEXT_SIZE_NUMBER_GAME_STAT,
                 TEXT_SIZE_LABEL_GAME_STAT, SIDE_PADDING_STATS_ICONS);
         pageContent.addView(numbersAndLabels);
-        LinearLayout gameGrid = ActivityDrawingUtils.drawGameBoard(this, gameWinState, originalbulbStatuses, movesPerBulb);
+
+        TextView solutionDescriptor = ActivityDrawingUtils.getTextView(this, SOLUTION_DESCRIPTOR, TEXT_SIZE_LABEL_GAME_STAT, false);
+        solutionDescriptor.setPadding(0, getPixels(SOLUTION_DESCRIPTOR_PADDING_TOP), getPixels(SOLUTION_DESCRIPTOR_PADDING_BOTTOM), 0);
+        pageContent.addView(solutionDescriptor);
+
+        LinearLayout gameGrid = ActivityDrawingUtils.drawGameBoard(this, gameWinState, originalBulbStatuses, movesPerBulb);
         pageContent.addView(gameGrid);
+
 
         LinearLayout bottomButtons = createButtonsToOtherActivities();
         pageContent.addView(bottomButtons);
 
-        newLevelIsUnlocked = false;
-        int currentBestLevel = getCurrentBestLevelDimensionFromDb();
+        skillLevelTextSwitcher = createSkillLevelTextSwitcher(this, currentBestLevel);
+        pageContent.addView(skillLevelTextSwitcher);
 
-        if(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION) {
-            nextLevel = levelDBHandler.getLevelFromDb(gameWinState.getGameMode(), gameWinState.getDimension() + 1);
-            newLevelIsUnlocked = checkIfNewLevelUnlocked(nextLevel);
-            if(newLevelIsUnlocked) {
-                updateNewLevelInDb();
-            }
-        }
 
-        TextView skillLevelTextView = createSkillLevelTextView(getSkillText(currentBestLevel));
-        pageContent.addView(skillLevelTextView);
         ProgressBar progressBar = this.getUserProgressBar(currentBestLevel);
+        Log.d(TAG, "progress: " + progressBar.getProgress());
         pageContent.addView(progressBar);
 
-        //TODO: update code for move counter animations
-        TextView movesTextView = (TextView) ((LinearLayout) numbersAndLabels.getChildAt(1)).getChildAt(0);
-        ValueAnimator moveTextAnimator = new ValueAnimator();
-        moveTextAnimator.setObjectValues(0, gameWinState.getNumberOfMoves());
-        moveTextAnimator.addUpdateListener(animation1 -> movesTextView.setText(String.valueOf(animation1.getAnimatedValue())));
 
-        moveTextAnimator.setDuration(this.calculateMoveTextAnimatorDuration(gameWinState.getNumberOfMoves()));
-        moveTextAnimator.setStartDelay((long) getResources().getDimension(R.dimen.star_animation_duration) * 3);
-        moveTextAnimator.start();
+        TextView movesTextView = (TextView) ((LinearLayout) numbersAndLabels.getChildAt(1)).getChildAt(0);
+        moveTextAnimator = createMoveTextAnimator(movesTextView);
+        progressBarAnimation = createProgressBarAnimation(progressBar);
+
+        rowOfStarsAnimationController.start();
+        rowOfStars.setLayoutAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                moveTextAnimator.start();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+
         moveTextAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (newLevelIsUnlocked) {
-                    int nextLevelProgress = (int) (((double) nextLevel.getDimension() / DatabaseConstants.MAX_DIMENSION) * 100);
-                    progressBarAnimation = new ProgressBarAnimation(progressBar, progressBar.getProgress(), nextLevelProgress);
-                    progressBarAnimation.setDuration(PROGRESS_BAR_ANIMATION_DURATION);
-                    progressBar.setAnimation(progressBarAnimation);
                     progressBar.startAnimation(progressBarAnimation);
-                    skillLevelTextView.setText(getSkillText(nextLevel.getDimension()));
                 }
+            }
+        });
+
+
+        progressBarAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                skillLevelTextSwitcher.setText(getSkillText(nextLevel.getDimension()));
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
             }
         });
     }
 
+    private ValueAnimator createMoveTextAnimator(TextView movesTextView) {
+        return new ValueAnimator() {{
+            setObjectValues(0, gameWinState.getNumberOfMoves());
+            addUpdateListener(animation1 -> movesTextView.setText(String.valueOf(animation1.getAnimatedValue())));
+            setDuration(calculateMoveTextAnimatorDuration(gameWinState.getNumberOfMoves()));
+        }};
+    }
+
+    private ProgressBarAnimation createProgressBarAnimation(ProgressBar progressBar) {
+        int nextLevelProgress = (int) (((double) nextLevel.getDimension() / DatabaseConstants.MAX_DIMENSION) * 100);
+        return new ProgressBarAnimation(progressBar, progressBar.getProgress(), nextLevelProgress) {{
+            setDuration(PROGRESS_BAR_ANIMATION_DURATION);
+        }};
+    }
+
+    private TextSwitcher createSkillLevelTextSwitcher(Context context, int currentBestLevel) {
+        return new TextSwitcher(context) {{
+            setInAnimation(context, android.R.anim.slide_in_left);
+            setOutAnimation(context, android.R.anim.slide_out_right);
+            setFactory(() -> ActivityDrawingUtils.getTextView(context, getSkillText(currentBestLevel), TEXT_SIZE_SKILL, false));
+            setPadding(0, getPixels(20), 0, 0);
+        }};
+    }
+
     /**
      * Gets the current highest unlocked level dimension from db before new level is unlocked
-     * @return
      */
     private int getCurrentBestLevelDimensionFromDb() {
         List<Level> levels = levelDBHandler.fetchLevelsForGameMode(GameMode.ARCADE);
@@ -160,10 +227,11 @@ public class GameSummaryActivity extends AppCompatActivity {
     }
 
     private long calculateMoveTextAnimatorDuration(int numberOfMoves) {
-        NavigableMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
-        map.put(0, 500);    // 0..9     => 0
-        map.put(10, 1000);    // 10..100    => 1
-        map.put(100, 2000);   // 100..200  => 2
+        NavigableMap<Integer, Integer> map = new TreeMap<Integer, Integer>() {{
+            put(0, 500);      // 0..9       => 0
+            put(10, 1000);    // 10..100    => 1
+            put(100, 2000);   // 100..200   => 2
+        }};
 
         // To do a lookup for some value in 'key'
         if (numberOfMoves < 0 || numberOfMoves > 200) {
@@ -174,12 +242,12 @@ public class GameSummaryActivity extends AppCompatActivity {
     }
 
     private String getSkillText(int dimension) {
-        return SKILL_PREFIX + SkillLevelConstants.getSkillLevelForLevel(dimension);
+        return SkillLevelConstants.getSkillLevelForLevel(dimension);
     }
 
     private TextView createSkillLevelTextView(String currentSkillText) {
         TextView skillTextView = ActivityDrawingUtils.getTextView(this, currentSkillText, BOTTOM_ICONS_LABEL_TEXT_SIZE, false);
-        skillTextView.setPadding(0, getPixels(SKILL_TEXt_VIEW_PADDING_TOP), 0, 0);
+        skillTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
         return skillTextView;
     }
 
@@ -329,16 +397,12 @@ public class GameSummaryActivity extends AppCompatActivity {
 
 
     private ProgressBar getUserProgressBar(int level) {
-        ProgressBar progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        progressBar.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.customprogressbarstyle));
-        int horizontalPadding = getPixels(PROGRESS_BAR_PADDING);
-        progressBar.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-        int progress = (int) (((double) level / DatabaseConstants.MAX_DIMENSION) * 100);
-        progressBar.setProgress(progress);
-
-        Log.d(TAG, "progress: " + progressBar.getProgress());
-        return progressBar;
+        return new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal) {{
+            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            setProgressDrawable(getResources().getDrawable(R.drawable.customprogressbarstyle));
+            setPadding(getPixels(PROGRESS_BAR_PADDING), 0, getPixels(PROGRESS_BAR_PADDING), 0);
+            setProgress((int) (((double) level / DatabaseConstants.MAX_DIMENSION) * 100));
+        }};
     }
 
     public int getPixels(int value) {
