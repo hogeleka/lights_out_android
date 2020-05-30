@@ -382,7 +382,7 @@ public class GameSummaryActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(GameSummaryActivity.this, LevelSelectorActivity.class);
+        Intent intent = new Intent(GameSummaryActivity.this, SwipeLevelSelectorActivity.class);
         intent.putExtra(getString(R.string.selected_game_mode), gameWinState.getGameMode());
         startActivity(intent);
         finish();

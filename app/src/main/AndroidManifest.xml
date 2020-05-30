@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.algorithmandblues.lightsout" >
+    package="com.algorithmandblues.lightsout">
 
     <application
         android:allowBackup="true"
@@ -9,20 +9,29 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".SwipeLevelSelectorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_level_selector"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme"
+            tools:ignore="LockedOrientationActivity" >
+        </activity>
         <activity
             android:name=".LevelSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_level_selector"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
-            tools:ignore="LockedOrientationActivity"/>
-        <activity android:name=".GameSummaryActivity"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".GameSummaryActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/game_win_state_label"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
-            tools:ignore="LockedOrientationActivity"/>
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".GameGridActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -36,7 +45,7 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
-            tools:ignore="LockedOrientationActivity" >
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
