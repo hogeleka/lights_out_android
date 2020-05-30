@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.widget.AppCompatButton;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 

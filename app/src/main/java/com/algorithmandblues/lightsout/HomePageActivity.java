@@ -2,7 +2,7 @@ package com.algorithmandblues.lightsout;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -43,7 +43,7 @@ public class HomePageActivity extends AppCompatActivity {
 
 
     public void goToLevelSelector() {
-        Intent intent = new Intent(HomePageActivity.this, LevelSelectorActivity.class);
+        Intent intent = new Intent(HomePageActivity.this, SelectLevelActivity.class);
         startActivity(intent);
         finish();
     }

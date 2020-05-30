@@ -21,10 +21,10 @@ import java.util.Map;
 
 public class ActivityDrawingUtils {
 
+    public static final float ONE_THIRD = (float) 0.33 ;
     private static final String TAG = ActivityDrawingUtils.class.getSimpleName();
     private static final int MARGIN_PX_BOARD_TO_TEXT = 10;
 
-    private static final float ONE_THIRD = (float) 0.33;
     public static final float ENABLED_LEVEL_ALPHA = (float) 1.0;
     public static final float DISABLED_LEVEL_ALPHA = (float) 0.25;
 
