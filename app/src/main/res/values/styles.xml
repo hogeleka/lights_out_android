@@ -10,7 +10,7 @@
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
-        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowActionBarOverlay">false</item>
         <item name="android:windowBackground">@color/background_color</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
@@ -23,8 +23,4 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
-
-<!--    <style name="customprogressbar"-->
-<!--        <item name="android:attr/">-->
-<!--    </style>-->
 </resources>

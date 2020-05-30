@@ -7,17 +7,14 @@
     <color name="background_color">#f5f2d0</color>
     <color name="transparent">#00000000</color>
     <color name="custom_black">#000000</color>
-    <color name="hint_start_color">#F2A65A</color>
-    <color name="hint_end_color">#772F1A</color>
+    <color name="hint_start_color">#EC9F05</color>
+    <color name="hint_end_color">#FF4E00</color>
     <color name="bulb_on_color">#009688</color>
     <color name="bulb_off_color">#004d40</color>
     <color name="navigation_bar_color">#004d40</color>
     <color name="progress_bar_fill">#004d40</color>
 
-<!--    #02aab0 → #00cdac-->
-<!--    #141e30 → #243b55-->
-<!--    #eacda3 → #d6ae7b-->
-    #F2A65A#772F1A
+    #EC9F05#FF4E00
 
 </resources>
 
