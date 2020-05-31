@@ -80,9 +80,12 @@
     <string name="rules_title">Rules</string>
     <string name="campaign_rules_title">campaign</string>
     <string name="practice_rules_title">practice</string>
-    <string name="switch_off_all_the_bulbs_rule">Switch off all the bulbs</string>
+    <string name="switch_off_all_the_bulbs_rule">Switch off all the bulbs.</string>
     <string name="neighbor_toggle_rule">When you toggle a bulb, its neighbors switch too.</string>
     <string name="hint_rule">Use hints when you\'re stuck.</string>
     <string name="solution_rule">See our solution if you still can’t solve it.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

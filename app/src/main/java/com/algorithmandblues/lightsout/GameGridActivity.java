@@ -74,7 +74,7 @@ public class GameGridActivity extends AppCompatActivity {
                 int insertedGameWinStateId = insertGameWinStateObjectIntoGameWinStateTable(gameWinState);
                 gameWinState.setId(insertedGameWinStateId);
                 updateDBForBestScorePerLevel(gameWinState);
-                sendGameWinStateToNewActivity(gameWinState, gameInstance);
+//                sendGameWinStateToNewActivity(gameWinState, gameInstance);
 
             }
         };
@@ -93,6 +93,7 @@ public class GameGridActivity extends AppCompatActivity {
         RelativeLayout moveCounterTextHolder = findViewById(R.id.move_counter_text_view_holder);
         moveCounterTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout gridLayoutHolder = findViewById(R.id.game_grid_holder);
+        gridLayoutHolder.setPadding(0, 100, 0, 400);
         gridLayoutHolder.addView(gameInstance.getGrid());
         LinearLayout gameButtonsHolder = findViewById(R.id.gameButtonsHolder);
         gameButtonsHolder.setVisibility(View.VISIBLE);
@@ -104,19 +105,20 @@ public class GameGridActivity extends AppCompatActivity {
         createShowSolutionButton();
         createNewGameButton();
 
-        mPendulum = findViewById(R.id.pendulum);
-        mAnimation = AnimationUtils.loadAnimation(this, R.anim.swinging);
+//        mPendulum = findViewById(R.id.pendulum);
+//        mPendulum.setVisibility(View.INVISIBLE);
+//        mAnimation = AnimationUtils.loadAnimation(this, R.anim.swinging);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mPendulum.startAnimation(mAnimation);
+//        mPendulum.startAnimation(mAnimation);
     }
 
     @Override
     public void onPause() {
-        mPendulum.clearAnimation();
+//        mPendulum.clearAnimation();
         super.onPause();
     }
 

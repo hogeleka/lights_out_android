@@ -13,6 +13,7 @@
     <color name="bulb_off_color">#004d40</color>
     <color name="navigation_bar_color">#004d40</color>
     <color name="progress_bar_fill">#004d40</color>
+    <color name="indicator_unselected">#4D000000</color>
 
 </resources>
 
