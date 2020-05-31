@@ -68,7 +68,10 @@
     <string name="stats_label">stats</string>
     <string name="rules_label">rules</string>
     <string name="home_label">home</string>
+    <string name="stats_games_completed_label">games completed</string>
+    <string name="stats_total_moves_label">total moves</string>
+    <string name="stats_hints_used_label">hints used</string>
+    <string name="stats_games_cheated_label">games cheated</string>
+    <string name="stats_cheat_percentage_label">cheat %</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

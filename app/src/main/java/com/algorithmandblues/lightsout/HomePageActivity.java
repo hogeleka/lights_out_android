@@ -24,9 +24,7 @@ public class HomePageActivity extends AppCompatActivity {
         button.setOnClickListener(v -> goToLevelSelector());
 
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-        gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);
         databaseHelper.resetDatabase();
-        spamDiviseWithGames();
 
     }
 
@@ -54,33 +52,4 @@ public class HomePageActivity extends AppCompatActivity {
         finish();
     }
 
-    private void spamDiviseWithGames() {
-        for (int i = 2; i <= 10; i++) {
-            for (int j = 0; j < 150; j++) {
-                gameWinStateDBHandler.insertGameWinStateObjectToDatabase(generateRandomGameWinStateForDimension(i));
-            }
-        }
-    }
-
-    private GameWinState generateRandomGameWinStateForDimension(int dimension) {
-        byte[] randomByteArray = new byte[dimension * dimension];
-        int[] randomIntArray = new int[dimension * dimension];
-        Arrays.fill(randomByteArray, (byte)1);
-        Arrays.fill(randomIntArray, 1);
-        String testString = GameDataUtil.byteArrayToString(randomByteArray);
-        return new GameWinState(){{
-            setDimension(dimension);
-            setOriginalStartState(testString);
-            setToggledBulbs(testString);
-            setToggledBulbs(testString);
-            setOriginalBulbConfiguration(testString);
-            setNumberOfMoves(dimension * dimension);
-            setNumberOfHintsUsed(20);
-            setNumberOfStars(3);
-            setGameMode(0);
-            setTimeStampMs(System.currentTimeMillis());
-            setMoveCounterPerBulbString(GameDataUtil.integerArrayToString(randomIntArray));
-            setOriginalBoardPower(dimension * dimension);
-        }};
-    }
 }

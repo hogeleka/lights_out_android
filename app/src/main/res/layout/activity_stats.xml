@@ -20,7 +20,7 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/pager_stats_activity"
         android:layout_below="@+id/tablayout_stats_activity">
     </androidx.viewpager2.widget.ViewPager2>

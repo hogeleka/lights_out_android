@@ -36,7 +36,7 @@ public class SelectLevelActivity extends FragmentActivity {
         setContentView(R.layout.activity_select_level);
         selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.CAMPAIGN);
         ViewPager2 viewPager = (ViewPager2) findViewById(R.id.pager);
-        CustomPagerAdapter myPagerAdapter = new CustomPagerAdapter(this);
+        LevelSelectorPagerAdapter myPagerAdapter = new LevelSelectorPagerAdapter(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
         viewPager.setAdapter(myPagerAdapter);
         new TabLayoutMediator(tabLayout, viewPager,

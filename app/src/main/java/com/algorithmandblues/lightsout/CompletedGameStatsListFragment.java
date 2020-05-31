@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * List Fragment which helps us display the Game win stats
  */
-public class GameStatsFragment extends ListFragment {
+public class CompletedGameStatsListFragment extends ListFragment {
 
     DatabaseHelper databaseHelper;
     GameWinStateDBHandler gameWinStateDBHandler;
@@ -21,11 +21,11 @@ public class GameStatsFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public GameStatsFragment() {
+    public CompletedGameStatsListFragment() {
     }
 
-    static GameStatsFragment newInstance() {
-        return new GameStatsFragment();
+    static CompletedGameStatsListFragment newInstance() {
+        return new CompletedGameStatsListFragment();
     }
 
     @Override
@@ -33,7 +33,12 @@ public class GameStatsFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         databaseHelper = DatabaseHelper.getInstance(getContext());
         gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);
-        gameWinStates = new ArrayList<>(gameWinStateDBHandler.fetchAllGameWinStatesInReverseChronological(GameMode.CAMPAIGN));
+        gameWinStates = new ArrayList<>();
+        for (GameWinState gameWinState : GameStatsPagerAdapter.gameWinStateList) {
+            if (gameWinState.getNumberOfStars() > 0) {
+                gameWinStates.add(gameWinState);
+            }
+        }
         adapter = new StatsViewAdapter(getActivity(), gameWinStates);
         StatsViewAdapter adapter = new StatsViewAdapter(getActivity(), gameWinStates);
         setListAdapter(adapter);
@@ -41,7 +46,7 @@ public class GameStatsFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.game_win_stats_fragment_list, container, false);
+        return inflater.inflate(R.layout.fragment_game_win_stats_list, container, false);
     }
 
     @Override

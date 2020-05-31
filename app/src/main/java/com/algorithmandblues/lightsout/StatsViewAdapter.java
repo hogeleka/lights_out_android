@@ -1,8 +1,5 @@
 package com.algorithmandblues.lightsout;
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -38,9 +35,9 @@ public class StatsViewAdapter extends ArrayAdapter<GameWinState> {
 
     private Context context; //will be activity context: we use ActivityD
     private ArrayList<GameWinState> gameWinStates;
-    public StatsViewAdapter(Context ctx, ArrayList<GameWinState> gameWinStates) {
-        super(ctx, R.layout.game_win_stats_fragment_list, gameWinStates);
-        this.context = ctx;
+    public StatsViewAdapter(Context context, ArrayList<GameWinState> gameWinStates) {
+        super(context, R.layout.fragment_game_win_stats_list, gameWinStates);
+        this.context = context;
         this.gameWinStates = gameWinStates;
         Log.d(TAG, "GameWinStateDBHandler: " + "list size: " + this.gameWinStates.size());
     }
@@ -51,7 +48,7 @@ public class StatsViewAdapter extends ArrayAdapter<GameWinState> {
         ViewHolder viewHolder;
         viewHolder = new ViewHolder();
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        convertView = inflater.inflate(R.layout.game_win_state_fragment_item, parent, false);
+        convertView = inflater.inflate(R.layout.fragment_game_win_stats_item, parent, false);
         viewHolder.mDateContainer = (TextView) convertView.findViewById(R.id.game_win_date);
         viewHolder.mGridContainer = (LinearLayout) convertView.findViewById(R.id.game_win_grid);
         viewHolder.mRowOfStarsHolder = (LinearLayout) convertView.findViewById(R.id.row_of_stars_container);
