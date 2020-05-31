@@ -34,7 +34,7 @@ public class GameInstance extends BaseObservable {
     private boolean hasMadeAtLeastOneMove;
     private int bulbGap;
     public int boardPadding;
-    private int gameMode;
+    public int gameMode;
     private int dimension;
     private int moveCounter;
     private int hintsAllowed;

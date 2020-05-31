@@ -84,6 +84,8 @@ public class GameGridActivity extends AppCompatActivity {
 
         RelativeLayout gameTextHolder = findViewById(R.id.game_title_text_view_holder);
         gameTextHolder.setVisibility(View.VISIBLE);
+        RelativeLayout gameModeTextHolder = findViewById(R.id.game_mode_text_view_holder);
+        gameModeTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout powerConsumptionTextHolder = findViewById(R.id.power_text_view_holder);
         powerConsumptionTextHolder.setVisibility(View.VISIBLE);
         RelativeLayout hintsLeftTextHolder = findViewById(R.id.hints_left_text_view_holder);

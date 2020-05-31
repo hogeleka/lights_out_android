@@ -27,7 +27,7 @@ public class SelectLevelActivity extends FragmentActivity {
     private static final int BUTTON_PADDING_TOP = 16;
     private static final float ONE_THIRD = (float) 0.33;
 
-    private static final String[] TAB_NAMES = {"Arcade", "Practice"};
+    private static final String[] TAB_NAMES = {GameMode.CAMPAIGN_STRING, GameMode.PRACTICE_STRING};
     private static final String TAG = SelectLevelActivity.class.getSimpleName();
 
     @Override

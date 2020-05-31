@@ -17,9 +17,9 @@
 
     <string name="level_chooser_button_label">%1$dx%2$d</string>
     <string name="should_randomize">Randomize</string>
-    <string name="level_picker_resume_or_restart_title">Resume Game</string>
+    <string name="level_picker_resume_or_restart_title">Continue %1$s</string>
     <string name="level_picker_resume_or_restart_message_prompt"> Would you like to resume your already existing %1$d x %2$d game?</string>
-    <string name="restart_new_game">No (Restart New Game)</string>
+    <string name="restart_new_game">New Game</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 

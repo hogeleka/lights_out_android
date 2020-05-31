@@ -230,7 +230,7 @@ public class LevelSelectorFragment extends Fragment {
 
     public void buildDialogToRequestUserResponse(Level level) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.AlertDialogStyle);
-        builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
+        builder.setTitle(String.format(getString(R.string.level_picker_resume_or_restart_title), level.getGameMode() == GameMode.CAMPAIGN ? GameMode.CAMPAIGN_STRING : GameMode.PRACTICE_STRING))
                 .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), level.getDimension(), level.getDimension()))
                 .setCancelable(true)
                 .setPositiveButton(getString(R.string.yes), (dialog, which) -> goToNewGameActivity(level, true))
