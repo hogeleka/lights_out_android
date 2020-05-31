@@ -1,11 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rules_scroll_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:layout_gravity="center"
-    tools:context=".RulesActivity">
-</ScrollView>
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/rules_title_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/rules_title"
+        android:textSize="24sp"
+        android:textColor="@color/black_overlay"/>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/rules_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rules_title_text_view"
+        android:background="@color/background_color"
+        android:layout_gravity="center"
+        tools:context=".RulesActivity">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/pager"
+            android:layoutDirection="ltr"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+        </androidx.viewpager2.widget.ViewPager2>
+
+        <!-- divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="?attr/actionBarSize"
+            android:alpha="0.12"
+            android:background="@android:color/white" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="bottom"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin">
+
+            <Button
+                android:id="@+id/intro_btn_skip"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center"
+                android:text="Skip"
+                android:textColor="@color/bulb_off_color" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/intro_indicator_0"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="@dimen/activity_margin_half"
+                    android:layout_marginRight="@dimen/activity_margin_half"
+                    android:background="@drawable/indicator_unselected" />
+
+                <ImageView
+                    android:id="@+id/intro_indicator_1"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="@dimen/activity_margin_half"
+                    android:layout_marginRight="@dimen/activity_margin_half"
+                    android:background="@drawable/indicator_unselected" />
+
+                <ImageView
+                    android:id="@+id/intro_indicator_2"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/indicator_unselected" />
+
+
+                <!-- Your other 2 indicators here -->
+
+            </LinearLayout>
+
+            <!-- This overlaps the next button in the last slide -->
+            <Button
+                android:id="@+id/intro_btn_finish"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:text="Finish"
+                android:textColor="@color/bulb_off_color"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/intro_btn_next"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_chevron_right_24dp"
+                android:backgroundTint="@color/bulb_off_color" />
+        </FrameLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>
