@@ -6,9 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
+import java.util.Arrays;
+
 public class HomePageActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
+    GameWinStateDBHandler gameWinStateDBHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,4 +50,5 @@ public class HomePageActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
 }

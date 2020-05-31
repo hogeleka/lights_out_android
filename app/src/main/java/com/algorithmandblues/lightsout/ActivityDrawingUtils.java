@@ -140,9 +140,6 @@ public class ActivityDrawingUtils {
         int id = 0;
         for (int row = 0; row < dimension; row++) {
             for (int col = 0; col < dimension; col++) {
-
-                //will take data from last activity which consists of toggle counts per bulb
-                // as well as solution
                 final Bulb bulb = new Bulb(context, id);
                 bulb.setLayoutParams(createBulbParameters(dimension, row, col, bulbWidth, bulbGap));
                 if (originalbulbStatuses[id] == (byte) 0) {

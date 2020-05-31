@@ -317,7 +317,11 @@ public class GameSummaryActivity extends AppCompatActivity {
         LinearLayout restartLevelLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.restart_game), "play again");
 
         //TODO: fix the on click listeners to implement the right methods (eg database calls, dialog boxes, etc)
-        allStatsLinkLayout.setOnClickListener(v -> Log.d(TAG, "Clicked on stats link"));
+        allStatsLinkLayout.setOnClickListener(v -> {
+            Log.d(TAG, "Clicked on stats link");
+            Intent intent = new Intent(GameSummaryActivity.this, StatsActivity.class);
+            startActivity(intent);
+        });
         linearLayout.addView(allStatsLinkLayout);
 
         nextLevelLinkLayout.setEnabled(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION
