@@ -69,18 +69,18 @@ public class SelectLevelActivity extends FragmentActivity {
             Intent intent = new Intent(SelectLevelActivity.this, StatsActivity.class);
             startActivity(intent);
         });
-
-        //TODO: fix to go to rules
-        rulesLinkLayout.setOnClickListener(v -> {
-            Log.d(TAG, "clicked on rules page");
-        });
-
+        rulesLinkLayout.setOnClickListener(v -> goToRules());
         homeLinkLayout.setOnClickListener(v -> goToHome());
         linearLayout.addView(statsLinkLayout);
         linearLayout.addView(rulesLinkLayout);
         linearLayout.addView(homeLinkLayout);
 
         return linearLayout;
+    }
+
+    private void goToRules() {
+        Intent intent = new Intent(SelectLevelActivity.this, RulesActivity.class);
+        startActivity(intent);
     }
 
     private void goToHome() {

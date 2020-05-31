@@ -17,9 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".RulesActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/rules_activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme"
+            tools:ignore="LockedOrientationActivity">
+        </activity>
+        <activity
             android:name=".StatsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/stats_activity_title"
+            android:label="@string/rules_activity"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
             tools:ignore="LockedOrientationActivity">
@@ -55,7 +63,6 @@
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

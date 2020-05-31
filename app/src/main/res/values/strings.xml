@@ -68,10 +68,21 @@
     <string name="stats_label">stats</string>
     <string name="rules_label">rules</string>
     <string name="home_label">home</string>
+
     <string name="stats_games_completed_label">games completed</string>
     <string name="stats_total_moves_label">total moves</string>
     <string name="stats_hints_used_label">hints used</string>
     <string name="stats_games_cheated_label">games cheated</string>
     <string name="stats_cheat_percentage_label">cheat %</string>
+
+    <string name="title_activity_rules">RulesActivity</string>
+    <string name="rules_activity">RulesActivity</string>
+    <string name="rules_title">Rules</string>
+    <string name="campaign_rules_title">campaign</string>
+    <string name="practice_rules_title">practice</string>
+    <string name="switch_off_all_the_bulbs_rule">Switch off all the bulbs</string>
+    <string name="neighbor_toggle_rule">When you toggle a bulb, its neighbors switch too.</string>
+    <string name="hint_rule">Use hints when you\'re stuck.</string>
+    <string name="solution_rule">See our solution if you still can’t solve it.</string>
 
 </resources>
