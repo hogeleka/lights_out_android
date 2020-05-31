@@ -40,6 +40,7 @@ public class LevelSelectorFragment extends Fragment {
     private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
     private static final int TEXT_SIZE = 24;
     private static final int STAR_IMAGE_SIZE_PX = 22;
+    private static final int SKILL_LEVEL_TEXT_PADDING_TOP = 20;
 
     DatabaseHelper databaseHelper;
     LevelDBHandler levelDBHandler;
@@ -200,6 +201,7 @@ public class LevelSelectorFragment extends Fragment {
         String levelTitle = getTextToDisplayForUserProgress(level);
         textView.setText(levelTitle);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+        textView.setPadding(0, getPixels(SKILL_LEVEL_TEXT_PADDING_TOP), 0, 0);
         textView.setTextColor(getResources().getColor(R.color.custom_black));
         return textView;
     }
