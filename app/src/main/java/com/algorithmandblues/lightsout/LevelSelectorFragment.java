@@ -108,7 +108,7 @@ public class LevelSelectorFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        LinearLayout holder = (LinearLayout) view.findViewById(R.id.arcadeTabFragment);
+        LinearLayout holder = (LinearLayout) view.findViewById(R.id.level_selector_linear_layout);
 
         TextView selectLevelPromptTextview = (TextView) holder.getChildAt(0);
         selectLevelPromptTextview.setText(selectLevelPrompt);

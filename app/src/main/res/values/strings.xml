@@ -12,6 +12,7 @@
     <string name="resume_from_db_flag">resumeGameFromDB</string>
     <string name="set_random_state_flag">setRandomStateFlag</string>
     <string name="title_activity_level_selector">SelectLevelActivity</string>
+    <string name="stats_activity_title">StatsActivity</string>
 
 
     <string name="level_chooser_button_label">%1$dx%2$d</string>
@@ -67,4 +68,10 @@
     <string name="stats_label">stats</string>
     <string name="rules_label">rules</string>
     <string name="home_label">home</string>
+    <string name="stats_games_completed_label">games completed</string>
+    <string name="stats_total_moves_label">total moves</string>
+    <string name="stats_hints_used_label">hints used</string>
+    <string name="stats_games_cheated_label">games cheated</string>
+    <string name="stats_cheat_percentage_label">cheat %</string>
+
 </resources>
