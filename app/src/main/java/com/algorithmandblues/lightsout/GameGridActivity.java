@@ -60,7 +60,7 @@ public class GameGridActivity extends AppCompatActivity {
         dimension = getIntent().getIntExtra(getString(R.string.dimension), 2);
         boolean shouldResumeGameFromDB = getIntent().getBooleanExtra(getString(R.string.resume_from_db_flag), false);
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
-        int gameMode = shouldSetRandomOriginalStartState ? GameMode.ARCADE : GameMode.CLASSIC;
+        int gameMode = shouldSetRandomOriginalStartState ? GameMode.CAMPAIGN : GameMode.PRACTICE;
         gameDataObject = shouldResumeGameFromDB ? gameDataObjectDBHandler.getMostRecentGameDataForGameType(dimension, gameMode) : getDefaultGameDataObject(dimension, gameMode);
 
 
@@ -138,7 +138,7 @@ public class GameGridActivity extends AppCompatActivity {
         if (gameInstance.getHasMadeAtLeastOneMove()) {
             saveCurrentGameInstance(gameInstance);
         } else {
-            if (gameInstance.getGameMode() == GameMode.ARCADE) {
+            if (gameInstance.getGameMode() == GameMode.CAMPAIGN) {
                 saveCurrentGameInstance(gameInstance);
             }
         }
@@ -360,7 +360,7 @@ public class GameGridActivity extends AppCompatActivity {
 
     private void handleRandomizeClick() {
         this.undoShowSolutionIfNeeded();
-        gameDataObject = getDefaultGameDataObject(dimension, GameMode.ARCADE);
+        gameDataObject = getDefaultGameDataObject(dimension, GameMode.CAMPAIGN);
         gameInstance.setOriginalStartState(GameDataUtil.stringToByteArray(gameDataObject.getOriginalStartState()));
         gameInstance.setHasSeenSolution(gameDataObject.getHasSeenSolution());
         gameInstance.resetBoardToState(

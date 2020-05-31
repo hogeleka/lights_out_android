@@ -3,4 +3,6 @@
     <dimen name="button_icon_size">40dp</dimen>
     <dimen name="scale_factor" format="float">0.75</dimen>
     <dimen name="one_third" format="float">0.33</dimen>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="vertical_padding_stats_page">20dp</dimen>
 </resources>

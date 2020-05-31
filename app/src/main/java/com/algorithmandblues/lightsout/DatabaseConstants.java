@@ -129,7 +129,7 @@ class DatabaseConstants {
         }
 
         static List<Level> defaultLevelValues() {
-            int[] gameModes = {GameMode.ARCADE, GameMode.CLASSIC};
+            int[] gameModes = {GameMode.CAMPAIGN, GameMode.PRACTICE};
             List<Level> levels = new ArrayList<>();
             for (int dimension = DatabaseConstants.MIN_DIMENSION; dimension <= DatabaseConstants.MAX_DIMENSION; dimension++) {
                 for (int j = 0; j < gameModes.length; j++) {
@@ -139,7 +139,7 @@ class DatabaseConstants {
                         setDimension(currentDimension);
                         setNumberOfStars(0);
                         setGameMode(currentGameMode);
-                        setIsLocked((currentGameMode == GameMode.CLASSIC || currentDimension == 2) ? UNLOCKED_LEVEL : LOCKED_LEVEL);
+                        setIsLocked((currentGameMode == GameMode.PRACTICE || currentDimension == 2) ? UNLOCKED_LEVEL : LOCKED_LEVEL);
                     }};
                     levels.add(level);
                 }

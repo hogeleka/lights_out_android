@@ -40,8 +40,10 @@ public class GameWinStateDBHandler {
         SQLiteDatabase db = this.databaseHelper.getReadableDatabase();
         String tableName = DatabaseConstants.GameWinStateTable.TABLE_NAME;
         String[] columns = DatabaseConstants.GameWinStateTable.TABLE_COLUMNS;
-        String selection = DatabaseConstants.GameWinStateTable.GAME_MODE + " = ? ";
-        String[] selectionArgs = {String.valueOf(gameMode)};
+        String selection = DatabaseConstants.GameWinStateTable.GAME_MODE + " = ? " + " AND "
+                + DatabaseConstants.GameWinStateTable.NUMBER_OF_STARS + " > ?";
+        //we do not want games where the user got a zero-score; it means they cheated
+        String[] selectionArgs = {String.valueOf(gameMode), String.valueOf(0)};
         String orderBy = DatabaseConstants.GameWinStateTable.TIME_STAMP_MS + " DESC";
 
         List<GameWinState> gameWinStates = new ArrayList<>();

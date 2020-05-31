@@ -17,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.List;
-
 public class SelectLevelActivity extends FragmentActivity {
 
     int selectedGameMode;
@@ -36,7 +34,7 @@ public class SelectLevelActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_level);
-        selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.ARCADE);
+        selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.CAMPAIGN);
         ViewPager2 viewPager = (ViewPager2) findViewById(R.id.pager);
         CustomPagerAdapter myPagerAdapter = new CustomPagerAdapter(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
@@ -68,6 +66,8 @@ public class SelectLevelActivity extends FragmentActivity {
         //TODO: fix to go to stats page
         statsLinkLayout.setOnClickListener(v -> {
             Log.d(TAG, "Clicked on stats link");
+            Intent intent = new Intent(SelectLevelActivity.this, StatsActivity.class);
+            startActivity(intent);
         });
 
         //TODO: fix to go to rules

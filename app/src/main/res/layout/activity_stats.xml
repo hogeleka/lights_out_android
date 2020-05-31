@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,12 +6,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/background_color"
-    tools:context=".SelectLevelActivity">
+    tools:context=".StatsActivity">
 
     <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tablayout"
+        android:id="@+id/tablayout_stats_activity"
         android:background="@color/background_color"
         android:minHeight="?attr/actionBarSize"
         app:tabIndicatorColor="@color/bulb_off_color"
@@ -22,30 +21,8 @@
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/pager"
-        android:layout_below="@+id/tablayout"
-        android:layout_above="@+id/progress_bar_and_other_buttons_holder">
+        android:id="@+id/pager_stats_activity"
+        android:layout_below="@+id/tablayout_stats_activity">
     </androidx.viewpager2.widget.ViewPager2>
 
-    <LinearLayout
-        android:id="@+id/progress_bar_and_other_buttons_holder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/bottom_icons_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="10dp">
-        </LinearLayout>
-
-    </LinearLayout>
-
-
 </RelativeLayout>
-

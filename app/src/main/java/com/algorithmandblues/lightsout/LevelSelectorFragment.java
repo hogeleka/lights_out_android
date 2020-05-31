@@ -1,7 +1,6 @@
 package com.algorithmandblues.lightsout;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -92,7 +91,7 @@ public class LevelSelectorFragment extends Fragment {
             dimensionAndLevel.put(level.getDimension(), level);
         }
 
-        if (gameMode == GameMode.ARCADE) {
+        if (gameMode == GameMode.CAMPAIGN) {
             selectLevelPrompt = getString(R.string.arcade_select_level_prompt);
             userProgressLevel = getUserProgressLevel(levels);
         } else {
@@ -158,7 +157,7 @@ public class LevelSelectorFragment extends Fragment {
         }
         LinearLayout progressBarHolder = (LinearLayout) holder.getChildAt(4);
 
-        if (gameMode == GameMode.ARCADE) {
+        if (gameMode == GameMode.CAMPAIGN) {
             TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
             ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
             progressBarHolder.addView(userProgressTextView);
@@ -245,7 +244,7 @@ public class LevelSelectorFragment extends Fragment {
         Intent intent = new Intent(getContext(), GameGridActivity.class);
         intent.putExtra(getString(R.string.dimension), level.getDimension());
         intent.putExtra(getString(R.string.resume_from_db_flag), resumeGameFromDBFlag);
-        intent.putExtra(getString(R.string.set_random_state_flag), level.getGameMode() == GameMode.ARCADE);
+        intent.putExtra(getString(R.string.set_random_state_flag), level.getGameMode() == GameMode.CAMPAIGN);
         intent.putExtra(getString(R.string.best_score_level_gameType), level.getNumberOfStars());
         startActivity(intent);
         getActivity().finish();

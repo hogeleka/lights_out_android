@@ -1,24 +1,22 @@
 package com.algorithmandblues.lightsout;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-public class CustomPagerAdapter extends FragmentStateAdapter {
+public class GameStatsPagerAdapter extends FragmentStateAdapter {
 
     private static final int ITEM_COUNT = 2;
 
-    CustomPagerAdapter(FragmentActivity fm) {
+    GameStatsPagerAdapter(FragmentActivity fm) {
         super(fm);
     }
 
     @Override
     public Fragment createFragment(int position) {
-        switch (position){
-            case GameMode.CAMPAIGN: return LevelSelectorFragment.newInstance(GameMode.CAMPAIGN);
-            case GameMode.PRACTICE: return LevelSelectorFragment.newInstance(GameMode.PRACTICE);
-        }
-        return null;
+        return position == 0 ? GameStatsFragment.newInstance() : AllTimeStatsFragment.newInstance("test", "test");
     }
+
     @Override
     public int getItemCount() {
         return ITEM_COUNT;
