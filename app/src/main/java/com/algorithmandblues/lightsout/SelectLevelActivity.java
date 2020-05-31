@@ -17,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.List;
-
 public class SelectLevelActivity extends FragmentActivity {
 
     int selectedGameMode;
@@ -29,14 +27,14 @@ public class SelectLevelActivity extends FragmentActivity {
     private static final int BUTTON_PADDING_TOP = 16;
     private static final float ONE_THIRD = (float) 0.33;
 
-    private static final String[] TAB_NAMES = {"Arcade", "Practice"};
+    private static final String[] TAB_NAMES = {GameMode.CAMPAIGN_STRING, GameMode.PRACTICE_STRING};
     private static final String TAG = SelectLevelActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_level);
-        selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.ARCADE);
+        selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.CAMPAIGN);
         ViewPager2 viewPager = (ViewPager2) findViewById(R.id.pager);
         CustomPagerAdapter myPagerAdapter = new CustomPagerAdapter(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);

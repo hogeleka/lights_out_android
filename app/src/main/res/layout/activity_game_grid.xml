@@ -7,7 +7,9 @@
          TextureView, etc. -->
     <data>
         <import type="com.algorithmandblues.lightsout.GameInstance"/>
+        <import type="com.algorithmandblues.lightsout.GameMode"/>
         <variable name="gameinstance" type="GameInstance" />
+        <variable name="gamemode" type="GameMode" />
     </data>
 
     <RelativeLayout
@@ -47,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_above="@+id/power_text_view_holder"
+                android:layout_above="@+id/game_mode_text_view_holder"
                 android:gravity="center">
                 <TextView
                     android:id="@+id/game_grid_title_text_view"
@@ -57,8 +59,30 @@
                     android:text="@string/lights_out"
                     android:textAlignment="center"
                     android:textSize="50sp"
-                    android:textColor="@color/custom_black"
+                    android:textColor="@color/bulb_off_color"
                     android:layout_gravity="center_horizontal">
+                </TextView>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/game_mode_text_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_above="@+id/power_text_view_holder"
+                android:gravity="center"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/game_mode_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textAlignment="center"
+                    android:textColor="@color/background_color"
+                    android:background="@drawable/game_mode_text_drawable"
+                    android:textAllCaps="true"
+                    android:text="@{(gameinstance.gameMode == 1 ? GameMode.PRACTICE_STRING : GameMode.CAMPAIGN_STRING)}"
+                    android:layout_gravity="center">
                 </TextView>
             </RelativeLayout>
 

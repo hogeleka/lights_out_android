@@ -14,8 +14,8 @@ public class CustomPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         switch (position){
-            case GameMode.ARCADE: return LevelSelectorFragment.newInstance(GameMode.ARCADE);
-            case GameMode.CLASSIC: return LevelSelectorFragment.newInstance(GameMode.CLASSIC);
+            case GameMode.CAMPAIGN: return LevelSelectorFragment.newInstance(GameMode.CAMPAIGN);
+            case GameMode.PRACTICE: return LevelSelectorFragment.newInstance(GameMode.PRACTICE);
         }
         return null;
     }

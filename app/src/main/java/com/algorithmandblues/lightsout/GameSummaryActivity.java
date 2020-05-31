@@ -243,7 +243,7 @@ public class GameSummaryActivity extends AppCompatActivity {
      * Gets the current highest unlocked level dimension from db before new level is unlocked
      */
     private int getCurrentBestLevelDimensionFromDb() {
-        List<Level> levels = levelDBHandler.fetchLevelsForGameMode(GameMode.ARCADE);
+        List<Level> levels = levelDBHandler.fetchLevelsForGameMode(GameMode.CAMPAIGN);
         int result = 2;
         for (Level level : levels) {
             if (level.getDimension() > result && level.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL) {
@@ -281,7 +281,7 @@ public class GameSummaryActivity extends AppCompatActivity {
     private boolean checkIfNewLevelUnlocked(Level nextLevel) {
 
         // If it is classic return false as all levels are already unlocked.
-        if (nextLevel.getGameMode() == GameMode.CLASSIC) {
+        if (nextLevel.getGameMode() == GameMode.PRACTICE) {
             return false;
         } else {
             // If next level is already unlocked then return false
@@ -348,14 +348,14 @@ public class GameSummaryActivity extends AppCompatActivity {
     private void goToNextLevel() {
         boolean hasDataForNextLevel = gameDataObjectDBHandler.getMostRecentGameDataForGameType(nextLevel.getDimension(), nextLevel.getGameMode()) != null;
         if(hasDataForNextLevel) {
-               buildDialogToRequestUserResponse(nextLevel.getDimension(), gameWinState.getGameMode() == GameMode.ARCADE);
+               buildDialogToRequestUserResponse(nextLevel.getDimension(), gameWinState.getGameMode() == GameMode.CAMPAIGN);
         } else {
-            goToLevel(nextLevel.getDimension(), false, nextLevel.getGameMode() == GameMode.ARCADE, nextLevel.getNumberOfStars());
+            goToLevel(nextLevel.getDimension(), false, nextLevel.getGameMode() == GameMode.CAMPAIGN, nextLevel.getNumberOfStars());
         }
     }
 
     private void restartLevel() {
-        goToLevel(gameWinState.getDimension(), false, gameWinState.getGameMode() == GameMode.ARCADE, bestScoreForLevelAndGameType);
+        goToLevel(gameWinState.getDimension(), false, gameWinState.getGameMode() == GameMode.CAMPAIGN, bestScoreForLevelAndGameType);
     }
 
     public void buildDialogToRequestUserResponse(int dimension, boolean setRandomStateFlag) {
