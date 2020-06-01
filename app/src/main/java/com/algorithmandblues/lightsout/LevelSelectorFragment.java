@@ -3,8 +3,6 @@ package com.algorithmandblues.lightsout;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -41,6 +39,7 @@ public class LevelSelectorFragment extends Fragment {
     private static final String TAG = LevelSelectorFragment.class.getSimpleName();
     private static final int INDIVIDUAL_LEVEL_CELL_PADDING = 10;
     private static final int TEXT_SIZE = 24;
+    private static final int TEXT_SIZE_BOTTOM_TEXT_BELOW_PROG_BAR = 16;
     private static final int STAR_IMAGE_SIZE_PX = 22;
     private static final int SKILL_LEVEL_TEXT_PADDING_TOP = 20;
 
@@ -172,14 +171,32 @@ public class LevelSelectorFragment extends Fragment {
 
         TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
         ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
+        TextView littlePromptBelowProgressBar = getPromptForUserProgressLevel(userProgressLevel+1);
         progressBarHolder.addView(userProgressTextView);
         progressBarHolder.addView(userProgressBar);
+        progressBarHolder.addView(littlePromptBelowProgressBar);
 
         //if it is practice mode, we hide the progress bar.
         // This ensures that the rest of the page is still consistent with its positioning
         if (gameMode == GameMode.PRACTICE) {
             holder.getChildAt(4).setVisibility(View.INVISIBLE);
         }
+
+    }
+
+    private TextView getPromptForUserProgressLevel(int userProgressLevel) {
+        TextView textView = new TextView(getContext());
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        String text;
+        if (userProgressLevel > DatabaseConstants.MAX_DIMENSION) {
+            text = getString(R.string.congrats_message_campaign_complete);
+        } else {
+            text = String.format(getString(R.string.solve_unlock_achievement_prompt), userProgressLevel, userProgressLevel);
+        }
+        textView.setText(text);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE_BOTTOM_TEXT_BELOW_PROG_BAR);
+        textView.setTextColor(getResources().getColor(R.color.custom_black));
+        return textView;
 
     }
 
@@ -227,17 +244,22 @@ public class LevelSelectorFragment extends Fragment {
     }
 
     private int getUserProgressLevel(List<Level> levels) {
-        int result = DatabaseConstants.MIN_DIMENSION;
-        for (Level level : levels) {
-            if (level.getDimension() > result && level.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL) {
-                result = level.getDimension();
+        for (int i = DatabaseConstants.MAX_DIMENSION; i>= DatabaseConstants.MIN_DIMENSION; i--) {
+            if (dimensionAndLevel.get(i).getNumberOfStars() > 0) {
+                return i;
             }
         }
-        return result;
+        return DatabaseConstants.MIN_DIMENSION-1;
     }
 
 
     private ProgressBar getUserProgressBar(int level) {
+//        int progress;
+//        if (level.getDimension() < DatabaseConstants.MAX_DIMENSION || level.getNumberOfStars() == 0) {
+//            progress = level.getDimension() - DatabaseConstants.MIN_DIMENSION;
+//        } else {
+//            progress = level.getDimension() - 1;
+//        }
         return new ProgressBar(getContext(), null, android.R.attr.progressBarStyleHorizontal) {{
             setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             setProgressDrawable(getResources().getDrawable(R.drawable.progress_bar_level_selector));

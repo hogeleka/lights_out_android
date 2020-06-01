@@ -3,15 +3,16 @@ import java.util.HashMap;
 
 public class SkillLevelConstants {
     public static final HashMap<Integer, String> SKILL_LEVEL_MAP = new HashMap<Integer, String>() {{
-       put(2, "Student");
-       put(3, "Engineer");
-       put(4, "Electrician");
-       put(5, "Expert");
-       put(6, "Professor");
-       put(7, "CEO");
-       put(8, "Edison");
-       put(9, "Tesla");
-       put(10, "Legend");
+        put(1, "novice");
+        put(2, "beginner");
+        put(3, "amateur");
+        put(4, "student");
+        put(5, "engineer");
+        put(6, "electrician");
+        put(7, "expert");
+        put(8, "professor");
+        put(9, "genius");
+        put(10, "legend");
     }};
 
     public static String getSkillLevelForLevel(int dimension) {

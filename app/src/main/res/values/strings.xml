@@ -87,6 +87,7 @@
     <string name="solution_rule">See our solution if you still can’t solve it.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="solve_unlock_achievement_prompt">solve %1$d x %2$d to unlock new title</string>
+    <string name="congrats_message_campaign_complete">congrats you have mastered the puzzle</string>
 
 </resources>
