@@ -16,8 +16,7 @@ import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 
-public class FirstLightsOutRuleFragment extends Fragment {
-
+public class BasicRuleFragment extends Fragment {
 
     private static final int RULE_PADDING_TOP = 10;
     private static final int RULE_PADDING_BOTTOM = 20;
@@ -27,33 +26,32 @@ public class FirstLightsOutRuleFragment extends Fragment {
     private GifImageView neighborToggleGif;
     private GifImageView turnOffAllTheLightsGif;
 
-    public FirstLightsOutRuleFragment() {
+    public BasicRuleFragment() {
         // Required empty public constructor
     }
 
-    public static FirstLightsOutRuleFragment newInstance() {
-        return new FirstLightsOutRuleFragment();
+    public static BasicRuleFragment newInstance() {
+        return new BasicRuleFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first_lights_out_rule, container, false);
+        return inflater.inflate(R.layout.fragment_lights_out_rule, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        LinearLayout firstRuleHolder = view.findViewById(R.id.firstRuleContainer);
+        LinearLayout basicRulesHolder = view.findViewById(R.id.RuleContainer);
 
-        TextView turnOffAllTheLights = RulesActivityUtil.createRuleTextView(getContext(), R.string.switch_off_all_the_bulbs_rule, RULE_FONT_SIZE, RULE_PADDING_TOP, RULE_PADDING_BOTTOM, RULE_PADDING_SIDE);
-        TextView neighbourToggleRule = RulesActivityUtil.createRuleTextView(getContext(), R.string.neighbor_toggle_rule, RULE_FONT_SIZE, RULE_PADDING_TOP, RULE_PADDING_BOTTOM, RULE_PADDING_SIDE);
+        TextView turnOffAllTheLights = getRuleTextView(R.string.switch_off_all_the_bulbs_rule);
+        TextView neighbourToggleRule = getRuleTextView(R.string.neighbor_toggle_rule);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) Objects.requireNonNull(getContext()).getSystemService(Context.WINDOW_SERVICE);
@@ -62,15 +60,19 @@ public class FirstLightsOutRuleFragment extends Fragment {
         try {
             GifDrawable turnOffAllTheLightsDrawable = new GifDrawable(getResources(), R.drawable.turn_off_all_the_lights);
             GifDrawable neighborToggleDrawable = new GifDrawable(getResources(), R.drawable.bulb_neighbor_rule);
-            turnOffAllTheLightsGif = RulesActivityUtil.createGif(getContext(), gifSize, turnOffAllTheLightsDrawable, RULE_PADDING_BOTTOM);
-            neighborToggleGif = RulesActivityUtil.createGif(getContext(), gifSize, neighborToggleDrawable, RULE_PADDING_BOTTOM);
+            turnOffAllTheLightsGif = RulesActivityUtil.createGif(getContext(), gifSize, turnOffAllTheLightsDrawable, RULE_PADDING_TOP);
+            neighborToggleGif = RulesActivityUtil.createGif(getContext(), gifSize, neighborToggleDrawable, RULE_PADDING_TOP);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        firstRuleHolder.addView(turnOffAllTheLightsGif);
-        firstRuleHolder.addView(turnOffAllTheLights);
-        firstRuleHolder.addView(neighborToggleGif);
-        firstRuleHolder.addView(neighbourToggleRule);
+        basicRulesHolder.addView(turnOffAllTheLightsGif);
+        basicRulesHolder.addView(turnOffAllTheLights);
+        basicRulesHolder.addView(neighborToggleGif);
+        basicRulesHolder.addView(neighbourToggleRule);
+    }
+
+    private TextView getRuleTextView(int text) {
+        return RulesActivityUtil.createRuleTextView(getContext(), text, RULE_FONT_SIZE, RULE_PADDING_TOP, RULE_PADDING_BOTTOM, RULE_PADDING_SIDE);
     }
 }
