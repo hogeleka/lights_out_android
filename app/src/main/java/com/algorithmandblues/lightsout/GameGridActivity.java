@@ -301,7 +301,7 @@ public class GameGridActivity extends AppCompatActivity {
         LinearLayout showSolution = findViewById(R.id.solution_button_holder);
         showSolution.setBackgroundColor(getResources().getColor(R.color.transparent));
         showSolution.setOnClickListener(v -> {
-            if (!gameInstance.getHasSeenSolution()) {
+            if (!gameInstance.getHasSeenSolution() && gameInstance.getGameMode() == GameMode.CAMPAIGN) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(GameGridActivity.this, R.style.AlertDialogStyle);
                 builder.setTitle(getString(R.string.show_solution_title))
                         .setMessage(R.string.show_soltuion_confirmation)

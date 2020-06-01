@@ -3,6 +3,8 @@ package com.algorithmandblues.lightsout;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -42,19 +44,25 @@ public class LevelSelectorFragment extends Fragment {
     private static final int STAR_IMAGE_SIZE_PX = 22;
     private static final int SKILL_LEVEL_TEXT_PADDING_TOP = 20;
 
+    private static final int BORDER_WIDTH_LEVEL_CELL = 2;
+
+    private static final float ALPHA_ENABLED = (float) 1.0;
+    private static final float ALPHA_DISABLED = (float) 0.4;
+
+    private static final int TABLE_ROW_MARGIN_HORIZONTAL = 4;
+    private static final int PROGRESS_BAR_HORIZONTAL_PADDING = 48;
+    private static final int CELL_MARGIN = 8;
+    private static final int CELL_BORDER_RADIUS = 5;
+    public static final float ONE_THIRD = (float) 0.33;
+
     DatabaseHelper databaseHelper;
     LevelDBHandler levelDBHandler;
+    GameWinStateDBHandler gameWinStateDBHandler;
     Map<Integer, Level> dimensionAndLevel;
     GameDataObjectDBHandler gameDataObjectDBHandler;
     int gameMode;
     String selectLevelPrompt;
     int userProgressLevel;
-
-    private static final float ALPHA_ENABLED = (float) 1.0;
-    private static final float ALPHA_DISABLED = (float) 0.4;
-
-    private static final int TABLE_ROW_MARGIN_HORIZONTAL = 8;
-    private static final int PROGRESS_BAR_HORIZONTAL_PADDING = 48;
 
 
     public LevelSelectorFragment() {
@@ -93,10 +101,15 @@ public class LevelSelectorFragment extends Fragment {
         }
 
         if (gameMode == GameMode.CAMPAIGN) {
-            selectLevelPrompt = getString(R.string.arcade_select_level_prompt);
             userProgressLevel = getUserProgressLevel(levels);
+            if (userProgressLevel == DatabaseConstants.MIN_DIMENSION && dimensionAndLevel.get(userProgressLevel).getNumberOfStars() == 0) {
+                selectLevelPrompt = getString(R.string.arcade_select_level_prompt_begin);
+            } else {
+                selectLevelPrompt = getString(R.string.arcade_select_level_prompt_continue);
+            }
         } else {
             selectLevelPrompt = getString(R.string.classic_select_level_prompt);
+            userProgressLevel = DatabaseConstants.MAX_DIMENSION;
         }
     }
 
@@ -114,7 +127,6 @@ public class LevelSelectorFragment extends Fragment {
         TextView selectLevelPromptTextview = (TextView) holder.getChildAt(0);
         selectLevelPromptTextview.setText(selectLevelPrompt);
         selectLevelPromptTextview.setTextColor(getResources().getColor(R.color.custom_black));
-
         int rowHeight = useDisplayMetricsToCalculateRowHeight();
         LinearLayout.LayoutParams layoutParams = getLayoutParams(rowHeight);
         int dim = DatabaseConstants.MIN_DIMENSION;
@@ -158,11 +170,15 @@ public class LevelSelectorFragment extends Fragment {
         }
         LinearLayout progressBarHolder = (LinearLayout) holder.getChildAt(4);
 
-        if (gameMode == GameMode.CAMPAIGN) {
-            TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
-            ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
-            progressBarHolder.addView(userProgressTextView);
-            progressBarHolder.addView(userProgressBar);
+        TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
+        ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
+        progressBarHolder.addView(userProgressTextView);
+        progressBarHolder.addView(userProgressBar);
+
+        //if it is practice mode, we hide the progress bar.
+        // This ensures that the rest of the page is still consistent with its positioning
+        if (gameMode == GameMode.PRACTICE) {
+            holder.getChildAt(4).setVisibility(View.INVISIBLE);
         }
 
     }
@@ -236,7 +252,7 @@ public class LevelSelectorFragment extends Fragment {
                 .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), level.getDimension(), level.getDimension()))
                 .setCancelable(true)
                 .setPositiveButton(getString(R.string.yes), (dialog, which) -> goToNewGameActivity(level, true))
-                .setNegativeButton(getString(R.string.restart_new_game), (dialog, which) -> goToNewGameActivity(level, false));
+                .setNegativeButton(getString(R.string.no), (dialog, which) -> goToNewGameActivity(level, false));
         //Creating dialog box
         AlertDialog dialog  = builder.create();
         dialog.show();

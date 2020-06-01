@@ -28,7 +28,7 @@ public class AllTimeStatsFragment extends Fragment {
     private double percentageOfCheatedGames;
 
     private static final int STATISTIC_TEXT_SIZE = 50;
-    private static final int STATISTIC_LABEL_SIZE = 18;
+    private static final int STATISTIC_LABEL_SIZE = 16;
     private static final int SIDE_PADDING = 10;
     private static final int STATISTIC_HORIZONTAL_PADDING = 15;
 

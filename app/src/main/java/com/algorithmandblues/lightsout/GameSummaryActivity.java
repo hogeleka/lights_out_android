@@ -363,14 +363,15 @@ public class GameSummaryActivity extends AppCompatActivity {
     }
 
     public void buildDialogToRequestUserResponse(int dimension, boolean setRandomStateFlag) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(GameSummaryActivity.this);
-        builder.setTitle(getString(R.string.level_picker_resume_or_restart_title))
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameSummaryActivity.this, R.style.AlertDialogStyle);
+        builder.setTitle(String.format(getString(R.string.level_picker_resume_or_restart_title),
+                gameWinState.getGameMode() == GameMode.CAMPAIGN ? GameMode.CAMPAIGN_STRING : GameMode.PRACTICE_STRING))
                 .setMessage(String.format(getString(R.string.level_picker_resume_or_restart_message_prompt), dimension, dimension))
                 .setCancelable(true)
                 .setPositiveButton(getString(R.string.yes), (dialog, which) -> {
                     goToLevel(dimension, true, setRandomStateFlag, bestScoreForLevelAndGameType);
                 })
-                .setNegativeButton(getString(R.string.restart_new_game), (dialog, which) -> {
+                .setNegativeButton(getString(R.string.no), (dialog, which) -> {
                     goToLevel(dimension, false, setRandomStateFlag, bestScoreForLevelAndGameType);
                 });
         AlertDialog dialog  = builder.create();
@@ -416,6 +417,7 @@ public class GameSummaryActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         Intent intent = new Intent(GameSummaryActivity.this, SelectLevelActivity.class);
         intent.putExtra(getString(R.string.selected_game_mode), gameWinState.getGameMode());
         startActivity(intent);
