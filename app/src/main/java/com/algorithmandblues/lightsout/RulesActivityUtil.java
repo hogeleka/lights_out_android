@@ -19,17 +19,17 @@ public class RulesActivityUtil {
         return textView;
     }
 
-    static GifImageView createGif(Context context, int gifSize, GifDrawable drawable, int paddingBottom) {
+    static GifImageView createGif(Context context, int gifSize, GifDrawable drawable, int paddingTop) {
         return new GifImageView(context) {{
             setAdjustViewBounds(true);
             setMaxWidth(gifSize);
             setMaxHeight(gifSize);
             setImageDrawable(drawable);
-            setPadding(0, getPixels(context, paddingBottom), 0, 0);
+            setPadding(0, getPixels(context, paddingTop), 0, 0);
         }};
     }
 
-    public static int getPixels(Context context, int value) {
+    private static int getPixels(Context context, int value) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (value * scale + 0.5f);
     }

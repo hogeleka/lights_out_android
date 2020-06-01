@@ -5,8 +5,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.algorithmandblues.lightsout.FirstLightsOutRuleFragment;
-
 public class RulesPageAdapter extends FragmentStateAdapter {
 
     public RulesPageAdapter(@NonNull FragmentActivity fragmentActivity) {
@@ -18,11 +16,13 @@ public class RulesPageAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return FirstLightsOutRuleFragment.newInstance();
+                return BasicRuleFragment.newInstance();
             case 1:
-                return SecondLightsOutRuleFragment.newInstance();
+                return HintAndSolutionRuleFragment.newInstance();
+            case 2:
+                return StarRulesFragment.newInstance();
         }
-        return FirstLightsOutRuleFragment.newInstance();
+        return BasicRuleFragment.newInstance();
     }
 
     @Override
