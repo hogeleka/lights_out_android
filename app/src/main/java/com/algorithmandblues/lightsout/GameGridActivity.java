@@ -161,7 +161,8 @@ public class GameGridActivity extends AppCompatActivity {
                 setIsLocked(0);
             }};
             levelDBHandler.updateLevelWithNewNumberOfStars(level);
-            currentBestScoreForDimensionAndGameType = gameWinState.getNumberOfStars();
+
+//            currentBestScoreForDimensionAndGameType = gameWinState.getNumberOfStars();
         }
     }
 
