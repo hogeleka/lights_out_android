@@ -2,9 +2,6 @@
     <string name="app_name">Lights Out!</string>
     <string name="lights_out">Lights Out!</string>
 
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-
     <string name="title_activity_game_grid">GameGridActivity</string>
     <string name="gameBoardState">gameBoardState</string>
     <string name="dimension">dimension</string>
@@ -13,7 +10,6 @@
     <string name="set_random_state_flag">setRandomStateFlag</string>
     <string name="title_activity_level_selector">SelectLevelActivity</string>
     <string name="stats_activity_title">StatsActivity</string>
-
 
     <string name="level_chooser_button_label">%1$dx%2$d</string>
     <string name="should_randomize">Randomize</string>
@@ -26,7 +22,6 @@
     <string name="request_to_save_game_title">Save Current Game</string>
     <string name="request_to_save_game_message">Would you like to Save your current %1$d x %2$d game?</string>
     <string name="no_do_not_save_current_game">No, do not save</string>
-
 
     <string name="undo">undo</string>
     <string name="redo">redo</string>
@@ -85,9 +80,11 @@
     <string name="neighbor_toggle_rule">When you toggle a bulb, its neighbors switch too.</string>
     <string name="hint_rule">Use hints when you\'re stuck.</string>
     <string name="solution_rule">See our solution if you still can’t solve it.</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="star_rule_prefix">We solved the board too so if you get</string>
+    <string name="rule_for_3_stars">you\'re as good as us!</string>
+    <string name="rule_for_2_stars">you\'re half as good as us.</string>
+    <string name="rule_for_1_star">you might wanna practice more…</string>
+  
     <string name="solve_unlock_achievement_prompt">solve %1$d x %2$d to unlock new title</string>
     <string name="congrats_message_campaign_complete">congrats you have mastered the puzzle</string>
-
 </resources>

@@ -23,23 +23,17 @@ import java.util.Random;
 public class GameGridActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
-
     LevelDBHandler levelDBHandler;
-
-    int currentBestScoreForDimensionAndGameType;
-
     GameDataObjectDBHandler gameDataObjectDBHandler;
     GameWinStateDBHandler gameWinStateDBHandler;
-
+    GameDataObject gameDataObject;
+    int currentBestScoreForDimensionAndGameType;
     private View mPendulum;
     private Animation mAnimation;
-
     private static final String TAG = GameGridActivity.class.getSimpleName();
-
     private int dimension;
     private boolean shouldSetRandomOriginalStartState;
     public GameInstance gameInstance;
-    GameDataObject gameDataObject;
     public PropertyChangeListener listener;
 
 
@@ -51,7 +45,6 @@ public class GameGridActivity extends AppCompatActivity {
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
         gameDataObjectDBHandler = GameDataObjectDBHandler.getInstance(databaseHelper);
         gameWinStateDBHandler = GameWinStateDBHandler.getInstance(databaseHelper);
-
         levelDBHandler = LevelDBHandler.getInstance(databaseHelper);
 
         ActivityGameGridBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_game_grid);
@@ -62,8 +55,6 @@ public class GameGridActivity extends AppCompatActivity {
         shouldSetRandomOriginalStartState = getIntent().getBooleanExtra(getString(R.string.set_random_state_flag), false);
         int gameMode = shouldSetRandomOriginalStartState ? GameMode.CAMPAIGN : GameMode.PRACTICE;
         gameDataObject = shouldResumeGameFromDB ? gameDataObjectDBHandler.getMostRecentGameDataForGameType(dimension, gameMode) : getDefaultGameDataObject(dimension, gameMode);
-
-
         gameInstance = new GameInstance(this, gameDataObject);
 
         listener = evt -> {
@@ -251,12 +242,15 @@ public class GameGridActivity extends AppCompatActivity {
         }
 
         // To accommodate accidentally generating all off state.
-        if(dimension <= 4) {
+        if(dimension <= 4 && shouldSetRandomOriginalStartState) {
             originalStartState.deleteCharAt(originalStartState.length() - 1);
             Random random = new Random();
             if (!originalStartState.toString().contains("1")) {
                 int odd = random.nextInt((dimension*2-1) / 2) * 2 + 1;
                 originalStartState.replace(odd-1, odd, "1");
+            } else if(!originalStartState.toString().contains("0")) {
+                int odd = random.nextInt((dimension*2-1) / 2) * 2 + 1;
+                originalStartState.replace(odd-1, odd, "0");
             }
         }
 

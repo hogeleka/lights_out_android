@@ -21,8 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/rules_title_text_view"
+        android:layout_marginTop="20dp"
         android:background="@color/background_color"
-        android:layout_gravity="center"
+        android:layout_gravity="top"
         tools:context=".RulesActivity">
 
         <androidx.viewpager2.widget.ViewPager2
@@ -30,7 +31,7 @@
             android:layout_height="match_parent"
             android:id="@+id/pager"
             android:layoutDirection="ltr"
-            android:layout_gravity="center"
+            android:layout_gravity="top"
             android:orientation="horizontal">
         </androidx.viewpager2.widget.ViewPager2>
 

@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import pl.droidsonroids.gif.GifImageView;
-
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.

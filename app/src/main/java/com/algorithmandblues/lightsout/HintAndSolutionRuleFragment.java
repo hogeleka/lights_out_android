@@ -19,8 +19,7 @@ import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 
-public class SecondLightsOutRuleFragment extends Fragment {
-
+public class HintAndSolutionRuleFragment extends Fragment {
 
     private static final int RULE_PADDING_TOP = 10;
     private static final int RULE_PADDING_BOTTOM = 20;
@@ -30,12 +29,12 @@ public class SecondLightsOutRuleFragment extends Fragment {
     private GifImageView hintGif;
     private GifImageView solutionGif;
 
-    public SecondLightsOutRuleFragment() {
+    public HintAndSolutionRuleFragment() {
         // Required empty public constructor
     }
 
-    public static SecondLightsOutRuleFragment newInstance() {
-        return new SecondLightsOutRuleFragment();
+    public static HintAndSolutionRuleFragment newInstance() {
+        return new HintAndSolutionRuleFragment();
     }
 
     @Override
@@ -48,15 +47,15 @@ public class SecondLightsOutRuleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first_lights_out_rule, container, false);
+        return inflater.inflate(R.layout.fragment_lights_out_rule, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        LinearLayout firstRuleHolder = view.findViewById(R.id.firstRuleContainer);
+        LinearLayout firstRuleHolder = view.findViewById(R.id.RuleContainer);
 
-        TextView hintRule = RulesActivityUtil.createRuleTextView(getContext(), R.string.hint_rule, RULE_FONT_SIZE, RULE_PADDING_TOP, RULE_PADDING_BOTTOM, RULE_PADDING_SIDE);
-        TextView solutionRule = RulesActivityUtil.createRuleTextView(getContext(), R.string.solution_rule, RULE_FONT_SIZE, RULE_PADDING_TOP, RULE_PADDING_BOTTOM, RULE_PADDING_SIDE);
+        TextView hintRule = getRuleTextView(R.string.hint_rule);
+        TextView solutionRule = getRuleTextView(R.string.solution_rule);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) Objects.requireNonNull(getContext()).getSystemService(Context.WINDOW_SERVICE);
@@ -65,8 +64,8 @@ public class SecondLightsOutRuleFragment extends Fragment {
         try {
             GifDrawable hintDrawable = new GifDrawable(getResources(), R.drawable.hint_gif);
             GifDrawable solutionDrawable = new GifDrawable(getResources(), R.drawable.solution_gif);
-            hintGif = RulesActivityUtil.createGif(getContext(), gifSize, hintDrawable, RULE_PADDING_BOTTOM);
-            solutionGif = RulesActivityUtil.createGif(getContext(), gifSize, solutionDrawable, RULE_PADDING_BOTTOM);
+            hintGif = RulesActivityUtil.createGif(getContext(), gifSize, hintDrawable, RULE_PADDING_TOP);
+            solutionGif = RulesActivityUtil.createGif(getContext(), gifSize, solutionDrawable, RULE_PADDING_TOP);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,5 +74,9 @@ public class SecondLightsOutRuleFragment extends Fragment {
         firstRuleHolder.addView(hintRule);
         firstRuleHolder.addView(solutionGif);
         firstRuleHolder.addView(solutionRule);
+    }
+
+    private TextView getRuleTextView(int text) {
+        return RulesActivityUtil.createRuleTextView(getContext(), text, RULE_FONT_SIZE, RULE_PADDING_TOP, RULE_PADDING_BOTTOM, RULE_PADDING_SIDE);
     }
 }
