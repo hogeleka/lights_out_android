@@ -301,7 +301,6 @@ public class GameSummaryActivity extends AppCompatActivity {
             Intent intent = new Intent(GameSummaryActivity.this, StatsActivity.class);
             startActivity(intent);
         });
-        linearLayout.addView(allStatsLinkLayout);
 
         nextLevelLinkLayout.setEnabled(gameWinState.getDimension() != DatabaseConstants.MAX_DIMENSION
                 && nextLevel.getIsLocked() == DatabaseConstants.UNLOCKED_LEVEL);
@@ -315,15 +314,18 @@ public class GameSummaryActivity extends AppCompatActivity {
             goToNextLevel();
         });
 
+        restartLevelLinkLayout.setOnClickListener(v -> {
+            Log.d(TAG, "Clicked on restart link");
+            restartLevel();
+        });
+
+        linearLayout.addView(allStatsLinkLayout);
+
         // Level 10 is the last level currently
         if(nextLevel != null) {
             linearLayout.addView(nextLevelLinkLayout);
         }
 
-        restartLevelLinkLayout.setOnClickListener(v -> {
-            Log.d(TAG, "Clicked on restart link");
-            restartLevel();
-        });
         linearLayout.addView(restartLevelLinkLayout);
         return linearLayout;
     }

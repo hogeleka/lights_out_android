@@ -21,7 +21,7 @@ public class Bulb extends AppCompatButton{
     private static final int SOLUTION_BORDER_COLOR = R.color.colorAccent;
     private static final int TRANSPARENT_COLOR = R.color.transparent;
     private static final int BULB_CORNER_RADIUS = 15;
-    private static final int BORDER_WIDTH = 3;
+    private static final int BORDER_WIDTH = 1;
     private static final int NO_BORDER_WIDTH = 0;
 
     private int hintGradientStartColor;

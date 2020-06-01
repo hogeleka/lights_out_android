@@ -76,8 +76,14 @@ public class RulesActivity extends FragmentActivity {
             vp.setCurrentItem(page, true);
         });
 
-        mSkipBtn.setOnClickListener(v -> finish());
+        mSkipBtn.setOnClickListener(v -> {
+            SharedPreferencesUtils.saveSharedSetting(RulesActivity.this, SelectLevelActivity.PREF_USER_FIRST_TIME, "false");
+            finish();
+        });
+
         mFinishBtn.setOnClickListener(v -> {
+            //  update 1st time pref
+            SharedPreferencesUtils.saveSharedSetting(RulesActivity.this, SelectLevelActivity.PREF_USER_FIRST_TIME, "false");
             finish();
         });
     }

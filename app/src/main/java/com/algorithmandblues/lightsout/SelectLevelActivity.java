@@ -19,6 +19,9 @@ import android.widget.TextView;
 
 public class SelectLevelActivity extends FragmentActivity {
 
+    public static final String PREF_USER_FIRST_TIME = "user_first_time";
+    boolean isUserFirstTime;
+
     int selectedGameMode;
 
     private static final int BOTTOM_ICONS_IMAGE_SIZE = 40;
@@ -34,6 +37,16 @@ public class SelectLevelActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_level);
+
+        isUserFirstTime = Boolean.parseBoolean(SharedPreferencesUtils.readSharedSetting(SelectLevelActivity.this, PREF_USER_FIRST_TIME, "true"));
+
+        Intent introIntent = new Intent(SelectLevelActivity.this, RulesActivity.class);
+        introIntent.putExtra(PREF_USER_FIRST_TIME, isUserFirstTime);
+
+        if (isUserFirstTime) {
+            startActivity(introIntent);
+        }
+
         selectedGameMode = getIntent().getIntExtra(getString(R.string.selected_game_mode), GameMode.CAMPAIGN);
         ViewPager2 viewPager = (ViewPager2) findViewById(R.id.pager);
         LevelSelectorPagerAdapter myPagerAdapter = new LevelSelectorPagerAdapter(this);
@@ -55,22 +68,21 @@ public class SelectLevelActivity extends FragmentActivity {
     }
 
     private LinearLayout getBottomButtonsAndIcons() {
-        LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        linearLayout.setGravity(Gravity.CENTER);
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayout.setPadding(SIDE_PADDING_STATS_ICONS, BUTTON_PADDING_TOP, SIDE_PADDING_STATS_ICONS, 0);
+        LinearLayout linearLayout = new LinearLayout(this) {{
+            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            setGravity(Gravity.CENTER);
+            setOrientation(LinearLayout.HORIZONTAL);
+            setPadding(SIDE_PADDING_STATS_ICONS, BUTTON_PADDING_TOP, SIDE_PADDING_STATS_ICONS, 0);
+        }};
+
         LinearLayout statsLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.stats), getString(R.string.stats_label));
         LinearLayout rulesLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.rules), getString(R.string.rules_label));
         LinearLayout homeLinkLayout = createImageIconAndTextLayout(getResources().getDrawable(R.drawable.home), getString(R.string.home_label));
-        //TODO: fix to go to stats page
-        statsLinkLayout.setOnClickListener(v -> {
-            Log.d(TAG, "Clicked on stats link");
-            Intent intent = new Intent(SelectLevelActivity.this, StatsActivity.class);
-            startActivity(intent);
-        });
+
+        statsLinkLayout.setOnClickListener(v -> goToStats());
         rulesLinkLayout.setOnClickListener(v -> goToRules());
         homeLinkLayout.setOnClickListener(v -> goToHome());
+
         linearLayout.addView(statsLinkLayout);
         linearLayout.addView(rulesLinkLayout);
         linearLayout.addView(homeLinkLayout);
@@ -78,31 +90,44 @@ public class SelectLevelActivity extends FragmentActivity {
         return linearLayout;
     }
 
+    private void goToStats() {
+        Log.d(TAG, "Clicked on stats link");
+        Intent intent = new Intent(SelectLevelActivity.this, StatsActivity.class);
+        startActivity(intent);
+    }
+
     private void goToRules() {
+        Log.d(TAG, "Clicked on rules link");
         Intent intent = new Intent(SelectLevelActivity.this, RulesActivity.class);
         startActivity(intent);
     }
 
     private void goToHome() {
+        Log.d(TAG, "Clicked on home link");
         Intent intent = new Intent(SelectLevelActivity.this, HomePageActivity.class);
         startActivity(intent);
         finish();
     }
 
     private LinearLayout createImageIconAndTextLayout(Drawable drawable, String text) {
-        LinearLayout layout = new LinearLayout(this);
-        layout.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, ONE_THIRD));
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setGravity(Gravity.CENTER);
         ImageView imageView = getImageView(drawable);
         TextView textView = ActivityDrawingUtils.getTextView(this, text, BOTTOM_ICONS_LABEL_TEXT_SIZE, false);
-        layout.addView(imageView);
-        layout.addView(textView);
-        layout.setEnabled(true);
-        layout.setClickable(true);
+
         TypedValue outValue = new TypedValue();
         getApplicationContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
-        layout.setBackgroundResource(outValue.resourceId);
+
+        LinearLayout layout = new LinearLayout(this) {{
+            setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, ONE_THIRD));
+            setOrientation(LinearLayout.VERTICAL);
+            setGravity(Gravity.CENTER);
+            setEnabled(true);
+            setClickable(true);
+            setBackgroundResource(outValue.resourceId);
+        }};
+
+        layout.addView(imageView);
+        layout.addView(textView);
+
         return layout;
 
     }
