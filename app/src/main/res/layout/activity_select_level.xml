@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/tablayout"
         android:background="@color/background_color"
-        android:minHeight="?attr/actionBarSize"
         app:tabIndicatorColor="@color/bulb_off_color"
         app:tabTextColor="@color/custom_black">
     </com.google.android.material.tabs.TabLayout>

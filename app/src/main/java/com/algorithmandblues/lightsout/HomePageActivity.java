@@ -23,7 +23,7 @@ public class HomePageActivity extends AppCompatActivity {
         button.setOnClickListener(v -> goToLevelSelector());
 
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-//        databaseHelper.resetDatabase();
+        databaseHelper.resetDatabase();
     }
 
     @Override

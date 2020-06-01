@@ -86,18 +86,21 @@ public class LevelDBHandler {
         Cursor cursor = db.query(distinct, tableName, columns, whereClause, selectionArgs, null, null, null, limit);
 
         // ID, DIMENSION, NUMBER_OF_STARS, GAME_MODE, IS_LOCKED
-        cursor.moveToFirst();
-        Level level = new Level() {{
-            setId(cursor.getInt(0));
-            setDimension(cursor.getInt(1));
-            setNumberOfStars(cursor.getInt(2));
-            setGameMode(cursor.getInt(3));
-            setIsLocked(cursor.getInt(4));
-        }};
+        if (cursor.getCount() == 0) {
+            return null;
+        } else {
+            cursor.moveToFirst();
+            Level level = new Level() {{
+                setId(cursor.getInt(0));
+                setDimension(cursor.getInt(1));
+                setNumberOfStars(cursor.getInt(2));
+                setGameMode(cursor.getInt(3));
+                setIsLocked(cursor.getInt(4));
+            }};
+            Log.d(TAG, "Found level in database for dimension " + dimension + "of game type " + gameMode + "--" + level.toString());
+            db.close();
 
-        Log.d(TAG, "Found level in database for dimension " + dimension + "of game type " + gameMode + "--" + level.toString());
-        db.close();
-
-        return level;
+            return level;
+        }
     }
 }

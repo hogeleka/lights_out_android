@@ -13,15 +13,17 @@
         android:layout_height="wrap_content"
         android:id="@+id/tablayout_stats_activity"
         android:background="@color/background_color"
-        android:minHeight="?attr/actionBarSize"
+        android:layout_marginBottom="0dp"
         app:tabIndicatorColor="@color/bulb_off_color"
         app:tabTextColor="@color/custom_black">
+<!--        android:minHeight="?attr/actionBarSize"-->
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/pager_stats_activity"
+        android:layout_marginTop="0dp"
         android:layout_below="@+id/tablayout_stats_activity">
     </androidx.viewpager2.widget.ViewPager2>
 

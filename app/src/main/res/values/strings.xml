@@ -55,8 +55,9 @@
     <string name="no_hint_needed">You have all the hints you need!</string>
     <string name="moves_per_bulb">movesPerBulb</string>
     <string name="selected_game_mode">selectedGameMode</string>
-    <string name="arcade_select_level_prompt">select a board size</string>
-    <string name="classic_select_level_prompt">choose any board size</string>
+    <string name="arcade_select_level_prompt_begin">begin your campaign</string>
+    <string name="arcade_select_level_prompt_continue">continue your campaign</string>
+    <string name="classic_select_level_prompt">practice any board size</string>
     <string name="arcade_description">Complete each level\nto unlock the next one!</string>
     <string name="classic_description">All lights are on:\ntry to turn them all off!</string>
 
@@ -83,5 +84,7 @@
     <string name="rule_for_3_stars">you\'re as good as us!</string>
     <string name="rule_for_2_stars">you\'re half as good as us.</string>
     <string name="rule_for_1_star">you might wanna practice more…</string>
-
+  
+    <string name="solve_unlock_achievement_prompt">solve %1$d x %2$d to unlock new title</string>
+    <string name="congrats_message_campaign_complete">congrats you have mastered the puzzle</string>
 </resources>
