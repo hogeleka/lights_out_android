@@ -101,7 +101,7 @@ public class LevelSelectorFragment extends Fragment {
 
         if (gameMode == GameMode.CAMPAIGN) {
             userProgressLevel = getUserProgressLevel(levels);
-            if (userProgressLevel == DatabaseConstants.MIN_DIMENSION && dimensionAndLevel.get(userProgressLevel).getNumberOfStars() == 0) {
+            if (userProgressLevel < DatabaseConstants.MIN_DIMENSION) {
                 selectLevelPrompt = getString(R.string.arcade_select_level_prompt_begin);
             } else {
                 selectLevelPrompt = getString(R.string.arcade_select_level_prompt_continue);
@@ -171,6 +171,8 @@ public class LevelSelectorFragment extends Fragment {
 
         TextView userProgressTextView = getTextViewDisplayForLevel(userProgressLevel);
         ProgressBar userProgressBar = getUserProgressBar(userProgressLevel);
+        //we always ask them to complete their current progress + 1, to unlock a new title,
+        //i.e, if I have completed 2x2, it should ask me to complete "3x3" to unclock new title
         TextView littlePromptBelowProgressBar = getPromptForUserProgressLevel(userProgressLevel+1);
         progressBarHolder.addView(userProgressTextView);
         progressBarHolder.addView(userProgressBar);
