@@ -97,11 +97,10 @@ public class LevelDBHandler {
                 setGameMode(cursor.getInt(3));
                 setIsLocked(cursor.getInt(4));
             }};
+            Log.d(TAG, "Found level in database for dimension " + dimension + "of game type " + gameMode + "--" + level.toString());
+            db.close();
+
+            return level;
         }
-
-        Log.d(TAG, "Found level in database for dimension " + dimension + "of game type " + gameMode + "--" + level.toString());
-        db.close();
-
-        return level;
     }
 }
