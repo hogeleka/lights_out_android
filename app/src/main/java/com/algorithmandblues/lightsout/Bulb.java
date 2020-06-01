@@ -21,7 +21,8 @@ public class Bulb extends AppCompatButton{
     private static final int SOLUTION_BORDER_COLOR = R.color.colorAccent;
     private static final int TRANSPARENT_COLOR = R.color.transparent;
     private static final int BULB_CORNER_RADIUS = 15;
-    private static final int BORDER_WIDTH = 1;
+    private static final int BORDER_WIDTH = 3;
+    private static final int NO_BORDER_WIDTH = 0;
 
     private int hintGradientStartColor;
     private int hintGradientEndColor;
@@ -114,7 +115,7 @@ public class Bulb extends AppCompatButton{
 
     public void unHighlightBorder() {
         this.setIsBorderHighlighted(false);
-        this.setBulbStroke(getPixels(BORDER_WIDTH), TRANSPARENT_COLOR);
+        this.setBulbStroke(getPixels(NO_BORDER_WIDTH), TRANSPARENT_COLOR);
     }
 
     public void highlightHint() {
