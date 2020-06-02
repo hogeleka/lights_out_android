@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.algorithmandblues.lightsout.databinding.ActivityGameGridBinding;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.Random;
 
 public class GameGridActivity extends AppCompatActivity {
@@ -228,20 +229,37 @@ public class GameGridActivity extends AppCompatActivity {
 
 
     private String getOriginalStartStateString(int dimension) {
-        StringBuilder originalStartState = new StringBuilder();
-        for (int i = 0; i < dimension*dimension; i++) {
-            if(!shouldSetRandomOriginalStartState) {
-                originalStartState.append("1,");
-            } else {
-                if (Math.random() <= 0.5) {
-                    originalStartState.append("0,");
-                } else {
+
+
+        byte[] allZeros = new byte[dimension * dimension];
+        Arrays.fill(allZeros, (byte) 0);
+        StringBuilder originalStartState;
+        byte[] currentXorArray = new byte[dimension * dimension];
+
+        //ensure that we **never** accidentally generate the an original start state which,
+        // when XORed with base solution, produces all zeros
+        do {
+            originalStartState = new StringBuilder();
+            for (int i = 0; i < dimension*dimension; i++) {
+                if(!shouldSetRandomOriginalStartState) {
                     originalStartState.append("1,");
+                } else {
+                    if (Math.random() <= 0.5) {
+                        originalStartState.append("0,");
+                    } else {
+                        originalStartState.append("1,");
+                    }
                 }
             }
-        }
-
-        // To accommodate accidentally generating all off state.
+            try {
+                currentXorArray = SolutionProvider.getSolution(dimension, GameDataUtil.stringToByteArray(originalStartState.toString()));
+            } catch (UnknownSolutionException e) {
+                Log.e(TAG, "something beyond our comprehension has happened!");
+            }
+        } while (
+                Arrays.equals(currentXorArray, allZeros)
+        );
+        // To accommodate accidentally generating all off/all on state state.
         if(dimension <= 4 && shouldSetRandomOriginalStartState) {
             originalStartState.deleteCharAt(originalStartState.length() - 1);
             Random random = new Random();
