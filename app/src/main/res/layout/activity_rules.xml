@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="16dp"
         android:text="@string/rules_title"
         android:textSize="36sp"/>
 

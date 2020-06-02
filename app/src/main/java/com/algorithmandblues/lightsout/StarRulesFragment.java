@@ -21,7 +21,7 @@ public class StarRulesFragment extends Fragment {
     private static final int ROW_OF_STARS_TOP_BOTTOM_PADDING = 5;
     private static final int RULE_PADDING_TOP = 5;
     private static final int RULE_PADDING_BOTTOM = 20;
-    private static final int RULE_PADDING_SIDE = 80;
+    private static final int RULE_PADDING_SIDE = 60;
     private static final int RULE_FONT_SIZE = 20;
     private static final int ROW_OF_STARS_ANIMATION_TIME_OFFSET = 1000;
 
