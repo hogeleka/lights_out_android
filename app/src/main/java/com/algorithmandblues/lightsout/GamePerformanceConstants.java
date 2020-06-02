@@ -11,7 +11,6 @@ public class GamePerformanceConstants {
         put(0, new ArrayList<String>() {{
             add("try not to cheat next time?");
             add("copycat");
-            add("con artist");
             add("was it really that difficult?");
             add("no points for cheating");
         }});
@@ -20,18 +19,22 @@ public class GamePerformanceConstants {
             add("okay I guess?");
             add("come on! you can do better...");
             add("maybe practice to improve?");
+            add("too many moves");
         }});
 
         put(2, new ArrayList<String>() {{
-            add("not bad!");
-            add("pass!");
+            add("not too bad!");
+            add("almost there!");
             add("nicely done!");
+            add("not bad. not great");
         }});
 
         put(3, new ArrayList<String>() {{
             add("let's go!!");
-            add("bravo!!");
             add("what a pro!");
+            add("amazing!");
+            add("heck yeah");
+            add("excellent!");
         }});
     }};
 

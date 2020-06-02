@@ -25,6 +25,8 @@ public class HintAndSolutionRuleFragment extends Fragment {
     private static final int RULE_PADDING_BOTTOM = 20;
     private static final int RULE_PADDING_SIDE = 100;
     private static final int RULE_FONT_SIZE = 20;
+    private static final int GIF_PADDING_TOP = 10;
+    private static final int GIF_PADDING_BOTTOM = 0;
 
     private GifImageView hintGif;
     private GifImageView solutionGif;
@@ -61,14 +63,9 @@ public class HintAndSolutionRuleFragment extends Fragment {
         WindowManager windowManager = (WindowManager) Objects.requireNonNull(getContext()).getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
         int gifSize = (int) (displayMetrics.widthPixels * 0.4);
-        try {
-            GifDrawable hintDrawable = new GifDrawable(getResources(), R.drawable.hint_gif);
-            GifDrawable solutionDrawable = new GifDrawable(getResources(), R.drawable.solution_gif);
-            hintGif = RulesActivityUtil.createGif(getContext(), gifSize, hintDrawable, RULE_PADDING_TOP);
-            solutionGif = RulesActivityUtil.createGif(getContext(), gifSize, solutionDrawable, RULE_PADDING_TOP);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        hintGif = RulesActivityUtil.createGif(getContext(), gifSize, R.drawable.hint_gif, GIF_PADDING_TOP, GIF_PADDING_BOTTOM);
+        solutionGif = RulesActivityUtil.createGif(getContext(), gifSize, R.drawable.solution_gif, GIF_PADDING_TOP, GIF_PADDING_BOTTOM);
 
         firstRuleHolder.addView(hintGif);
         firstRuleHolder.addView(hintRule);
