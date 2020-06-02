@@ -5,6 +5,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -19,14 +21,23 @@ public class RulesActivityUtil {
         return textView;
     }
 
-    static GifImageView createGif(Context context, int gifSize, GifDrawable drawable, int paddingTop) {
+    static GifImageView createGif(Context context, int gifSize, int id, int paddingTop, int paddingBottom) {
         return new GifImageView(context) {{
             setAdjustViewBounds(true);
             setMaxWidth(gifSize);
             setMaxHeight(gifSize);
-            setImageDrawable(drawable);
-            setPadding(0, getPixels(context, paddingTop), 0, 0);
+            setImageDrawable(createGifDrawable(context, id));
+            setPadding(0, getPixels(context, paddingTop), 0, paddingBottom);
         }};
+    }
+
+    static GifDrawable createGifDrawable(Context context, int id) {
+        try {
+            return new GifDrawable(context.getResources(), id);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private static int getPixels(Context context, int value) {

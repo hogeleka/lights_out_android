@@ -22,6 +22,8 @@ public class BasicRuleFragment extends Fragment {
     private static final int RULE_PADDING_BOTTOM = 20;
     private static final int RULE_PADDING_SIDE = 100;
     private static final int RULE_FONT_SIZE = 20;
+    private static final int GIF_PADDING_TOP = 10;
+    private static final int GIF_PADDING_BOTTOM = 0;
 
     private GifImageView neighborToggleGif;
     private GifImageView turnOffAllTheLightsGif;
@@ -57,14 +59,9 @@ public class BasicRuleFragment extends Fragment {
         WindowManager windowManager = (WindowManager) Objects.requireNonNull(getContext()).getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
         int gifSize = (int) (displayMetrics.widthPixels * 0.4);
-        try {
-            GifDrawable turnOffAllTheLightsDrawable = new GifDrawable(getResources(), R.drawable.turn_off_all_the_lights);
-            GifDrawable neighborToggleDrawable = new GifDrawable(getResources(), R.drawable.bulb_neighbor_rule);
-            turnOffAllTheLightsGif = RulesActivityUtil.createGif(getContext(), gifSize, turnOffAllTheLightsDrawable, RULE_PADDING_TOP);
-            neighborToggleGif = RulesActivityUtil.createGif(getContext(), gifSize, neighborToggleDrawable, RULE_PADDING_TOP);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        turnOffAllTheLightsGif = RulesActivityUtil.createGif(getContext(), gifSize,  R.drawable.turn_off_all_the_lights, GIF_PADDING_TOP, GIF_PADDING_BOTTOM);
+        neighborToggleGif = RulesActivityUtil.createGif(getContext(), gifSize, R.drawable.bulb_neighbor_rule, GIF_PADDING_TOP, GIF_PADDING_BOTTOM);
 
         basicRulesHolder.addView(turnOffAllTheLightsGif);
         basicRulesHolder.addView(turnOffAllTheLights);
