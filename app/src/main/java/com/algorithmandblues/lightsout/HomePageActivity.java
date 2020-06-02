@@ -22,11 +22,12 @@ import pl.droidsonroids.gif.GifImageView;
 public class HomePageActivity extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
-    private static final int PLAY_TEXT_PADDING_TOP = 20;
     private static final int GIF_PADDING_BOTTOM = 20;
     private static final int GIF_PADDING_TOP = 0;
     private static final int PLAY_FONT_SIZE = 24;
-    private static final int ABOUT_FONT_SIZE = 18;
+    private static final int PLAY_LAYOUT_PADDING_TOP = 120;
+    private static final int PLAY_BUTTON_PADDING_VERTICAL = 30;
+    private static final int PLAY_BUTTON_PADDING_HORIZONTAL = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,17 +52,13 @@ public class HomePageActivity extends AppCompatActivity {
         tv.setText(R.string.icons_8);
         tv.setMovementMethod(LinkMovementMethod.getInstance());
 
-//        Spanned result = HtmlCompat.fromHtml(html);
-//        icons8.setText(result);
-//        icons8.setMovementMethod(LinkMovementMethod.getInstance());
-
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
 //        databaseHelper.resetDatabase();
     }
 
     private TextView getButtonTextView(String text) {
         LinearLayout.LayoutParams playParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT );
-        playParams.setMargins(0, 120, 0, 0);
+        playParams.setMargins(0, PLAY_LAYOUT_PADDING_TOP, 0, 0);
 
         TextView textView = new TextView(this);
         textView.setLayoutParams(playParams);
@@ -70,7 +67,7 @@ public class HomePageActivity extends AppCompatActivity {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, HomePageActivity.PLAY_FONT_SIZE);
         textView.setTextColor(getResources().getColor(R.color.black_overlay));
         textView.setBackgroundColor(getResources().getColor(R.color.background_color));
-        textView.setPadding(getPixels(30), getPixels(5), getPixels(35), getPixels(5));
+        textView.setPadding(getPixels(PLAY_BUTTON_PADDING_VERTICAL), getPixels(PLAY_BUTTON_PADDING_HORIZONTAL), getPixels(PLAY_BUTTON_PADDING_VERTICAL), getPixels(PLAY_BUTTON_PADDING_HORIZONTAL));
         return textView;
     }
 
@@ -86,7 +83,6 @@ public class HomePageActivity extends AppCompatActivity {
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(a);
     }
-
 
     public void goToLevelSelector() {
         Intent intent = new Intent(HomePageActivity.this, SelectLevelActivity.class);
