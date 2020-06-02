@@ -13,7 +13,7 @@ public class StatsActivity extends FragmentActivity  {
 
     private static final String TAG = StatsActivity.class.getSimpleName();
 
-    private static final String[] TAB_NAMES = {"Campaign", "All time"};
+    private static final String[] TAB_NAMES = {"campaign", "all time"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
