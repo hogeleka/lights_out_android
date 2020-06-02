@@ -25,7 +25,7 @@ public class AllTimeStatsFragment extends Fragment {
     private int totalNumberOfCheatedGames;
     private int totalNumberOfMovesMade;
     private int totalNumberOfHintsUsed;
-    private double percentageOfCheatedGames;
+    private int totalLightsTurnedOff;
 
     private static final int STATISTIC_TEXT_SIZE = 50;
     private static final int STATISTIC_LABEL_SIZE = 16;
@@ -55,14 +55,15 @@ public class AllTimeStatsFragment extends Fragment {
         totalNumberOfCheatedGames = 0;
         totalNumberOfHintsUsed = 0;
         totalNumberOfMovesMade = 0;
+        totalLightsTurnedOff = 0;
         for (GameWinState gameWinState : gameWinStates) {
             if (gameWinState.getNumberOfStars() == 0) {
                 totalNumberOfCheatedGames++;
             }
             totalNumberOfHintsUsed += gameWinState.getNumberOfHintsUsed();
             totalNumberOfMovesMade += gameWinState.getNumberOfMoves();
+            totalLightsTurnedOff += gameWinState.getOriginalBoardPower();
         }
-        percentageOfCheatedGames = ((double) totalNumberOfCheatedGames / totalNumberOfCompletedGames) * 100;
     }
 
     @Override
@@ -112,13 +113,13 @@ public class AllTimeStatsFragment extends Fragment {
         holder.addView(totalGamesCheatedLayout);
 
 
-        String[] gameCheatedPercentageLabel = {getString(R.string.stats_cheat_percentage_label)};
-        String[] gameCheatedPercentageData = {String.valueOf(Math.round(percentageOfCheatedGames))};
-        LinearLayout cheatPercentageLayout = ActivityDrawingUtils.makeGameSummaryTextsAndCaptions(
-                getContext(), gameCheatedPercentageData, gameCheatedPercentageLabel, STATISTIC_TEXT_SIZE, STATISTIC_LABEL_SIZE, SIDE_PADDING
+        String[] lightsTurnedOffLabel = {getString(R.string.stats_lights_turned_off)};
+        String[] lightsTurnedOffData = {String.valueOf(Math.round(totalLightsTurnedOff))};
+        LinearLayout lightsTurnedOffLayout = ActivityDrawingUtils.makeGameSummaryTextsAndCaptions(
+                getContext(), lightsTurnedOffData, lightsTurnedOffLabel, STATISTIC_TEXT_SIZE, STATISTIC_LABEL_SIZE, SIDE_PADDING
         );
-        cheatPercentageLayout.setPadding(0, horizontalPadding, 0, horizontalPadding);
-        holder.addView(cheatPercentageLayout);
+        lightsTurnedOffLayout.setPadding(0, horizontalPadding, 0, horizontalPadding);
+        holder.addView(lightsTurnedOffLayout);
     }
 
 }

@@ -16,14 +16,14 @@ import android.widget.TextView;
 public class StarRulesFragment extends Fragment {
 
 
-    private static final int STAR_IMAGE_SIZE_PX = 55;
+    private static final int STAR_IMAGE_SIZE_PX = 40;
     private static final int ROW_OF_STARS_LEFT_RIGHT_PADDING = 10;
     private static final int ROW_OF_STARS_TOP_BOTTOM_PADDING = 5;
     private static final int RULE_PADDING_TOP = 5;
     private static final int RULE_PADDING_BOTTOM = 20;
-    private static final int RULE_PADDING_SIDE = 100;
+    private static final int RULE_PADDING_SIDE = 80;
     private static final int RULE_FONT_SIZE = 20;
-    private static final int ROW_OF_STARS_ANIMATION_TIME_OFFSET = 1500;
+    private static final int ROW_OF_STARS_ANIMATION_TIME_OFFSET = 1000;
 
 
     // 750 is duration of each star animation. Defined in staranimation.xml
@@ -52,7 +52,7 @@ public class StarRulesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         LinearLayout starRuleHolder = view.findViewById(R.id.RuleContainer);
-        LinearLayout rowOf3Stars, rowOf2Stars, rowOf1Star;
+        LinearLayout rowOf3Stars, rowOf2Stars, rowOf1Star, rowOf0Stars;
         LayoutAnimationController rowOfStarsAnimationController = createRowOfStarsAnimationController();
         rowOfStarsAnimationController.setDelay(1);
 
@@ -71,12 +71,18 @@ public class StarRulesFragment extends Fragment {
         rowOf1Star.setLayoutAnimation(rowOfStarsAnimationController);
         TextView ruleFor1Star = getRuleTextView(R.string.rule_for_1_star);
 
+        rowOf0Stars = getRowOfStars(0);
+        rowOf0Stars.setLayoutAnimation(rowOfStarsAnimationController);
+        TextView ruleFor0Stars = getRuleTextView(R.string.rule_for_0_stars);
+
         starRuleHolder.addView(rowOf3Stars);
         starRuleHolder.addView(ruleFor3Stars);
         starRuleHolder.addView(rowOf2Stars);
         starRuleHolder.addView(ruleFor2Stars);
         starRuleHolder.addView(rowOf1Star);
         starRuleHolder.addView(ruleFor1Star);
+        starRuleHolder.addView(rowOf0Stars);
+        starRuleHolder.addView(ruleFor0Stars);
         rowOfStarsAnimationController.start();
     }
 

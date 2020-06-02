@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
         android:text="@string/rules_title"
         android:textSize="36sp"/>
 
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/rules_title_text_view"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:background="@color/background_color"
         android:layout_gravity="top"
         tools:context=".RulesActivity">
