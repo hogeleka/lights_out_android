@@ -84,12 +84,13 @@
     <string name="star_rule_prefix">We solved the board too so if you get</string>
     <string name="rule_for_3_stars">you\'re as good as us!</string>
     <string name="rule_for_2_stars">you\'re half as good as us.</string>
-    <string name="rule_for_1_star">you might wanna practice more…</string>
+    <string name="rule_for_1_star">you should practice more…</string>
 
     <string name="solve_unlock_achievement_prompt">solve %1$d x %2$d to unlock new title</string>
     <string name="congrats_message_campaign_complete">congrats! you have mastered the puzzle :)</string>
-    <string name="icons_8">icons by <a href="https://icons8.com">icons8</a></string>
 
     <string name="rate_us_app_store">\u0020 \u0020\u0020 \u0020 rate us</string>
     <string name="contact_us">contact us</string>
+    <string name="stats_lights_turned_off">lights turned Off</string>
+    <string name="rule_for_0_stars">you definitely cheated 👀</string>
 </resources>

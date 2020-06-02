@@ -48,10 +48,6 @@ public class HomePageActivity extends AppCompatActivity {
         homePageContentHolder.addView(homePageGif);
         homePageContentHolder.addView(play);
 
-        TextView tv = findViewById(R.id.icons_8_text_view);
-        tv.setText(R.string.icons_8);
-        tv.setMovementMethod(LinkMovementMethod.getInstance());
-
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
 //        databaseHelper.resetDatabase();
     }
@@ -65,7 +61,7 @@ public class HomePageActivity extends AppCompatActivity {
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         textView.setText(text);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, HomePageActivity.PLAY_FONT_SIZE);
-        textView.setTextColor(getResources().getColor(R.color.black_overlay));
+        textView.setTextColor(getResources().getColor(R.color.custom_black));
         textView.setBackgroundColor(getResources().getColor(R.color.background_color));
         textView.setPadding(getPixels(PLAY_BUTTON_PADDING_VERTICAL), getPixels(PLAY_BUTTON_PADDING_HORIZONTAL), getPixels(PLAY_BUTTON_PADDING_VERTICAL), getPixels(PLAY_BUTTON_PADDING_HORIZONTAL));
         return textView;

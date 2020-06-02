@@ -46,7 +46,7 @@
                     android:onClick="rateUs"
                     android:text="@string/rate_us_app_store"
                     android:textAllCaps="false"
-                    android:textColor="@color/black_overlay"
+                    android:textColor="@color/custom_black"
                     android:textSize="16sp" />
 
                 <ImageView
@@ -65,25 +65,9 @@
                     android:onClick="contactUs"
                     android:text="@string/contact_us"
                     android:textAllCaps="false"
-                    android:textColor="@color/black_overlay"
+                    android:textColor="@color/custom_black"
                     android:textSize="16sp" />
 
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/icons_8_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:textSize="10sp"
-                    android:textColor="@color/black_overlay"
-                    android:textColorLink="@color/black_overlay"
-                    android:textColorHighlight="@color/black_overlay">
-                </TextView>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
