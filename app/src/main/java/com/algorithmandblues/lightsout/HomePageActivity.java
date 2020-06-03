@@ -48,8 +48,8 @@ public class HomePageActivity extends AppCompatActivity {
         homePageContentHolder.addView(homePageGif);
         homePageContentHolder.addView(play);
 
-        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-        databaseHelper.resetDatabase();
+//        databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
+//        databaseHelper.resetDatabase();
     }
 
     private TextView getButtonTextView(String text) {
