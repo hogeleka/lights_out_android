@@ -11,11 +11,12 @@ public class GameDataUtil {
             return new byte[0];
         }
 
-        String[] split = str.split(",");
+        char[] split = str.toCharArray();
         byte[] numbers = new byte[split.length];
         int i=0;
-        for(String s : split) {
-            numbers[i++] = Byte.parseByte(s);
+
+        for(char s : split) {
+            numbers[i++] = Byte.parseByte(String.valueOf(s));
         }
         return numbers;
     }
@@ -23,11 +24,8 @@ public class GameDataUtil {
     public static String byteArrayToString(byte[] array) {
 
         StringBuilder str = new StringBuilder(array.length);
-        for (int i = 0; i < array.length; i++) {
-            str.append(array[i]);
-            if(i!= array.length-1) {
-                str.append(",");
-            }
+        for (byte s : array) {
+            str.append(s);
         }
         return str.toString();
     }

@@ -236,18 +236,18 @@ public class GameGridActivity extends AppCompatActivity {
         StringBuilder originalStartState;
         byte[] currentXorArray = new byte[dimension * dimension];
 
-        //ensure that we **never** accidentally generate the an original start state which,
+        // ensure that we **never** accidentally generate the an original start state which,
         // when XORed with base solution, produces all zeros
         do {
             originalStartState = new StringBuilder();
             for (int i = 0; i < dimension*dimension; i++) {
                 if(!shouldSetRandomOriginalStartState) {
-                    originalStartState.append("1,");
+                    originalStartState.append("1");
                 } else {
                     if (Math.random() <= 0.5) {
-                        originalStartState.append("0,");
+                        originalStartState.append("0");
                     } else {
-                        originalStartState.append("1,");
+                        originalStartState.append("1");
                     }
                 }
             }
@@ -261,14 +261,13 @@ public class GameGridActivity extends AppCompatActivity {
         );
         // To accommodate accidentally generating all off/all on state state.
         if(dimension <= 4 && shouldSetRandomOriginalStartState) {
-            originalStartState.deleteCharAt(originalStartState.length() - 1);
             Random random = new Random();
             if (!originalStartState.toString().contains("1")) {
-                int odd = random.nextInt((dimension*2-1) / 2) * 2 + 1;
-                originalStartState.replace(odd-1, odd, "1");
+                int randomIndex = random.nextInt(dimension);
+                originalStartState.replace(randomIndex, randomIndex+1, "1");
             } else if(!originalStartState.toString().contains("0")) {
-                int odd = random.nextInt((dimension*2-1) / 2) * 2 + 1;
-                originalStartState.replace(odd-1, odd, "0");
+                int randomIndex = random.nextInt(dimension);
+                originalStartState.replace(randomIndex, randomIndex+1, "0");
             }
         }
 

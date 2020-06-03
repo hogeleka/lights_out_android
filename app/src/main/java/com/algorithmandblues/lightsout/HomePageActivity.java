@@ -49,7 +49,7 @@ public class HomePageActivity extends AppCompatActivity {
         homePageContentHolder.addView(play);
 
         databaseHelper = DatabaseHelper.getInstance(getApplicationContext());
-//        databaseHelper.resetDatabase();
+        databaseHelper.resetDatabase();
     }
 
     private TextView getButtonTextView(String text) {
