@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/background_color"
-    tools:context=".StatsActivity">
+    tools:context=".stats.StatsActivity">
 
     <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"

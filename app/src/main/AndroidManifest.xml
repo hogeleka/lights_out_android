@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".RulesActivity"
+            android:name=".rules.RulesActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/rules_activity"
             android:screenOrientation="portrait"
@@ -25,7 +25,7 @@
             tools:ignore="LockedOrientationActivity">
         </activity>
         <activity
-            android:name=".StatsActivity"
+            android:name=".stats.StatsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/rules_activity"
             android:screenOrientation="portrait"
@@ -33,7 +33,7 @@
             tools:ignore="LockedOrientationActivity">
         </activity>
         <activity
-            android:name=".SelectLevelActivity"
+            android:name=".levelselection.SelectLevelActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_level_selector"
             android:screenOrientation="portrait"
@@ -41,21 +41,21 @@
             tools:ignore="LockedOrientationActivity">
         </activity>
         <activity
-            android:name=".GameSummaryActivity"
+            android:name=".gamesummary.GameSummaryActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/game_win_state_label"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".GameGridActivity"
+            android:name=".game.GameGridActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game_grid"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".HomePageActivity"
+            android:name=".home.HomePageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
