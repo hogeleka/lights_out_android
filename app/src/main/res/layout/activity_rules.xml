@@ -24,7 +24,7 @@
         android:layout_marginTop="15dp"
         android:background="@color/background_color"
         android:layout_gravity="top"
-        tools:context=".RulesActivity">
+        tools:context=".rules.RulesActivity">
 
         <androidx.viewpager2.widget.ViewPager2
             android:layout_width="match_parent"

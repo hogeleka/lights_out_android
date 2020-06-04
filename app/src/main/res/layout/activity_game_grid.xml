@@ -6,10 +6,10 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
     <data>
-        <import type="com.algorithmandblues.lightsout.GameInstance"/>
-        <import type="com.algorithmandblues.lightsout.GameMode"/>
-        <variable name="gameinstance" type="GameInstance" />
-        <variable name="gamemode" type="GameMode" />
+        <import type="com.algorithmandblues.lightsout.game.GameInstance"/>
+        <import type="com.algorithmandblues.lightsout.game.GameMode"/>
+        <variable name="gameinstance" type="com.algorithmandblues.lightsout.game.GameInstance" />
+        <variable name="gamemode" type="com.algorithmandblues.lightsout.game.GameMode" />
     </data>
 
     <RelativeLayout
